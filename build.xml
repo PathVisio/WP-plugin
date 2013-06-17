@@ -1,15 +1,17 @@
 <?xml version="1.0"?>
 <project name="org.tno.wpclient" default="jar" basedir=".">
 
-  <property name="pathvisio.dir" value="../../pathvisio/"/>
+  <property name="pathvisio.dir" value="../../"/>
   <import file="${pathvisio.dir}/plugin-common.xml"/>
-
+	<path id="embed.jars">
+			
+		</path>
   	<path id="project.class.path">
 		<fileset dir="${pathvisio.dir}/modules">
 			<include name="org.pathvisio.core.jar"/>
 			<include name="org.pathvisio.desktop.jar"/>
 			<include name="org.pathvisio.gui.jar"/>
-			<include name="wikipathways-client.jar"/>
+			
 		</fileset>
 		<fileset dir="${pathvisio.dir}/lib">
 			<include name="org.bridgedb.jar"/>
@@ -22,6 +24,9 @@
 		<fileset dir="${pathvisio.dir}/tools/cytoscape-gpml/lib">
 			<include name="**/*.jar"/>
 		</fileset>
+  		<fileset dir="lib">
+  			<include name="org.wikipathways.client.jar"/>
+  		</fileset>
 	</path>
 
  	<path id="exe.bundle">
