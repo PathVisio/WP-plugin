@@ -1,6 +1,7 @@
 package org.tno.wpclient;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -8,11 +9,11 @@ import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-
 import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingWorker;
@@ -57,6 +58,7 @@ public class WikiPathwaysClientPlugin implements Plugin {
 	PvDesktop desktop;
 	File tmpDir = new File(GlobalPreference.getApplicationDir(),
 			"wpclient-cache");
+	private JMenu UploadMenu;
 
 	@Override
 	public void init(PvDesktop desktop) {
@@ -67,7 +69,9 @@ public class WikiPathwaysClientPlugin implements Plugin {
 			registerActions();
 			// registerMenuOptions(); removed
 			// register our action in the "Wikipathways" menu.
-			new WikipathwaysManager(desktop);
+			new WikipathwaysPluginManagerAction(desktop);
+			this.desktop = desktop;
+
 		} catch (Exception e) {
 			Logger.log.error("Error while initializing WikiPathways client", e);
 			JOptionPane.showMessageDialog(desktop.getSwingEngine()
@@ -84,23 +88,33 @@ public class WikiPathwaysClientPlugin implements Plugin {
 		return tmpDir;
 	}
 
-	private class WikipathwaysManager {
-		PvDesktop pvDesktop;
+	private class WikipathwaysPluginManagerAction {
+
 		public final SearchAction searchAction = new SearchAction();
 		public final BrowseAction browseAction = new BrowseAction();
 		public final UploadAction uploadAction = new UploadAction();
 
-		public WikipathwaysManager(PvDesktop desktop) {
+		public WikipathwaysPluginManagerAction(PvDesktop desktop) {
+			UploadMenu = new JMenu("Upload");
+			JMenuItem create = new JMenuItem("Create Pathway");
+			CreateAction createAction = new CreateAction();
+			UpdateAction updateAction = new UpdateAction();
+			create.addActionListener(createAction);
 
+			JMenuItem update = new JMenuItem("Update Pathway");
+			update.addActionListener(updateAction);
+
+			UploadMenu.add(create);
+			UploadMenu.add(update);
+
+			
 			desktop.registerMenuAction("Wikipathways", searchAction);
 			desktop.registerMenuAction("Wikipathways", browseAction);
-			desktop.registerMenuAction("Wikipathways", uploadAction);
+			desktop.registerSubMenu("Wikipathways", UploadMenu);
+			//desktop.registerMenuAction("Wikipathways", uploadAction);
 
 		}
 
-		public void actionPerformed(ActionEvent e) {
-			pvDesktop.getPluginManagerExternal().showGui(pvDesktop.getFrame());
-		}
 	}
 
 	public class SearchAction extends AbstractAction {
@@ -109,7 +123,6 @@ public class WikiPathwaysClientPlugin implements Plugin {
 				IMG_SEARCH);
 
 		public SearchAction() {
-
 			putValue(NAME, "Search");
 			putValue(SMALL_ICON, new ImageIcon(url));
 			putValue(SHORT_DESCRIPTION, "Search pathways in Wikipathways");
@@ -129,7 +142,6 @@ public class WikiPathwaysClientPlugin implements Plugin {
 	public class BrowseAction extends AbstractAction {
 
 		public BrowseAction() {
-
 			putValue(NAME, "Browse");
 			putValue(SHORT_DESCRIPTION, "Browse pathways in Wikipathways");
 		}
@@ -141,11 +153,19 @@ public class WikiPathwaysClientPlugin implements Plugin {
 
 	public class UploadAction extends AbstractAction {
 
-		public UploadAction() {
+		public void actionPerformed(ActionEvent e) {
 
-			putValue(NAME, "Upload");
-			putValue(SHORT_DESCRIPTION, "Upload pathways to Wikipathways");
 		}
+	}
+
+	public class CreateAction extends AbstractAction {
+
+		public void actionPerformed(ActionEvent e) {
+
+		}
+	}
+
+	public class UpdateAction extends AbstractAction {
 
 		public void actionPerformed(ActionEvent e) {
 
