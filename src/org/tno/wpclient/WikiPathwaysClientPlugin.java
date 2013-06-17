@@ -75,7 +75,7 @@ public class WikiPathwaysClientPlugin implements Plugin {
 	}
 	
 	private void registerMenuOptions() {
-		Action menuAction = new AbstractAction("Search WikiPathways") {
+		Action menuAction = new AbstractAction("Search") {
 			public void actionPerformed(ActionEvent e) {
 				SearchPanel p = new SearchPanel(WikiPathwaysClientPlugin.this);
 				JDialog d = new JDialog(
@@ -86,7 +86,7 @@ public class WikiPathwaysClientPlugin implements Plugin {
 				
 			}
 		};
-		desktop.registerMenuAction("Data", menuAction);
+		desktop.registerMenuAction("Wikipathways", menuAction);
 	}
 	
 	private void loadClients() throws MalformedURLException, ServiceException {
