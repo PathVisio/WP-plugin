@@ -58,16 +58,17 @@ public class SearchPanel extends JPanel {
 	private JTextField txtPLabel;
 	private JScrollPane resultspane;
 	Border etch = BorderFactory.createEtchedBorder();
+
 	public SearchPanel(final WikiPathwaysClientPlugin plugin) {
 		this.plugin = plugin;
-		
+
 		setLayout(new BorderLayout());
 
 		Action searchAction = new AbstractAction("Search") {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					 resultspane.setBorder(BorderFactory.createTitledBorder(etch,
-								"Pathways"));
+					resultspane.setBorder(BorderFactory.createTitledBorder(
+							etch, "Pathways"));
 					search();
 				} catch (Exception ex) {
 					JOptionPane
@@ -80,11 +81,13 @@ public class SearchPanel extends JPanel {
 		};
 
 		txtName = new JTextField();
+		txtName.setToolTipText("Enter the Name of the pathway");
 		txtPLabel = new JTextField();
-
+		txtPLabel.setToolTipText("Enter any label of elements in the pathway");
 		DefaultFormBuilder NameOptBuilder = new DefaultFormBuilder(
 				new FormLayout("pref, 4dlu, fill:pref:grow"));
 		NameOptBuilder.append("Name:", txtName);
+
 		JPanel NameOpt = NameOptBuilder.getPanel();
 		DefaultFormBuilder LabelOptBuilder = new DefaultFormBuilder(
 				new FormLayout("pref, 4dlu, fill:pref:grow"));
@@ -92,6 +95,7 @@ public class SearchPanel extends JPanel {
 		JPanel LabelOpt = LabelOptBuilder.getPanel();
 
 		txtSpecies = new JTextField();
+
 		organism = new JComboBox(Organism.values());
 		DefaultFormBuilder idOptBuilder = new DefaultFormBuilder(
 				new FormLayout(
@@ -115,7 +119,7 @@ public class SearchPanel extends JPanel {
 		CellConstraints cc = new CellConstraints();
 
 		searchOptBox.setLayout(layout);
-		
+
 		searchOptBox.setBorder(BorderFactory.createTitledBorder(etch,
 				"Search options"));
 
@@ -169,11 +173,11 @@ public class SearchPanel extends JPanel {
 			clientDropdown.setVisible(false);
 
 		add(searchOptBox, BorderLayout.NORTH);
- 
+
 		// Center contains table model for results
 		resultTable = new JTable();
-		resultspane= new JScrollPane(resultTable);
-		
+		resultspane = new JScrollPane(resultTable);
+
 		add(resultspane, BorderLayout.CENTER);
 		searchField = txtName;
 		searchField.requestDefaultFocus();
@@ -238,7 +242,7 @@ public class SearchPanel extends JPanel {
 
 						results = client.findPathwaysByText(query);
 					}
-				
+
 				} catch (Exception e) {
 					throw e;
 				} finally {
