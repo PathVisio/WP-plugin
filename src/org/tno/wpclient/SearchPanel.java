@@ -56,16 +56,18 @@ public class SearchPanel extends JPanel {
 	final private JComboBox cbSearchBy;
 	private JTextField txtName;
 	private JTextField txtPLabel;
-
+	private JScrollPane resultspane;
+	Border etch = BorderFactory.createEtchedBorder();
 	public SearchPanel(final WikiPathwaysClientPlugin plugin) {
 		this.plugin = plugin;
-
+		
 		setLayout(new BorderLayout());
 
 		Action searchAction = new AbstractAction("Search") {
 			public void actionPerformed(ActionEvent e) {
 				try {
-
+					 resultspane.setBorder(BorderFactory.createTitledBorder(etch,
+								"Pathways"));
 					search();
 				} catch (Exception ex) {
 					JOptionPane
@@ -113,7 +115,7 @@ public class SearchPanel extends JPanel {
 		CellConstraints cc = new CellConstraints();
 
 		searchOptBox.setLayout(layout);
-		Border etch = BorderFactory.createEtchedBorder();
+		
 		searchOptBox.setBorder(BorderFactory.createTitledBorder(etch,
 				"Search options"));
 
@@ -167,10 +169,12 @@ public class SearchPanel extends JPanel {
 			clientDropdown.setVisible(false);
 
 		add(searchOptBox, BorderLayout.NORTH);
-
+ 
 		// Center contains table model for results
 		resultTable = new JTable();
-		add(new JScrollPane(resultTable), BorderLayout.CENTER);
+		resultspane= new JScrollPane(resultTable);
+		
+		add(resultspane, BorderLayout.CENTER);
 		searchField = txtName;
 		searchField.requestDefaultFocus();
 
