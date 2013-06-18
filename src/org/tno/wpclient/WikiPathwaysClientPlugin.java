@@ -1,5 +1,6 @@
 package org.tno.wpclient;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -132,6 +133,8 @@ public class WikiPathwaysClientPlugin implements Plugin {
 			SearchPanel p = new SearchPanel(WikiPathwaysClientPlugin.this);
 			JDialog d = new JDialog(desktop.getFrame(), "Search WikiPathways",
 					false);
+		
+			d.setMinimumSize( new Dimension(550, 270));
 			d.getContentPane().add(p);
 			d.pack();
 			d.setVisible(true);
