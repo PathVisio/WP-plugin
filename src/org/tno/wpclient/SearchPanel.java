@@ -84,10 +84,10 @@ public class SearchPanel extends JPanel {
 
 		searchField = new JTextField();
 
-		tipLabel = new JLabel("Tip: use AND, OR, *, ?, parentheses or quotes (e.g.: 'apoptosis or p53' , 'dna*')");
+		tipLabel = new JLabel("Tip: use AND, OR, *, ?, parentheses or quotes (e.g.: 'Apoptosis or P53' , 'DNA*')");
 		tipLabel.setFont(new Font("SansSerif", Font.ITALIC, 11));
 		searchField
-				.setToolTipText("Enter any search query (e.g. 'apoptosis' or 'p53').");
+				.setToolTipText("Enter any search query (e.g. 'Apoptosis' or 'P53').");
 		java.util.List<String> O = new ArrayList<String>();
 		O.add("ALL SPECIES");
 		O.addAll(1, Organism.latinNames());
