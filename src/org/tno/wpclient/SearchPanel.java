@@ -3,12 +3,16 @@ package org.tno.wpclient;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Vector;
 import java.util.concurrent.ExecutionException;
@@ -52,12 +56,10 @@ public class SearchPanel extends JPanel {
 	private JComboBox organism;
 	JTable resultTable;
 	int i;
-	private JTextField txtSpecies;
-	final private JComboBox cbSearchBy;
-	private JTextField txtName;
-	private JTextField txtPLabel;
+
 	private JScrollPane resultspane;
 	Border etch = BorderFactory.createEtchedBorder();
+	private JLabel tipLabel;
 
 	public SearchPanel(final WikiPathwaysClientPlugin plugin) {
 		this.plugin = plugin;
@@ -80,42 +82,34 @@ public class SearchPanel extends JPanel {
 			}
 		};
 
-		txtName = new JTextField();
-		txtName.setToolTipText("Enter the Name of the pathway");
-		txtPLabel = new JTextField();
-		txtPLabel.setToolTipText("Enter any label of elements in the pathway");
-		DefaultFormBuilder NameOptBuilder = new DefaultFormBuilder(
-				new FormLayout("pref, 4dlu, fill:pref:grow"));
-		NameOptBuilder.append("Name:", txtName);
+		searchField = new JTextField();
 
-		JPanel NameOpt = NameOptBuilder.getPanel();
-		DefaultFormBuilder LabelOptBuilder = new DefaultFormBuilder(
-				new FormLayout("pref, 4dlu, fill:pref:grow"));
-		LabelOptBuilder.append("Element Label", txtPLabel);
-		JPanel LabelOpt = LabelOptBuilder.getPanel();
+		tipLabel = new JLabel("Tip: use AND, OR, *, ?, parentheses or quotes (e.g.: 'apoptosis or p53' , 'dna*')");
+		tipLabel.setFont(new Font("SansSerif", Font.ITALIC, 11));
+		searchField
+				.setToolTipText("Enter any search query (e.g. 'apoptosis' or 'p53').");
+		java.util.List<String> O = new ArrayList<String>();
+		O.add("ALL SPECIES");
+		O.addAll(1, Organism.latinNames());
+		organism = new JComboBox(O.toArray());
 
-		txtSpecies = new JTextField();
-
-		organism = new JComboBox(Organism.values());
 		DefaultFormBuilder idOptBuilder = new DefaultFormBuilder(
-				new FormLayout(
-						"p, 3dlu,right:pref,3dlu, fill:pref:grow, p, 3dlu"));
+				new FormLayout("right:pref, 3dlu,right:pref"));
+
 		idOptBuilder.append("Species:", organism);
-		idOptBuilder.append(txtSpecies);
 
 		JPanel idOpt = idOptBuilder.getPanel();
 
 		final JPanel opts = new JPanel();
 		final CardLayout optCards = new CardLayout();
 		opts.setLayout(optCards);
-		opts.add(NameOpt, "Name");
+
 		opts.add(idOpt, "Species");
-		opts.add(LabelOpt, "Element Label");
 
 		JPanel searchOptBox = new JPanel();
 		FormLayout layout = new FormLayout(
-				"p,3dlu,fill:pref,3dlu,fill:pref:grow, 3dlu, fill:pref, 3dlu,fill:pref", // columns
-				"p, 3dlu, p, 3dlu");
+				"p,3dlu,150px,3dlu,fill:pref:grow,3dlu,fill:pref:grow,3dlu", // columns
+				"p, pref, p, 2dlu");
 		CellConstraints cc = new CellConstraints();
 
 		searchOptBox.setLayout(layout);
@@ -123,29 +117,10 @@ public class SearchPanel extends JPanel {
 		searchOptBox.setBorder(BorderFactory.createTitledBorder(etch,
 				"Search options"));
 
-		searchOptBox.add(new JLabel("Search by:"), cc.xy(1, 1));
+		searchOptBox.add(new JLabel("Search For:"), cc.xy(1, 1));
 
-		cbSearchBy = new JComboBox();
-		cbSearchBy.addItem("Name");
-		cbSearchBy.addItem("Species");
-		cbSearchBy.addItem("Element Label");
-		cbSearchBy.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				i = cbSearchBy.getSelectedIndex();
-				if (i == 0) {
-					optCards.show(opts, "Name");
-					searchField = txtName;
-				} else if (i == 1) {
-					optCards.show(opts, "Species");
-					searchField = txtSpecies;
-				} else {
-					optCards.show(opts, "Element Label");
-					searchField = txtPLabel;
-				}
+		searchOptBox.add(searchField, cc.xy(3, 1));
 
-			}
-		});
-		searchOptBox.add(cbSearchBy, cc.xy(3, 1));
 		searchOptBox.add(opts, cc.xy(5, 1));
 
 		JButton searchButton = new JButton(searchAction);
@@ -168,18 +143,20 @@ public class SearchPanel extends JPanel {
 
 			}
 		});
-		searchOptBox.add(clientDropdown, cc.xy(9, 1));
+		searchOptBox.add(clientDropdown, cc.xy(8, 1));
+		searchOptBox.add(tipLabel,cc.xyw(1, 2,8));
 		if (plugin.getClients().size() < 2)
 			clientDropdown.setVisible(false);
 
 		add(searchOptBox, BorderLayout.NORTH);
 
+		
 		// Center contains table model for results
 		resultTable = new JTable();
 		resultspane = new JScrollPane(resultTable);
 
 		add(resultspane, BorderLayout.CENTER);
-		searchField = txtName;
+
 		searchField.requestDefaultFocus();
 
 		resultTable.addMouseListener(new MouseAdapter() {
@@ -232,16 +209,13 @@ public class SearchPanel extends JPanel {
 				pk.setTaskName("Searching");
 				WSSearchResult[] results = null;
 				try {
-					if (i == 1)
-						results = client
-								.findPathwaysByText(query, Organism
-										.valueOf(organism.getSelectedItem()
-												.toString()));
-
-					else {
-
+					if (organism.getSelectedItem().toString()
+							.equalsIgnoreCase("ALL SPECIES")) {
 						results = client.findPathwaysByText(query);
-					}
+					} else
+						results = client.findPathwaysByText(query, Organism
+								.fromLatinName(organism.getSelectedItem()
+										.toString()));
 
 				} catch (Exception e) {
 					throw e;

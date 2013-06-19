@@ -108,11 +108,10 @@ public class WikiPathwaysClientPlugin implements Plugin {
 			UploadMenu.add(create);
 			UploadMenu.add(update);
 
-			
 			desktop.registerMenuAction("Wikipathways", searchAction);
 			desktop.registerMenuAction("Wikipathways", browseAction);
 			desktop.registerSubMenu("Wikipathways", UploadMenu);
-			//desktop.registerMenuAction("Wikipathways", uploadAction);
+			// desktop.registerMenuAction("Wikipathways", uploadAction);
 
 		}
 
@@ -131,14 +130,10 @@ public class WikiPathwaysClientPlugin implements Plugin {
 
 		public void actionPerformed(ActionEvent e) {
 			SearchPanel p = new SearchPanel(WikiPathwaysClientPlugin.this);
-			JDialog d = new JDialog(desktop.getFrame(), "Search WikiPathways",
-					false);
-		
-			d.setMinimumSize( new Dimension(550, 270));
+			JDialog d = new JDialog(desktop.getFrame(), "Search WikiPathways",false);
 			d.getContentPane().add(p);
 			d.pack();
 			d.setVisible(true);
-
 		}
 	}
 
