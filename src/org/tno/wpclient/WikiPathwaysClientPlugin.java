@@ -325,7 +325,7 @@ public class WikiPathwaysClientPlugin implements Plugin
 
 	static boolean isSameServer(String clientStr, String url)
 	{
-		return url.toLowerCase().startsWith(clientStr.toLowerCase().replaceAll(	"/wpi/webservice/webservice.php$", ""));
+		return url.toLowerCase().startsWith(clientStr.toLowerCase().replace("wpi/webservice/webservice.php?wsdl", ""));
 	}
 
 	@Override
