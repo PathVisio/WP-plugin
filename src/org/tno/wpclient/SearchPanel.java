@@ -196,6 +196,7 @@ public class SearchPanel extends JPanel {
 	private void search() throws RemoteException, InterruptedException,
 			ExecutionException {
 		final String query = searchField.getText();
+		 if(!query.isEmpty()){
 		String clientName = clientDropdown.getSelectedItem().toString();
 
 		final WikiPathwaysClient client = plugin.getClients().get(clientName);
@@ -230,6 +231,8 @@ public class SearchPanel extends JPanel {
 		d.setVisible(true);
 		resultTable.setModel(new SearchTableModel(sw.get(), clientName));
 		resultTable.setRowSorter(new TableRowSorter(resultTable.getModel()));
+		 } else
+	JOptionPane.showMessageDialog(null,"Please Enter a Seacrh Query", "ERROR", JOptionPane.ERROR_MESSAGE);
 	}
 
 	private class SearchTableModel extends AbstractTableModel {
