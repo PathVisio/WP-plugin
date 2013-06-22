@@ -10,6 +10,8 @@ import org.pathvisio.core.debug.Logger;
 import org.pathvisio.core.model.PathwayElement;
 import org.wikipathways.client.WikiPathwaysClient;
 
+import com.sun.xml.internal.org.jvnet.fastinfoset.ExternalVocabulary;
+
 class OpenPathwayFromXrefAction extends AbstractAction
 {
 	private PathwayElement elm;
@@ -32,13 +34,14 @@ class OpenPathwayFromXrefAction extends AbstractAction
 	{
 		try
 		{
-			int id=0;
+			int flag=0;
 			Xref x = elm.getXref();
 			try
 			{
-				if(!(x.getDataSource().toString().isEmpty()))
+				if((x.getDataSource().toString().isEmpty()) ||x.getId().isEmpty() ||(!x.getId().matches(".*\\d.*")))
 				{
-				id=Integer.parseInt(x.getId().toString()); // to check wheter the id is a NUMBER
+					flag++;
+				throw new Exception();
 				}
 			}
 			catch (Exception e)
@@ -46,14 +49,12 @@ class OpenPathwayFromXrefAction extends AbstractAction
 			Logger.log.error("The Pathway was annotated with an invalid identifier", e);
 			JOptionPane.showMessageDialog(null,"The Pathway is annotated with an invalid identifier", "ERROR", JOptionPane.ERROR_MESSAGE);
 			}
-			
-			if(id>0)
-			{
+			if(flag==0)
+				{
 			 File tmpDir= new File(plugin.getTmpDir(), x.getDataSource().getFullName());
 			 tmpDir.mkdirs();
 			 plugin.openPathwayWithProgress(client, x.getId(), 0, tmpDir);					
-			} 
-			
+				}
 		} 
 		catch (Exception e) 
 		{
