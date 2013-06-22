@@ -2,7 +2,6 @@ package org.tno.wpclient;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
-
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 
@@ -11,22 +10,26 @@ import org.pathvisio.core.debug.Logger;
 import org.pathvisio.core.model.PathwayElement;
 import org.wikipathways.client.WikiPathwaysClient;
 
-class OpenPathwayFromXrefAction extends AbstractAction {
+class OpenPathwayFromXrefAction extends AbstractAction
+{
 	private PathwayElement elm;
 	private WikiPathwaysClient client;
 	private WikiPathwaysClientPlugin plugin;
 	
-	public OpenPathwayFromXrefAction(WikiPathwaysClientPlugin plugin, PathwayElement elm) {
+	public OpenPathwayFromXrefAction(WikiPathwaysClientPlugin plugin, PathwayElement elm)
+	{
 		putValue(NAME, "Open pathway from " + elm.getXref().getDataSource().getFullName());
 		this.plugin = plugin;
 		this.elm = elm;
 	}
 
-	public void setClient(WikiPathwaysClient client) {
+	public void setClient(WikiPathwaysClient client)
+	{
 		this.client = client;
 	}
 	
-	public void actionPerformed(ActionEvent evt) {
+	public void actionPerformed(ActionEvent evt)
+	{
 		try {
 			int id=0;
 			Xref x = elm.getXref();

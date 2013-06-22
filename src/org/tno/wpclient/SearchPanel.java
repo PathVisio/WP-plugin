@@ -3,11 +3,8 @@ package org.tno.wpclient;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.List;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -18,7 +15,6 @@ import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -40,7 +36,6 @@ import javax.swing.table.TableRowSorter;
 import org.bridgedb.bio.Organism;
 import org.pathvisio.core.debug.Logger;
 import org.pathvisio.core.util.ProgressKeeper;
-import org.pathvisio.gui.DataSourceModel;
 import org.pathvisio.gui.ProgressDialog;
 import org.pathvisio.wikipathways.webservice.WSSearchResult;
 import org.wikipathways.client.WikiPathwaysClient;
@@ -53,7 +48,7 @@ public class SearchPanel extends JPanel {
 	WikiPathwaysClientPlugin plugin;
 	JTextField searchField;
 	JComboBox clientDropdown;
-	private JComboBox organism;
+	private JComboBox organismOpt;
 	JTable resultTable;
 	int i;
 
@@ -91,12 +86,12 @@ public class SearchPanel extends JPanel {
 		java.util.List<String> O = new ArrayList<String>();
 		O.add("ALL SPECIES");
 		O.addAll(1, Organism.latinNames());
-		organism = new JComboBox(O.toArray());
+		organismOpt = new JComboBox(O.toArray());
 
 		DefaultFormBuilder idOptBuilder = new DefaultFormBuilder(
 				new FormLayout("right:pref, 3dlu,right:pref"));
 
-		idOptBuilder.append("Species:", organism);
+		idOptBuilder.append("Species:", organismOpt);
 
 		JPanel idOpt = idOptBuilder.getPanel();
 
@@ -196,7 +191,6 @@ public class SearchPanel extends JPanel {
 	private void search() throws RemoteException, InterruptedException,
 			ExecutionException {
 		final String query = searchField.getText();
-		 if(!query.isEmpty()){
 		String clientName = clientDropdown.getSelectedItem().toString();
 
 		final WikiPathwaysClient client = plugin.getClients().get(clientName);
@@ -210,12 +204,12 @@ public class SearchPanel extends JPanel {
 				pk.setTaskName("Searching");
 				WSSearchResult[] results = null;
 				try {
-					if (organism.getSelectedItem().toString()
+					if (organismOpt.getSelectedItem().toString()
 							.equalsIgnoreCase("ALL SPECIES")) {
 						results = client.findPathwaysByText(query);
 					} else
 						results = client.findPathwaysByText(query, Organism
-								.fromLatinName(organism.getSelectedItem()
+								.fromLatinName(organismOpt.getSelectedItem()
 										.toString()));
 
 				} catch (Exception e) {
@@ -231,8 +225,6 @@ public class SearchPanel extends JPanel {
 		d.setVisible(true);
 		resultTable.setModel(new SearchTableModel(sw.get(), clientName));
 		resultTable.setRowSorter(new TableRowSorter(resultTable.getModel()));
-		 } else
-	JOptionPane.showMessageDialog(null,"Please Enter a Seacrh Query", "ERROR", JOptionPane.ERROR_MESSAGE);
 	}
 
 	private class SearchTableModel extends AbstractTableModel {
