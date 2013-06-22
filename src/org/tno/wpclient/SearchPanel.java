@@ -228,7 +228,7 @@ public class SearchPanel extends JPanel {
 	 } 
 	 else
 	 {
-	  JOptionPane.showMessageDialog(null,"Please Enter a Seacrh Query", "ERROR", JOptionPane.ERROR_MESSAGE);
+	  JOptionPane.showMessageDialog(null,"Please Enter a Search Query", "ERROR", JOptionPane.ERROR_MESSAGE);
 	 }
 	}
 	
