@@ -293,11 +293,11 @@ public class WikiPathwaysClientPlugin implements Plugin
 				try
 				{
 					openPathway(client, id, rev, tmpDir);
-				} 
-				catch (Exception e)
+				}catch (Exception e)
 				{
-					throw e;
-				} 
+					Logger.log.error("The Pathway is not found", e);
+					JOptionPane.showMessageDialog(null,"The Pathway is not found", "ERROR", JOptionPane.ERROR_MESSAGE);
+				}
 				finally 
 				{
 					pk.finished();
@@ -313,7 +313,7 @@ public class WikiPathwaysClientPlugin implements Plugin
 
 	void openPathway(WikiPathwaysClient client, String id, int rev, File tmpDir)throws RemoteException, ConverterException 
 	{
-		WSPathway wsp = client.getPathway(id, rev);
+		WSPathway wsp = client.getPathway(id, rev);		
 		Pathway p = WikiPathwaysClient.toPathway(wsp);
 		File tmp = new File(tmpDir, wsp.getId() + ".r" + wsp.getRevision()+ ".gpml");
 		p.writeToXml(tmp, true);
@@ -321,6 +321,7 @@ public class WikiPathwaysClientPlugin implements Plugin
 		Engine engine = desktop.getSwingEngine().getEngine();
 		engine.setWrapper(desktop.getSwingEngine().createWrapper());
 		engine.openPathway(tmp);
+		
 	}
 
 	static boolean isSameServer(String clientStr, String url)
