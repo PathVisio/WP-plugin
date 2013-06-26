@@ -168,7 +168,7 @@ public class SearchPanel extends JPanel {
 		});
 	}
 
-	private String shortClientName(String clientName) 
+	public static String shortClientName(String clientName) 
 	{
 		Pattern pattern = Pattern.compile("http://(.*?)/");
 		Matcher matcher = pattern.matcher(clientName);

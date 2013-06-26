@@ -3,19 +3,13 @@ package org.tno.wpclient;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Component;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Locale.Category;
 import java.util.Vector;
-import java.util.concurrent.ExecutionException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -28,18 +22,15 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.SwingWorker;
 import javax.swing.border.Border;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableRowSorter;
+
 
 import org.bridgedb.bio.Organism;
 import org.pathvisio.core.debug.Logger;
-import org.pathvisio.core.util.ProgressKeeper;
-import org.pathvisio.gui.ProgressDialog;
 import org.pathvisio.wikipathways.webservice.WSSearchResult;
-import org.wikipathways.client.WikiPathwaysClient;
+
+
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -77,7 +68,7 @@ public class BrowsePanel extends JPanel {
 			{
 				try
 				{
-					resultspane.setBorder(BorderFactory.createTitledBorder(etch, "Pathways"));
+					
 					browse();
 				}
 				catch (Exception ex) 
@@ -89,10 +80,10 @@ public class BrowsePanel extends JPanel {
 		};
 
 		
-	speciesLabel= new JLabel("Species");
-	catLabel= new JLabel("Category");
-	CollecLabel= new JLabel("Collection");
-	CuraLabel= new JLabel("Curation Tag");
+	speciesLabel= new JLabel("Species:");
+	catLabel= new JLabel("Categories:");
+	CollecLabel= new JLabel("Collections:");
+	CuraLabel= new JLabel("Curation Tags:");
 	
 	// species combo box
 	java.util.List<String> org = new ArrayList<String>();
@@ -179,7 +170,7 @@ public class BrowsePanel extends JPanel {
 	curationOpt = new JComboBox(curationtags.toArray());
 	curationOpt.setSelectedItem("Not specified");
 	DefaultFormBuilder curationOptBuilder = new DefaultFormBuilder(new FormLayout("right:pref, 3dlu,right:pref"));
-	catOptBuilder.append(curationOpt);
+	curationOptBuilder.append(curationOpt);
 	
 	final JPanel opts4 = new JPanel();
 	final CardLayout opt4Cards = new CardLayout();
@@ -189,7 +180,7 @@ public class BrowsePanel extends JPanel {
 	opts4.add(curOpt, "Curation Tags");
 	
 	JPanel browseOptBox = new JPanel();
-	FormLayout layout = new FormLayout("left:pref,10dlu,left:pref,10dlu,left:pref,14dlu,left:pref,14dlu","p,24dlu, p, 2dlu");
+	FormLayout layout = new FormLayout("left:pref,6dlu,left:pref,6dlu,left:pref,6dlu,left:pref,6dlu,left:pref,6dlu","p,24dlu, p, 2dlu");
 	CellConstraints cc = new CellConstraints();
 
 	browseOptBox.setLayout(layout);
@@ -202,10 +193,65 @@ public class BrowsePanel extends JPanel {
 	browseOptBox.add(opts2, cc.xy(3, 2));
 	browseOptBox.add(opts3, cc.xy(5, 2));
 	browseOptBox.add(opts4, cc.xy(7, 2));
-	
+	JButton BrowseButton = new JButton(browseAction);
+	browseOptBox.add(BrowseButton, cc.xy(9, 2));
 	add(browseOptBox, BorderLayout.CENTER);
-		
-	}
+	
+	Vector<String> clients = new Vector<String>(plugin.getClients().keySet());
+	Collections.sort(clients);
+	
+	clientDropdown = new JComboBox(clients);
+	clientDropdown.setSelectedIndex(0);
+	clientDropdown.setRenderer(new DefaultListCellRenderer() 
+	{
+		public Component getListCellRendererComponent(final JList list,final Object value, final int index,final boolean isSelected, final boolean cellHasFocus) 
+		{
+			String strValue = SearchPanel.shortClientName(value.toString());
+			return super.getListCellRendererComponent(list, strValue,index, isSelected, cellHasFocus);
+		}
+	});
+	
+	browseOptBox.add(clientDropdown, cc.xy(8, 1));
+	
+	if (plugin.getClients().size() < 2)
+		clientDropdown.setVisible(false);
+
+	add(browseOptBox, BorderLayout.NORTH);
+
+	// Center contains table model for results
+	resultTable = new JTable();
+	resultspane = new JScrollPane(resultTable);
+
+	add(resultspane, BorderLayout.CENTER);
+
+	
+
+	resultTable.addMouseListener(new MouseAdapter()
+	{
+		public void mouseClicked(MouseEvent e) 
+		{
+			if (e.getClickCount() == 2) 
+			{
+				JTable target = (JTable) e.getSource();
+				int row = target.getSelectedRow();
+				SearchTableModel model = (SearchTableModel) target.getModel();
+
+				File tmpDir = new File(plugin.getTmpDir(),SearchPanel.shortClientName(model.clientName));
+				tmpDir.mkdirs();
+				
+				try
+				{
+					plugin.openPathwayWithProgress(plugin.getClients().get(model.clientName),model.getValueAt(row, 0).toString(), 0, tmpDir);
+				}
+				catch (Exception ex) 
+				{
+					JOptionPane.showMessageDialog(BrowsePanel.this,ex.getMessage(), "Error",JOptionPane.ERROR_MESSAGE);
+					Logger.log.error("Error", ex);
+				}
+			}
+		}
+	});
+}
 
 	
 
@@ -217,7 +263,47 @@ public class BrowsePanel extends JPanel {
 	}
 
 
+	private class SearchTableModel extends AbstractTableModel
+	{
+		WSSearchResult[] results;
+		String[] columnNames = new String[] { "Name"};
+		String clientName;
 
+		public SearchTableModel(WSSearchResult[] results, String clientName) 
+		{
+			this.clientName = clientName;
+			this.results = results;
+		}
+
+		public int getColumnCount()
+		{
+			return 3;
+		}
+
+		public int getRowCount() 
+		{
+			return results.length;
+		}
+
+		public Object getValueAt(int rowIndex, int columnIndex)
+		{
+			WSSearchResult r = results[rowIndex];
+			switch (columnIndex) {
+			case 0:
+				return r.getId();
+			case 1:
+				return r.getName();
+			case 2:
+				return r.getSpecies();
+			}
+			return "";
+		}
+
+		public String getColumnName(int column) 
+		{
+			return columnNames[column];
+		}
+	}
 
 
 	
