@@ -153,7 +153,12 @@ public class WikiPathwaysClientPlugin implements Plugin
 
 		public void actionPerformed(ActionEvent e)
 		{
-			// needs to be implemented
+			BrowsePanel p = new BrowsePanel(WikiPathwaysClientPlugin.this);
+			JDialog d = new JDialog(desktop.getFrame(), "Browse WikiPathways",false);
+			
+			d.getContentPane().add(p);
+			d.pack();
+			d.setVisible(true);
 		}
 	}
 
