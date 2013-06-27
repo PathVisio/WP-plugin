@@ -57,6 +57,7 @@ public class BrowsePanel extends JPanel
 	private JComboBox curationOpt;
 
 	java.util.HashMap<String, String> curationtags = new HashMap<>();
+	java.util.HashMap<String, String> coll = new HashMap<>();
 
 	public BrowsePanel(final WikiPathwaysClientPlugin plugin) 
 	{
@@ -130,19 +131,25 @@ public class BrowsePanel extends JPanel
 		opts.add(idOpt, "Species");
 
 		// collections combo box
-		java.util.List<String> coll = new ArrayList<String>();
-		coll.add("Curated pathways");
-		coll.add("Featured pathways");
-		coll.add("GenMAPP pathways");
-		coll.add("CIRM pathways");
-		coll.add("Reactome pathways");
-		coll.add("Open Access pathways");
-		coll.add("WormBase pathways");
-		coll.add("Wikipedia pathways");
-		coll.add("All pathways");
-
-		collOpt = new JComboBox(coll.toArray());
 		
+		coll.put("AnalysisCollection","Curated pathways");
+		coll.put("FeaturedPathway","Featured pathways");
+		coll.put("GenMAPP_Approved","GenMAPP pathways");
+		coll.put("CIRM_Related ","CIRM pathways");
+		coll.put("Reactome_Approved","Reactome pathways");
+		coll.put("OpenAccess","Open Access pathways");
+		coll.put("WormBase_Approved","WormBase pathways");
+		coll.put("Wikipedia","Wikipedia pathways");
+		coll.put("All","All pathways");
+
+		
+		collOpt = new JComboBox();
+		Iterator it = coll.keySet().iterator();
+		while (it.hasNext()) 
+		{
+			collOpt.addItem(coll.get(it.next()));
+		}
+		collOpt.setSelectedItem("All pathways");
 		DefaultFormBuilder colOptBuilder = new DefaultFormBuilder(new FormLayout("right:pref, 3dlu,right:pref"));
 		colOptBuilder.append(collOpt);
 		JPanel opts2 = new JPanel();
@@ -179,7 +186,7 @@ public class BrowsePanel extends JPanel
 		curationtags.put("Curation:Stub", "stub");
 		curationtags.put("Curation:NeedsWork", "needs work");
 		curationOpt = new JComboBox();
-		Iterator it = curationtags.keySet().iterator();
+		 it = curationtags.keySet().iterator();
 		while (it.hasNext()) 
 		{
 			curationOpt.addItem(curationtags.get(it.next()));
@@ -441,7 +448,7 @@ public class BrowsePanel extends JPanel
 				return r.getPathway().getSpecies();
 			case 3:
 				return r.getDisplayName();
-			}
+			}			
 			return "";
 		}
 
@@ -474,7 +481,8 @@ public class BrowsePanel extends JPanel
 		public Object getValueAt(int rowIndex, int columnIndex) 
 		{
 			WSPathwayInfo r = results[rowIndex];
-			switch (columnIndex) {
+			switch (columnIndex)
+			{
 			case 0:
 				return r.getId();
 			case 1:
@@ -483,6 +491,7 @@ public class BrowsePanel extends JPanel
 				return r.getSpecies();
 			}
 			return "";
+			
 		}
 
 		public String getColumnName(int column) 
