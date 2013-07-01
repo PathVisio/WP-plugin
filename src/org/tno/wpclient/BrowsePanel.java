@@ -112,7 +112,7 @@ public class BrowsePanel extends JPanel
 			{
 				try 
 				{
-					browse();
+					browseBySpecies();
 				} 
 				catch (Exception ex) 
 				{
@@ -203,7 +203,7 @@ public class BrowsePanel extends JPanel
 			{
 				try
 				{
-					browse2();
+					browseByCurationTag();
 				}
 				catch (Exception ex)
 				{
@@ -273,7 +273,7 @@ public class BrowsePanel extends JPanel
 					JTable target = (JTable) e.getSource();
 					int row = target.getSelectedRow();
 					
-					if (target.getColumnCount() == 3) // 3 columns for browse by species
+					if (target.getColumnCount() == 3) // 3 columns for browseBySpecies by species
 					{
 						BrowseTableModel model = (BrowseTableModel) target.getModel();
 						File tmpDir = new File(plugin.getTmpDir(), BrowsePanel.shortClientName(model.clientName));
@@ -290,7 +290,7 @@ public class BrowsePanel extends JPanel
 						}
 					}
 					else
-					{// 4 columns for browse by species
+					{// 4 columns for browseBySpecies by species
 						BrowseTableModel2 model = (BrowseTableModel2) target.getModel();
 
 						File tmpDir = new File(plugin.getTmpDir(), BrowsePanel.shortClientName(model.clientName));
@@ -324,7 +324,7 @@ public class BrowsePanel extends JPanel
 		return clientName;
 	}
 
-	protected void browse() throws RemoteException, InterruptedException,ExecutionException 
+	protected void browseBySpecies() throws RemoteException, InterruptedException,ExecutionException 
 	{
 		
 		String clientName = clientDropdown.getSelectedItem().toString();
@@ -366,7 +366,7 @@ public class BrowsePanel extends JPanel
 
 	}
 
-	protected void browse2() throws RemoteException, InterruptedException,ExecutionException 
+	protected void browseByCurationTag() throws RemoteException, InterruptedException,ExecutionException 
 	{
 		// TODO Auto-generated method stub
 		String clientName = clientDropdown.getSelectedItem().toString();
