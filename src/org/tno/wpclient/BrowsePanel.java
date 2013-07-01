@@ -132,15 +132,15 @@ public class BrowsePanel extends JPanel
 
 		// collections combo box
 		
-		coll.put("AnalysisCollection","Curated pathways");
-		coll.put("FeaturedPathway","Featured pathways");
-		coll.put("GenMAPP_Approved","GenMAPP pathways");
-		coll.put("CIRM_Related ","CIRM pathways");
-		coll.put("Reactome_Approved","Reactome pathways");
-		coll.put("OpenAccess","Open Access pathways");
-		coll.put("WormBase_Approved","WormBase pathways");
-		coll.put("Wikipedia","Wikipedia pathways");
-		coll.put("All","All pathways");
+		coll.put("Curation:AnalysisCollection","Curated pathways");
+		coll.put("Curation:FeaturedPathway","Featured pathways");
+		coll.put("Curation:GenMAPP_Approved","GenMAPP pathways");
+		coll.put("Curation:CIRM_Related ","CIRM pathways");
+		coll.put("Curation:Reactome_Approved","Reactome pathways");
+		coll.put("Curation:OpenAccess","Open Access pathways");
+		coll.put("Curation:WormBase_Approved","WormBase pathways");
+		coll.put("Curation:Wikipedia","Wikipedia pathways");
+		coll.put("Curation:All","All pathways");
 
 		
 		collOpt = new JComboBox();
@@ -152,6 +152,23 @@ public class BrowsePanel extends JPanel
 		collOpt.setSelectedItem("All pathways");
 		DefaultFormBuilder colOptBuilder = new DefaultFormBuilder(new FormLayout("right:pref, 3dlu,right:pref"));
 		colOptBuilder.append(collOpt);
+		collOpt.addActionListener(new ActionListener() 
+		{
+
+			@Override
+			public void actionPerformed(ActionEvent e) 
+			{
+				try
+				{
+					browseByCollection();
+				}
+				catch (Exception ex)
+				{
+					JOptionPane.showMessageDialog(BrowsePanel.this,ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+					Logger.log.error("Error searching WikiPathways", ex);
+				}
+			}
+		});
 		JPanel opts2 = new JPanel();
 		final CardLayout opt2Cards = new CardLayout();
 		opts2.setLayout(opt2Cards);
@@ -229,12 +246,12 @@ public class BrowsePanel extends JPanel
 		browseOptBox.setBorder(BorderFactory.createTitledBorder(etch,"Browse options"));
 		browseOptBox.add(speciesLabel, cc.xy(1, 1));
 		browseOptBox.add(CollecLabel, cc.xy(3, 1));
-		browseOptBox.add(catLabel, cc.xy(5, 1));
-		browseOptBox.add(CuraLabel, cc.xy(7, 1));
+		browseOptBox.add(CuraLabel, cc.xy(5, 1));
+		browseOptBox.add(catLabel, cc.xy(7, 1));
 		browseOptBox.add(opts, cc.xy(1, 2));
 		browseOptBox.add(opts2, cc.xy(3, 2));
-		browseOptBox.add(opts3, cc.xy(5, 2));
-		browseOptBox.add(opts4, cc.xy(7, 2));
+		browseOptBox.add(opts4, cc.xy(5, 2));
+		browseOptBox.add(opts3, cc.xy(7, 2));
 
 		add(browseOptBox, BorderLayout.CENTER);
 
@@ -309,6 +326,53 @@ public class BrowsePanel extends JPanel
 				}
 			}
 		});
+	}
+
+	protected void browseByCollection() throws RemoteException, InterruptedException,ExecutionException 
+	{
+		// TODO Auto-generated method stub
+		String clientName = clientDropdown.getSelectedItem().toString();
+		final WikiPathwaysClient client = plugin.getClients().get(clientName);
+		final ProgressKeeper pk = new ProgressKeeper();
+		final ProgressDialog d = new ProgressDialog(JOptionPane.getFrameForComponent(this), "", pk, true, true);
+
+		SwingWorker<WSCurationTag[], Void> sw = new SwingWorker<WSCurationTag[], Void>() 
+				{
+			protected WSCurationTag[] doInBackground() throws Exception
+			{
+				pk.setTaskName("Searching");
+				WSCurationTag[] results = null;
+				try 
+				{
+					String key = null;
+					for (Entry<String, String> entry : coll.entrySet()) 
+					{
+						if ((collOpt.getSelectedItem().toString()).equals(entry.getValue()))
+						{
+							key = entry.getKey();
+							break; // breaking because its one to one map
+						}
+					}
+
+					results = client.getCurationTagsByName(key);
+				} 
+				catch (Exception e) 
+				{
+					throw e;
+				} finally {
+					pk.finished();
+				}
+				return results;
+			}
+		};
+
+		sw.execute();
+		d.setVisible(true);
+
+		resultTable.setModel(new BrowseTableModel2(sw.get(), clientName));
+
+		resultTable.setRowSorter(new TableRowSorter(resultTable.getModel()));
+
 	}
 
 	public static String shortClientName(String clientName) 
