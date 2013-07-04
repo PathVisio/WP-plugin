@@ -58,8 +58,8 @@ public class BrowsePanel extends JPanel
 	private JComboBox curationOpt;
 	WSPathwayInfo[] results2;
 
-	java.util.HashMap<String, String> curationtags = new HashMap<>();
-	java.util.HashMap<String, String> coll = new HashMap<>();
+	java.util.HashMap<String, String> curationtags = new HashMap<String, String>();
+	java.util.HashMap<String, String> coll = new HashMap<String, String>();
 
 	public BrowsePanel(final WikiPathwaysClientPlugin plugin) 
 	{
