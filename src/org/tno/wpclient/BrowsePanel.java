@@ -636,6 +636,8 @@ public class BrowsePanel extends JPanel
 					}
 					else 
 					{
+						if (!p.equals("ALL SPECIES")) 
+						{
 						results = client.listPathways(Organism.fromLatinName(organismOpt.getSelectedItem().toString()));
 
 						for (WSPathwayInfo pa : results)
@@ -654,7 +656,26 @@ public class BrowsePanel extends JPanel
 							}
 						}
 					}
-				} 
+					 else 
+					{
+						for (Entry<String, String> entry : coll.entrySet()) 
+						{
+							
+							key = entry.getKey();
+							if (!key.equals("Curation:All")) 
+							{
+							WSCurationTag[] lo=client.getCurationTagsByName(key);
+							for (WSCurationTag tag2 : lo)
+							{
+							results2.add(tag2);
+							i++;
+							}
+							}
+						}
+					}
+					}
+				}
+				
 				catch (Exception e)
 				{
 					throw e;
