@@ -57,7 +57,7 @@ public class WikiPathwaysClientPlugin implements Plugin
 	Map<String, WikiPathwaysClient> clients = new HashMap<String, WikiPathwaysClient>();
 	PvDesktop desktop;
 	File tmpDir = new File(GlobalPreference.getApplicationDir(),"wpclient-cache");
-	private JMenu UploadMenu;
+	private JMenu UploadMenu,WikipathwaysMenu;
 
 	@Override
 	public void init(PvDesktop desktop)
@@ -95,26 +95,40 @@ public class WikiPathwaysClientPlugin implements Plugin
 	private class WikipathwaysPluginManagerAction 
 	{
 
-		public final SearchAction searchAction = new SearchAction();
-		public final BrowseAction browseAction = new BrowseAction();
+	
 	
 		public WikipathwaysPluginManagerAction(PvDesktop desktop)
 		{
-			UploadMenu = new JMenu("Upload");
+			WikipathwaysMenu = new JMenu("Wikipathways");
+			JMenuItem search = new JMenuItem("Search");
+			SearchAction searchAction = new SearchAction();
+			BrowseAction browseAction = new BrowseAction();
+			
+			search.addActionListener(searchAction);
+
+			JMenuItem browse = new JMenuItem("Browse");
+			browse.addActionListener(browseAction);
+			
 			JMenuItem create = new JMenuItem("Create Pathway");
+			JMenuItem update = new JMenuItem("Update Pathway");
+			
 			CreateAction createAction = new CreateAction();
 			UpdateAction updateAction = new UpdateAction();
-			create.addActionListener(createAction);
-
-			JMenuItem update = new JMenuItem("Update Pathway");
+			
+			create.addActionListener(createAction);		
 			update.addActionListener(updateAction);
+			//UploadMenu.add(create);
+			//UploadMenu.add(update);
+			
+			WikipathwaysMenu.add(search);
+			WikipathwaysMenu.add(browse);
+		//	WikipathwaysMenu.add(UploadMenu);
+			
 
-			UploadMenu.add(create);
-			UploadMenu.add(update);
-
-			desktop.registerMenuAction("Wikipathways", searchAction);
-			desktop.registerMenuAction("Wikipathways", browseAction);
-			desktop.registerSubMenu("Wikipathways", UploadMenu);
+			//desktop.registerMenuAction("Wikipathways", searchAction);
+			//desktop.registerMenuAction("Wikipathways", browseAction);
+			desktop.registerSubMenu("Plugins", WikipathwaysMenu);
+			
 		}
 
 	}
