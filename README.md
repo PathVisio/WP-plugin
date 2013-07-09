@@ -5,6 +5,8 @@ Plugin for PathVisio that provides a WikiPathways client.
 
 Currently the development of the plugin is in progress.Right now, the plugin does the following:
 
+
+
 Search Pathways :
 
 Basic Search
