@@ -355,8 +355,8 @@ public class WikiPathwaysClientPlugin implements Plugin
 		{		SearchPanel p = new SearchPanel(plugin);
 		AdvancedSearchPanel a= new AdvancedSearchPanel(plugin);
 				searchTabbedPane= new JTabbedPane();
-			searchTabbedPane.addTab("Search", p);
-			searchTabbedPane.addTab("Advanced", a);
+			searchTabbedPane.addTab("Basic Search", p);
+			searchTabbedPane.addTab("Advanced Search", a);
 			add(searchTabbedPane);
 		}
 		

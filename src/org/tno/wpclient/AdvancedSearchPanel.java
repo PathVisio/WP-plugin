@@ -92,7 +92,7 @@ public class AdvancedSearchPanel extends JPanel {
 			}
 
 		};
-
+		searchField.addActionListener(searchAction);
 		tipLabel = new JLabel("Tip: pathway identifier, title, curator')");
 		tipLabel.setFont(new Font("SansSerif", Font.ITALIC, 11));
 		searchField
@@ -142,18 +142,21 @@ public class AdvancedSearchPanel extends JPanel {
 
 		JPanel searchOptBox = new JPanel();
 		FormLayout layout = new FormLayout(
-				"p,3dlu,150px,3dlu,fill:pref:grow,3dlu,fill:pref:grow,3dlu",
-				"p, pref, p, 2dlu");
+				"p,3dlu,120px,2dlu,40px,fill:pref:grow,3dlu,fill:pref:grow,3dlu",
+				"p, pref, p, 2dlu,p,pref");
 		CellConstraints cc = new CellConstraints();
 
 		searchOptBox.setLayout(layout);
 		searchOptBox.setBorder(BorderFactory.createTitledBorder(etch,
 				"Search options"));
-		searchOptBox.add(new JLabel("Search For:"), cc.xy(1, 1));
-		searchOptBox.add(searchField, cc.xy(3, 1));
-
-		JButton searchButton = new JButton(searchAction);
-		searchOptBox.add(searchButton, cc.xy(7, 1));
+		searchOptBox.add(new JLabel("Title/ID"), cc.xy(1, 1));
+		searchOptBox.add(searchField, cc.xyw(1, 2,3));
+		
+		searchOptBox.add(new JLabel("Curator Tag"), cc.xy(6, 1));
+		searchOptBox.add(new JLabel("(OR)"), cc.xyw(5, 2,1));
+		searchOptBox.add(opts4,cc.xyw(6, 2,3));
+		//JButton searchButton = new JButton(searchAction);
+	//	searchOptBox.add(searchButton, cc.xy(7, 1));
 
 		Vector<String> clients = new Vector<String>(plugin.getClients()
 				.keySet());
@@ -172,7 +175,7 @@ public class AdvancedSearchPanel extends JPanel {
 		});
 
 		searchOptBox.add(clientDropdown, cc.xy(8, 1));
-		searchOptBox.add(tipLabel, cc.xyw(1, 2, 8));
+		//searchOptBox.add(tipLabel, cc.xyw(1, 3, 8));
 		if (plugin.getClients().size() < 2)
 			clientDropdown.setVisible(false);
 	
