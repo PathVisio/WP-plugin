@@ -582,6 +582,9 @@ public class AdvancedSearchPanel extends JPanel {
 			return "";
 
 		}
+		public String getColumnName(int column) {
+			return columnNames[column];
+		}
 
 	}
 
