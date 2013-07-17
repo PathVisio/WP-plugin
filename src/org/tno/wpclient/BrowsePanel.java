@@ -126,7 +126,7 @@ public class BrowsePanel extends JPanel
 				catch (Exception ex)
 				{
 					JOptionPane.showMessageDialog(BrowsePanel.this,ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-					Logger.log.error("Error searching WikiPathways", ex);
+					Logger.log.error("Error Browsing WikiPathways", ex);
 				}
 			}
 		});
@@ -174,7 +174,7 @@ public class BrowsePanel extends JPanel
 				catch (Exception ex)
 				{
 					JOptionPane.showMessageDialog(BrowsePanel.this,ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-					Logger.log.error("Error searching WikiPathways", ex);
+					Logger.log.error("Error Browsing WikiPathways", ex);
 				}
 			}
 		});
@@ -242,7 +242,7 @@ public class BrowsePanel extends JPanel
 				catch (Exception ex)
 				{
 					JOptionPane.showMessageDialog(BrowsePanel.this,ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-					Logger.log.error("Error searching WikiPathways", ex);
+					Logger.log.error("Error Browsing WikiPathways", ex);
 				}
 			}
 		});
@@ -369,7 +369,7 @@ public class BrowsePanel extends JPanel
 		{
 			protected WSPathwayInfo[] doInBackground() throws Exception 
 			{
-				pk.setTaskName("Searching");
+				pk.setTaskName("Browsing");
 				WSPathwayInfo[] results = null;
 				try
 				{
@@ -422,7 +422,7 @@ public class BrowsePanel extends JPanel
 
 			protected WSCurationTag[] doInBackground() throws Exception 
 			{
-				pk.setTaskName("Searching");
+				pk.setTaskName("Browsing");
 			
 				WSCurationTag[] results3 = null;
 				WSCurationTag[] results4 = null;
@@ -528,7 +528,7 @@ public class BrowsePanel extends JPanel
 			protected WSCurationTag[] doInBackground() throws Exception 
 			{
 			
-				pk.setTaskName("Searching");			
+				pk.setTaskName("Browsing");			
 				WSCurationTag[] results3 = null;
 				ArrayList<WSCurationTag> results2 = new ArrayList<WSCurationTag>();
 				int i = 0;
@@ -600,7 +600,7 @@ public class BrowsePanel extends JPanel
 			protected WSCurationTag[] doInBackground() throws Exception 
 			{
 
-				pk.setTaskName("Searching");
+				pk.setTaskName("Browsing");
 				WSPathwayInfo[] results = null;
 				WSCurationTag[] results3 = null;
 				ArrayList<WSCurationTag> results2 = new ArrayList<WSCurationTag>();
