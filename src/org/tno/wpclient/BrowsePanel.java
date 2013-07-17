@@ -19,8 +19,13 @@ import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -59,11 +64,27 @@ public class BrowsePanel extends JPanel {
 
 	java.util.HashMap<String, String> curationtags = new HashMap<String, String>();
 	java.util.HashMap<String, String> coll = new HashMap<String, String>();
-
+	
 	public BrowsePanel(final WikiPathwaysClientPlugin plugin) {
 		this.plugin = plugin;
 		setLayout(new BorderLayout());
 
+		Action browseAction = new AbstractAction("Browse")
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				try
+				{
+					resultspane.setBorder(BorderFactory.createTitledBorder(etch, "Pathways"));
+					browse();
+				}
+				catch (Exception ex) 
+				{
+					JOptionPane.showMessageDialog(BrowsePanel.this,ex.getMessage(), "Error",JOptionPane.ERROR_MESSAGE);
+					Logger.log.error("Error searching WikiPathways", ex);
+				}
+			}
+		};
 		// Browse Option Labels
 		speciesLabel = new JLabel("Species:");
 		catLabel = new JLabel("Categories:");
@@ -105,7 +126,7 @@ public class BrowsePanel extends JPanel {
 
 		organismOpt = new JComboBox(org.toArray());
 		organismOpt.setSelectedItem(Organism.HomoSapiens.latinName());
-		organismOpt.addActionListener(new ActionListener() {
+		/*organismOpt.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -125,7 +146,7 @@ public class BrowsePanel extends JPanel {
 					Logger.log.error("Error Browsing WikiPathways", ex);
 				}
 			}
-		});
+		});*/
 
 		DefaultFormBuilder idOptBuilder = new DefaultFormBuilder(
 				new FormLayout("right:pref, 3dlu,right:pref"));
@@ -138,7 +159,6 @@ public class BrowsePanel extends JPanel {
 
 		// collections combo box
 
-		
 		coll.put("Curation:AnalysisCollection", "Curated pathways");
 		coll.put("Curation:FeaturedPathway", "Featured pathways");
 		coll.put("Curation:Reactome_Approved", "Reactome pathways");
@@ -158,7 +178,7 @@ public class BrowsePanel extends JPanel {
 		DefaultFormBuilder colOptBuilder = new DefaultFormBuilder(
 				new FormLayout("right:pref, 3dlu,right:pref"));
 		colOptBuilder.append(collOpt);
-		collOpt.addActionListener(new ActionListener() {
+		/*collOpt.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -172,7 +192,7 @@ public class BrowsePanel extends JPanel {
 					Logger.log.error("Error Browsing WikiPathways", ex);
 				}
 			}
-		});
+		});*/
 		JPanel opts2 = new JPanel();
 		final CardLayout opt2Cards = new CardLayout();
 		opts2.setLayout(opt2Cards);
@@ -180,25 +200,22 @@ public class BrowsePanel extends JPanel {
 		opts2.add(collOptBuilder, "Collections");
 
 		// Category COmboBox
-	/*	java.util.List<String> cat = new ArrayList<String>();
-		cat.add("Cellular Process");
-		cat.add("Metabolic Process");
-		cat.add("Molecular Function");
-		cat.add("Physiological Process");
-		cat.add("All Categories");
-		cat.add("Un Categoriesed");
-
-		categoryOpt = new JComboBox(cat.toArray());
-		categoryOpt.setSelectedItem("All Categories");
-		DefaultFormBuilder catOptBuilder = new DefaultFormBuilder(
-				new FormLayout("right:pref, 3dlu,right:pref"));
-		catOptBuilder.append(categoryOpt);
-
-		final JPanel opts3 = new JPanel();
-		final CardLayout opt3Cards = new CardLayout();
-		opts3.setLayout(opt3Cards);
-		JPanel catOpt = catOptBuilder.getPanel();
-		opts3.add(catOpt, "Category");*/
+		/*
+		 * java.util.List<String> cat = new ArrayList<String>();
+		 * cat.add("Cellular Process"); cat.add("Metabolic Process");
+		 * cat.add("Molecular Function"); cat.add("Physiological Process");
+		 * cat.add("All Categories"); cat.add("Un Categoriesed");
+		 * 
+		 * categoryOpt = new JComboBox(cat.toArray());
+		 * categoryOpt.setSelectedItem("All Categories"); DefaultFormBuilder
+		 * catOptBuilder = new DefaultFormBuilder( new
+		 * FormLayout("right:pref, 3dlu,right:pref"));
+		 * catOptBuilder.append(categoryOpt);
+		 * 
+		 * final JPanel opts3 = new JPanel(); final CardLayout opt3Cards = new
+		 * CardLayout(); opts3.setLayout(opt3Cards); JPanel catOpt =
+		 * catOptBuilder.getPanel(); opts3.add(catOpt, "Category");
+		 */
 
 		// Curation Combobox
 		curationtags.put("Not specified", "Not specified");
@@ -217,7 +234,7 @@ public class BrowsePanel extends JPanel {
 		DefaultFormBuilder curationOptBuilder = new DefaultFormBuilder(
 				new FormLayout("right:pref, 3dlu,right:pref"));
 		curationOptBuilder.append(curationOpt);
-		curationOpt.addActionListener(new ActionListener() {
+		/*curationOpt.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -238,7 +255,7 @@ public class BrowsePanel extends JPanel {
 					Logger.log.error("Error Browsing WikiPathways", ex);
 				}
 			}
-		});
+		});*/
 
 		final JPanel opts4 = new JPanel();
 		final CardLayout opt4Cards = new CardLayout();
@@ -252,26 +269,23 @@ public class BrowsePanel extends JPanel {
 		JPanel browseOptBox = new JPanel();
 		FormLayout layout = new FormLayout(
 				"left:pref,6dlu,left:pref,6dlu,left:pref,6dlu,left:pref,6dlu,left:pref,6dlu",
-				"p,14dlu, 14dlu");
+				"p,14dlu");
 		CellConstraints cc = new CellConstraints();
 
 		browseOptBox.setLayout(layout);
 		browseOptBox.setBorder(BorderFactory.createTitledBorder(etch,
 				"Browse options"));
-		// browseOptBox.add(speciesLabel, cc.xy(1, 1));
-		browseOptBox.add(opts, cc.xy(3, 2));
-		browseOptBox.add(CollecLabel, cc.xy(5, 1));
-		browseOptBox.add(opts2, cc.xy(7, 1));
-		browseOptBox.add(speciesLabel, cc.xy(1, 2));
-		browseOptBox.add(new JLabel("(OR)"), cc.xy(5, 2));
-		browseOptBox.add(CuraLabel, cc.xy(5, 3));
-		browseOptBox.add(opts4, cc.xy(7, 3));
-		// browseOptBox.add(catLabel, cc.xy(7, 1));
-		// browseOptBox.add(opts, cc.xy(1, 2));
-		// browseOptBox.add(opts2, cc.xy(3, 2));
-		// browseOptBox.add(opts4, cc.xy(5, 2));
-		// browseOptBox.add(opts3, cc.xy(7, 2));
+		browseOptBox.add(speciesLabel, cc.xy(1, 1));
+		browseOptBox.add(opts, cc.xy(1, 2));
+		browseOptBox.add(CollecLabel, cc.xy(3, 1));
+		browseOptBox.add(opts2, cc.xy(3, 2));
 
+		browseOptBox.add(CuraLabel, cc.xy(5, 1));
+		browseOptBox.add(opts4, cc.xy(5, 2));
+		JButton browseButton = new JButton(browseAction);
+
+		
+		browseOptBox.add(browseButton, cc.xy(7, 2));
 		add(browseOptBox, BorderLayout.CENTER);
 
 		Vector<String> clients = new Vector<String>(plugin.getClients()
