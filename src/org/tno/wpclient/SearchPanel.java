@@ -53,7 +53,7 @@ public class SearchPanel extends JPanel {
 	int i;
 
 	private JScrollPane resultspane;
-	Border etch = BorderFactory.createEtchedBorder();
+public static	Border etch = BorderFactory.createEtchedBorder();
 	private JLabel tipLabel;
 
 	public SearchPanel(final WikiPathwaysClientPlugin plugin) 
