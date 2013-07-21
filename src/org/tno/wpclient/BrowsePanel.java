@@ -1,13 +1,19 @@
 package org.tno.wpclient;
 
 import java.awt.BorderLayout;
+import java.awt.Button;
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
+import java.awt.FlowLayout;
+import java.awt.Panel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,6 +31,7 @@ import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -32,15 +39,21 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 import javax.swing.border.Border;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableRowSorter;
 
 import org.bridgedb.bio.Organism;
 import org.pathvisio.core.debug.Logger;
 import org.pathvisio.core.util.ProgressKeeper;
+import org.pathvisio.desktop.PvDesktop;
+import org.pathvisio.gui.CommonActions;
+import org.pathvisio.gui.ObjectsPane;
 import org.pathvisio.gui.ProgressDialog;
 import org.pathvisio.wikipathways.webservice.WSCurationTag;
 import org.pathvisio.wikipathways.webservice.WSPathwayInfo;
@@ -58,7 +71,7 @@ public class BrowsePanel extends JPanel {
 	Border etch = BorderFactory.createEtchedBorder();
 	private JLabel speciesLabel, CollecLabel, CuraLabel;
 	private JComboBox collOpt;
-	//private JComboBox categoryOpt;
+	// private JComboBox categoryOpt;
 	private JComboBox curationOpt;
 	WSPathwayInfo[] results2;
 	String collkey = null, curkey = null;
@@ -67,6 +80,7 @@ public class BrowsePanel extends JPanel {
 
 	public BrowsePanel(final WikiPathwaysClientPlugin plugin) {
 		this.plugin = plugin;
+
 		setLayout(new BorderLayout());
 
 		Action browseAction = new AbstractAction("Browse") {
@@ -275,8 +289,10 @@ public class BrowsePanel extends JPanel {
 					final Object value, final int index,
 					final boolean isSelected, final boolean cellHasFocus) {
 				String strValue = SearchPanel.shortClientName(value.toString());
+
 				return super.getListCellRendererComponent(list, strValue,
 						index, isSelected, cellHasFocus);
+
 			}
 		});
 
@@ -298,47 +314,25 @@ public class BrowsePanel extends JPanel {
 					JTable target = (JTable) e.getSource();
 					int row = target.getSelectedRow();
 
-					if (target.getColumnCount() == 3) // 3 columns for browse by
-														// species
-					{
-						BrowseTableModel2 model = (BrowseTableModel2) target
-								.getModel();
-						File tmpDir = new File(plugin.getTmpDir(), BrowsePanel
-								.shortClientName(model.clientName));
-						tmpDir.mkdirs();
+					BrowseTableModel2 model = (BrowseTableModel2) target
+							.getModel();
 
-						try {
-							plugin.openPathwayWithProgress(plugin.getClients()
-									.get(model.clientName),
-									model.getValueAt(row, 0).toString(), 0,
-									tmpDir);
-						} catch (Exception ex) {
-							JOptionPane.showMessageDialog(BrowsePanel.this,
-									ex.getMessage(), "Error",
-									JOptionPane.ERROR_MESSAGE);
-							Logger.log.error("Error", ex);
-						}
-					} else {// 4 columns for browse by species
-						BrowseTableModel2 model = (BrowseTableModel2) target
-								.getModel();
+					File tmpDir = new File(plugin.getTmpDir(), BrowsePanel
+							.shortClientName(model.clientName));
+					tmpDir.mkdirs();
 
-						File tmpDir = new File(plugin.getTmpDir(), BrowsePanel
-								.shortClientName(model.clientName));
-						tmpDir.mkdirs();
-
-						try {
-							plugin.openPathwayWithProgress(plugin.getClients()
-									.get(model.clientName),
-									model.getValueAt(row, 0).toString(), 0,
-									tmpDir);
-						} catch (Exception ex) {
-							JOptionPane.showMessageDialog(BrowsePanel.this,
-									ex.getMessage(), "Error",
-									JOptionPane.ERROR_MESSAGE);
-							Logger.log.error("Error", ex);
-						}
+					try {
+						plugin.openPathwayWithProgress(
+								plugin.getClients().get(model.clientName),
+								model.getValueAt(row, 0).toString(), 0, tmpDir);
+					} catch (Exception ex) {
+						JOptionPane.showMessageDialog(BrowsePanel.this,
+								ex.getMessage(), "Error",
+								JOptionPane.ERROR_MESSAGE);
+						Logger.log.error("Error", ex);
 					}
 				}
+
 			}
 		});
 	}
@@ -400,7 +394,7 @@ public class BrowsePanel extends JPanel {
 				ArrayList<String> results = new ArrayList<String>();
 				ArrayList<WSCurationTag> results2 = new ArrayList<WSCurationTag>();
 				int i = 0;
-	
+
 				try {
 
 					for (Entry<String, String> entry : curationtags.entrySet()) {
@@ -433,16 +427,15 @@ public class BrowsePanel extends JPanel {
 
 							}
 						}
-					
+
 					}
 
-					
 					Iterator itr = results.iterator();
 					while (itr.hasNext()) {
-						String sid=itr.next().toString();
-						results4=client.getCurationTags(sid);
+						String sid = itr.next().toString();
+						results4 = client.getCurationTags(sid);
 						for (WSCurationTag tag : results4) {
-						String op=tag.getName();
+							String op = tag.getName();
 							if (curkey.equals(op)) {
 								results2.add(tag);
 								i++;
@@ -473,6 +466,17 @@ public class BrowsePanel extends JPanel {
 		d.setVisible(true);
 
 		resultTable.setModel(new BrowseTableModel2(sw.get(), clientName));
+		resultTable.setDefaultRenderer(JPanel.class, new TableCellRenderer() {
+
+			@Override
+			public Component getTableCellRendererComponent(JTable arg0,
+					Object value, boolean arg2, boolean arg3, int arg4, int arg5) {
+				// TODO Auto-generated method stub
+				JPanel p = (JPanel) value;
+
+				return p;
+			}
+		});
 		resultTable.setRowSorter(new TableRowSorter(resultTable.getModel()));
 
 	}
@@ -563,18 +567,22 @@ public class BrowsePanel extends JPanel {
 		WSCurationTag[] results;
 		String[] columnNames = new String[] { "ID", "Name", "Species",
 				"Curation Tag" };
-	
+
 		String clientName = clientDropdown.getSelectedItem().toString();
 		final WikiPathwaysClient client = plugin.getClients().get(clientName);
-	
+
 		public BrowseTableModel2(WSCurationTag[] wsCurationTags,
 				String clientName2) {
 			this.clientName = clientName2;
 			this.results = wsCurationTags;
 		}
-		
+
 		public int getColumnCount() {
 			return 4;
+		}
+
+		public Class getColumnClass(int column) {
+			return getValueAt(3, column).getClass();
 		}
 
 		public int getRowCount() {
@@ -591,18 +599,48 @@ public class BrowsePanel extends JPanel {
 				return r.getPathway().getName();
 			case 2:
 				return r.getPathway().getSpecies();
-			case 3:
-				String cu="";
-				
+			case 3: {
+				String IMG_SEARCH = "";
+
+				HashMap<String, String> tags = new HashMap<String, String>();
+				tags.put("Curation:MissingXRef", "MissingXRef");
+				tags.put("Curation:Stub", "Stub");
+				tags.put("Curation:NeedsWork", "NeedsWork");
+				tags.put("Curation:AnalysisCollection", "Curated");
+				tags.put("Curation:MissingDescription", "MissingDescription");
+				tags.put("Curation:NoInteractions", "UnConnected");
+				tags.put("Curation:NeedsReference", "NeedsRef");
+
+				JPanel p = new JPanel();
+				p.setLayout(new FlowLayout(FlowLayout.CENTER, 2, 1));
+
+				ImageIcon icon = null;
+
 				try {
-					for (WSCurationTag tag : client.getCurationTags(r.getPathway().getId())) {
-						cu+=tag.getName()+ " ";
+					for (WSCurationTag tag : client.getCurationTags(r
+							.getPathway().getId())) {
+
+						String[] re = tag.getName().split(":");
+						if (tags.containsKey(tag.getName())) {
+							IMG_SEARCH = "resources/" + tags.get(tag.getName())
+									+ ".png";
+							URL url = this.getClass().getClassLoader()
+									.getResource(IMG_SEARCH);
+							icon = new ImageIcon(url);
+
+							JLabel l = new JLabel(icon);
+							l.setToolTipText(tags.get(tag.getName()));
+							p.add(l);
+
+						}
 					}
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				return cu;
+				return p;
+
+			}
 			}
 			return "";
 		}
@@ -610,6 +648,7 @@ public class BrowsePanel extends JPanel {
 		public String getColumnName(int column) {
 			return columnNames[column];
 		}
+
 	}
 
 	/*
