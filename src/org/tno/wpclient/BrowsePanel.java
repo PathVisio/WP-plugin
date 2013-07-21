@@ -1,15 +1,12 @@
 package org.tno.wpclient;
 
 import java.awt.BorderLayout;
-import java.awt.Button;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.FlowLayout;
-import java.awt.Panel;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -20,6 +17,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Vector;
 import java.util.concurrent.ExecutionException;
@@ -30,7 +28,6 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -39,9 +36,7 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
 import javax.swing.JTable;
-import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 import javax.swing.border.Border;
 import javax.swing.table.AbstractTableModel;
@@ -51,12 +46,8 @@ import javax.swing.table.TableRowSorter;
 import org.bridgedb.bio.Organism;
 import org.pathvisio.core.debug.Logger;
 import org.pathvisio.core.util.ProgressKeeper;
-import org.pathvisio.desktop.PvDesktop;
-import org.pathvisio.gui.CommonActions;
-import org.pathvisio.gui.ObjectsPane;
 import org.pathvisio.gui.ProgressDialog;
 import org.pathvisio.wikipathways.webservice.WSCurationTag;
-import org.pathvisio.wikipathways.webservice.WSPathwayInfo;
 import org.wikipathways.client.WikiPathwaysClient;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -71,42 +62,20 @@ public class BrowsePanel extends JPanel {
 	Border etch = BorderFactory.createEtchedBorder();
 	private JLabel speciesLabel, CollecLabel, CuraLabel;
 	private JComboBox collOpt;
-	// private JComboBox categoryOpt;
 	private JComboBox curationOpt;
-	WSPathwayInfo[] results2;
+
 	String collkey = null, curkey = null;
-	java.util.HashMap<String, String> curationtags = new HashMap<String, String>();
-	java.util.HashMap<String, String> coll = new HashMap<String, String>();
+	HashMap<String, String> curationtags = new HashMap<String, String>();
+	HashMap<String, String> coll = new HashMap<String, String>();
+	HashMap<String, String> tags = new HashMap<String, String>();
+	JLabel l;
 
 	public BrowsePanel(final WikiPathwaysClientPlugin plugin) {
 		this.plugin = plugin;
 
-		setLayout(new BorderLayout());
+		List<String> org = new ArrayList<String>();
 
-		Action browseAction = new AbstractAction("Browse") {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					resultspane.setBorder(BorderFactory.createTitledBorder(
-							etch, "Pathways"));
-					browse();
-				} catch (Exception ex) {
-					JOptionPane
-							.showMessageDialog(BrowsePanel.this,
-									ex.getMessage(), "Error",
-									JOptionPane.ERROR_MESSAGE);
-					Logger.log.error("Error searching WikiPathways", ex);
-				}
-			}
-		};
-		// Browse Option Labels
-		speciesLabel = new JLabel("Species:");
-		// catLabel = new JLabel("Categories:");
-		CollecLabel = new JLabel("Collections:");
-		CuraLabel = new JLabel("Curation Tags:");
-
-		// species combo box,Right now combo box is hardcoded , we should get
-		// the list of organisms from the webservices
-		java.util.List<String> org = new ArrayList<String>();
+		// preparing organism list for combobox
 		org.add("ALL SPECIES");
 		org.add("Anopheles gambiae");
 		org.add("Arabidopsis thaliana");
@@ -137,33 +106,7 @@ public class BrowsePanel extends JPanel {
 		org.add("Xenopus tropicalis");
 		org.add("Zea mays");
 
-		organismOpt = new JComboBox(org.toArray());
-		organismOpt.setSelectedItem(Organism.HomoSapiens.latinName());
-		/*
-		 * organismOpt.addActionListener(new ActionListener() {
-		 * 
-		 * @Override public void actionPerformed(ActionEvent e) { try {
-		 * resultspane.setBorder(BorderFactory.createTitledBorder( etch,
-		 * "Pathways")); if (collOpt.getSelectedItem().toString()
-		 * .equals("All pathways") && curationOpt.getSelectedItem().toString()
-		 * .equals("Not specified")) { browseByCollection(); } else browse(); }
-		 * catch (Exception ex) {
-		 * JOptionPane.showMessageDialog(BrowsePanel.this, ex.getMessage(),
-		 * "Error", JOptionPane.ERROR_MESSAGE);
-		 * Logger.log.error("Error Browsing WikiPathways", ex); } } });
-		 */
-
-		DefaultFormBuilder idOptBuilder = new DefaultFormBuilder(
-				new FormLayout("right:pref, 3dlu,right:pref"));
-		idOptBuilder.append(organismOpt);
-		final JPanel opts = new JPanel();
-		final CardLayout optCards = new CardLayout();
-		opts.setLayout(optCards);
-		JPanel idOpt = idOptBuilder.getPanel();
-		opts.add(idOpt, "Species");
-
 		// collections combo box
-
 		coll.put("Curation:AnalysisCollection", "Curated pathways");
 		coll.put("Curation:FeaturedPathway", "Featured pathways");
 		coll.put("Curation:Reactome_Approved", "Reactome pathways");
@@ -174,6 +117,62 @@ public class BrowsePanel extends JPanel {
 		coll.put("Curation:GenMAPP_Approved", "GenMAPP pathways");
 		coll.put("Curation:All", "All pathways");
 
+		// Curation Combobox
+		curationtags.put("No Curation", "No Curation");
+		curationtags.put("Curation:MissingXRef", "missing annotations");
+		curationtags.put("Curation:NoInteractions", "unconnected lines");
+		curationtags.put("Curation:UnderConstruction", "under construction");
+		curationtags.put("Curation:Stub", "stub");
+		curationtags.put("Curation:NeedsWork", "needs work");
+		
+
+		// curationtags mapping for image resouces
+		tags.put("Curation:MissingXRef", "MissingXRef");
+		tags.put("Curation:Stub", "Stub");
+		tags.put("Curation:NeedsWork", "NeedsWork");
+		tags.put("Curation:AnalysisCollection", "Curated");
+		tags.put("Curation:MissingDescription", "MissingDescription");
+		tags.put("Curation:NoInteractions", "UnConnected");
+		tags.put("Curation:NeedsReference", "NeedsRef");
+		setLayout(new BorderLayout());
+
+		Action browseAction = new AbstractAction("Browse") {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					resultspane.setBorder(BorderFactory.createTitledBorder(
+							etch, "Pathways"));
+					browse();
+				} catch (Exception ex) {
+					JOptionPane
+							.showMessageDialog(BrowsePanel.this,
+									ex.getMessage(), "Error",
+									JOptionPane.ERROR_MESSAGE);
+					Logger.log.error("Error browsing WikiPathways", ex);
+				}
+			}
+		};
+
+		// Browse Option Labels
+		speciesLabel = new JLabel("Species:");
+		// catLabel = new JLabel("Categories:");
+		CollecLabel = new JLabel("Collections:");
+		CuraLabel = new JLabel("Curation Tags:");
+
+		// species combo box,Right now combo box is hardcoded , we should get
+		// the list of organisms from the webservices
+
+		organismOpt = new JComboBox(org.toArray());
+		organismOpt.setSelectedItem(Organism.HomoSapiens.latinName());
+
+		DefaultFormBuilder idOptBuilder = new DefaultFormBuilder(
+				new FormLayout("right:pref, 3dlu,right:pref"));
+		idOptBuilder.append(organismOpt);
+		final JPanel opts = new JPanel();
+		final CardLayout optCards = new CardLayout();
+		opts.setLayout(optCards);
+		JPanel idOpt = idOptBuilder.getPanel();
+		opts.add(idOpt, "Species");
+
 		collOpt = new JComboBox();
 		Iterator it = coll.keySet().iterator();
 		while (it.hasNext()) {
@@ -183,70 +182,22 @@ public class BrowsePanel extends JPanel {
 		DefaultFormBuilder colOptBuilder = new DefaultFormBuilder(
 				new FormLayout("right:pref, 3dlu,right:pref"));
 		colOptBuilder.append(collOpt);
-		/*
-		 * collOpt.addActionListener(new ActionListener() {
-		 * 
-		 * @Override public void actionPerformed(ActionEvent e) { try {
-		 * resultspane.setBorder(BorderFactory.createTitledBorder( etch,
-		 * "Pathways")); browseByCollection(); } catch (Exception ex) {
-		 * JOptionPane.showMessageDialog(BrowsePanel.this, ex.getMessage(),
-		 * "Error", JOptionPane.ERROR_MESSAGE);
-		 * Logger.log.error("Error Browsing WikiPathways", ex); } } });
-		 */
+
 		JPanel opts2 = new JPanel();
 		final CardLayout opt2Cards = new CardLayout();
 		opts2.setLayout(opt2Cards);
 		JPanel collOptBuilder = colOptBuilder.getPanel();
 		opts2.add(collOptBuilder, "Collections");
 
-		// Category COmboBox
-		/*
-		 * java.util.List<String> cat = new ArrayList<String>();
-		 * cat.add("Cellular Process"); cat.add("Metabolic Process");
-		 * cat.add("Molecular Function"); cat.add("Physiological Process");
-		 * cat.add("All Categories"); cat.add("Un Categoriesed");
-		 * 
-		 * categoryOpt = new JComboBox(cat.toArray());
-		 * categoryOpt.setSelectedItem("All Categories"); DefaultFormBuilder
-		 * catOptBuilder = new DefaultFormBuilder( new
-		 * FormLayout("right:pref, 3dlu,right:pref"));
-		 * catOptBuilder.append(categoryOpt);
-		 * 
-		 * final JPanel opts3 = new JPanel(); final CardLayout opt3Cards = new
-		 * CardLayout(); opts3.setLayout(opt3Cards); JPanel catOpt =
-		 * catOptBuilder.getPanel(); opts3.add(catOpt, "Category");
-		 */
-
-		// Curation Combobox
-		curationtags.put("Not specified", "Not specified");
-		curationtags.put("Curation:MissingXRef", "missing annotations");
-		curationtags.put("Curation:NoInteractions", "unconnected lines");
-		curationtags.put("Curation:UnderConstruction", "under construction");
-		curationtags.put("Curation:Stub", "stub");
-		curationtags.put("Curation:NeedsWork", "needs work");
-		curationtags.put("Curation:All", "All pathways");
 		curationOpt = new JComboBox();
 		it = curationtags.keySet().iterator();
 		while (it.hasNext()) {
 			curationOpt.addItem(curationtags.get(it.next()));
 		}
-		curationOpt.setSelectedItem("All pathways");
+		curationOpt.setSelectedItem("No Curation");
 		DefaultFormBuilder curationOptBuilder = new DefaultFormBuilder(
 				new FormLayout("right:pref, 3dlu,right:pref"));
 		curationOptBuilder.append(curationOpt);
-		/*
-		 * curationOpt.addActionListener(new ActionListener() {
-		 * 
-		 * @Override public void actionPerformed(ActionEvent e) { try {
-		 * resultspane.setBorder(BorderFactory.createTitledBorder( etch,
-		 * "Pathways")); if (collOpt.getSelectedItem().toString()
-		 * .equals("All pathways") && curationOpt.getSelectedItem().toString()
-		 * .equals("Not specified")) { browseBySpecies(); } else {
-		 * browseByCurationTag(); } } catch (Exception ex) {
-		 * JOptionPane.showMessageDialog(BrowsePanel.this, ex.getMessage(),
-		 * "Error", JOptionPane.ERROR_MESSAGE);
-		 * Logger.log.error("Error Browsing WikiPathways", ex); } } });
-		 */
 
 		final JPanel opts4 = new JPanel();
 		final CardLayout opt4Cards = new CardLayout();
@@ -317,7 +268,7 @@ public class BrowsePanel extends JPanel {
 					BrowseTableModel2 model = (BrowseTableModel2) target
 							.getModel();
 
-					File tmpDir = new File(plugin.getTmpDir(), BrowsePanel
+					File tmpDir = new File(plugin.getTmpDir(), SearchPanel
 							.shortClientName(model.clientName));
 					tmpDir.mkdirs();
 
@@ -337,47 +288,9 @@ public class BrowsePanel extends JPanel {
 		});
 	}
 
-	/*
-	 * protected void browseBySpecies() throws RemoteException,
-	 * InterruptedException, ExecutionException {
-	 * 
-	 * String clientName = clientDropdown.getSelectedItem().toString(); final
-	 * WikiPathwaysClient client = plugin.getClients().get(clientName); final
-	 * ProgressKeeper pk = new ProgressKeeper(); final ProgressDialog d = new
-	 * ProgressDialog( JOptionPane.getFrameForComponent(this), "", pk, true,
-	 * true);
-	 * 
-	 * SwingWorker<WSPathwayInfo[], Void> sw = new SwingWorker<WSPathwayInfo[],
-	 * Void>() { protected WSPathwayInfo[] doInBackground() throws Exception {
-	 * pk.setTaskName("Browsing"); WSPathwayInfo[] results = null; try {
-	 * 
-	 * results = client.listPathways(Organism
-	 * .fromLatinName(organismOpt.getSelectedItem() .toString())); } catch
-	 * (Exception e) { throw e; } finally { pk.finished(); } return results; }
-	 * };
-	 * 
-	 * sw.execute(); d.setVisible(true);
-	 * 
-	 * resultTable.setModel(new BrowseTableModel2(sw.get(), clientName));
-	 * resultTable.setRowSorter(new TableRowSorter(resultTable.getModel()));
-	 * 
-	 * }
-	 */
-
-	public static String shortClientName(String clientName) {
-		Pattern pattern = Pattern.compile("http://(.*?)/");
-		Matcher matcher = pattern.matcher(clientName);
-
-		if (matcher.find()) {
-			clientName = matcher.group(1);
-		}
-
-		return clientName;
-	}
-
 	protected void browse() throws RemoteException, InterruptedException,
 			ExecutionException {
-
+		final ArrayList<String> results = new ArrayList<String>();
 		String clientName = clientDropdown.getSelectedItem().toString();
 		final WikiPathwaysClient client = plugin.getClients().get(clientName);
 		final ProgressKeeper pk = new ProgressKeeper();
@@ -385,18 +298,17 @@ public class BrowsePanel extends JPanel {
 				JOptionPane.getFrameForComponent(this), "", pk, true, true);
 
 		SwingWorker<WSCurationTag[], Void> sw = new SwingWorker<WSCurationTag[], Void>() {
+			WSCurationTag[] pcolltags = null;
+			WSCurationTag[] ptags = null;
+			int i = 0;;
+			ArrayList<WSCurationTag> results2 = new ArrayList<WSCurationTag>();
 
 			protected WSCurationTag[] doInBackground() throws Exception {
 				pk.setTaskName("Browsing");
 
-				WSCurationTag[] results3 = null;
-				WSCurationTag[] results4 = null;
-				ArrayList<String> results = new ArrayList<String>();
-				ArrayList<WSCurationTag> results2 = new ArrayList<WSCurationTag>();
-				int i = 0;
-
 				try {
 
+					// obtaining the selected cutaion tag
 					for (Entry<String, String> entry : curationtags.entrySet()) {
 						if ((curationOpt.getSelectedItem().toString())
 								.equals(entry.getValue())) {
@@ -405,6 +317,7 @@ public class BrowsePanel extends JPanel {
 						}
 					}
 
+					// obtaining the selected collection
 					for (Entry<String, String> entry : coll.entrySet()) {
 						if ((collOpt.getSelectedItem().toString()).equals(entry
 								.getValue())) {
@@ -412,54 +325,186 @@ public class BrowsePanel extends JPanel {
 							break; // breaking because its one to one map
 						}
 					}
+					// Retrieving the selected species
+					String organism = organismOpt.getSelectedItem().toString();
+					if (!collkey.equals("Curation:All")) {
+						pcolltags = client.getCurationTagsByName(collkey); // Retrieving
+																			// all
+																			// pathways
+																			// belonging
+																			// to
+																			// certain
+																			// curation
+																			// tag
 
-					String p = organismOpt.getSelectedItem().toString();
-
-					String l = "";
-					results3 = client.getCurationTagsByName(collkey);
-
-					for (WSCurationTag tag : results3) {
-						if (!p.equals("ALL SPECIES")) {
-							l = tag.getPathway().getSpecies();
-
-							if (l.equals(p)) {
-								results.add(tag.getPathway().getId());
-
-							}
-						}
-
+						getPathwaysOfSpecColl(pcolltags, organism);
+					} else {
+						getPathwaysOfColl(organism);
+					}
+					if (!curkey.equals("No Curation")) {
+					getPathwaysOfSpecCollCur();
+					}
+					else
+					{
+					getPathwaysOfSpecColl();
 					}
 
-					Iterator itr = results.iterator();
-					while (itr.hasNext()) {
-						String sid = itr.next().toString();
-						results4 = client.getCurationTags(sid);
-						for (WSCurationTag tag : results4) {
-							String op = tag.getName();
-							if (curkey.equals(op)) {
-								results2.add(tag);
-								i++;
-							}
-						}
-
-					}
 				} catch (Exception e) {
 					throw e;
 				} finally {
 					pk.finished();
 				}
 				if (i > 0) {
-					results3 = new WSCurationTag[i];
-					results2.toArray(results3);
-					return results3;
+					pcolltags = new WSCurationTag[i];
+					results2.toArray(pcolltags);
+					return pcolltags;
 				} else {
-					WSCurationTag[] result = Arrays.copyOf(results3,
-							results3.length + results4.length);
-					System.arraycopy(results4, 0, result, results3.length,
-							results4.length);
+					WSCurationTag[] result = Arrays.copyOf(pcolltags,
+							pcolltags.length + ptags.length);
+					System.arraycopy(ptags, 0, result, pcolltags.length,
+							ptags.length);
 					return result;
 				}
 			}
+
+			private void getPathwaysOfSpecColl() {
+				Iterator itr = results.iterator();
+				while (itr.hasNext()) {
+					String sid = itr.next().toString();
+					try {
+						ptags = client.getCurationTags(sid);
+					} catch (RemoteException e) {
+
+						e.printStackTrace();
+					}
+					
+					for (Entry<String, String> entry : curationtags.entrySet()) {
+						String l = "";
+
+						curkey = entry.getKey();
+
+						try {
+					for (WSCurationTag tag : ptags) {
+						
+						if (curkey.equals(tag)) {
+							// storing pathways belonging to certain collection
+							// tag and selected species and curation tag
+							results2.add(tag);
+							i++;
+						}
+					}
+					}catch (Exception e)
+					{e.printStackTrace();
+						
+					}
+					}
+
+				}
+				
+			}
+
+			private void getPathwaysOfColl(String organism)
+					 {
+				// TODO Auto-generated method stub
+				 HashMap<String, String> tempcoll = coll;
+				 tempcoll.remove("Curation:All");
+
+				for (Entry<String, String> entry : tempcoll.entrySet()) {
+					String l = "";
+
+					collkey = entry.getKey();
+
+					try {
+						for (WSCurationTag tag : client.getCurationTagsByName((collkey)))
+							if (!organism.equals("ALL SPECIES")) {
+
+								l = tag.getPathway().getSpecies();
+
+								if (l.equals(organism)) {
+									results.add(tag.getPathway().getId()); // storing
+																			// pathways
+																			// belonging
+																			// to
+																			// certain
+																			// collection
+																			// and
+																			// selected
+																			// species
+								}
+
+							} else {
+								results.add(tag.getPathway().getId());// storing all
+																		// pathways
+																		// belonging
+																		// to
+																		// certain
+																		// collection
+							}
+					} catch (RemoteException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+
+			}
+
+			private void getPathwaysOfSpecColl(WSCurationTag[] pcolltags,
+					String organism) {
+
+				String l = "";
+				for (WSCurationTag tag : pcolltags) {
+					if (!organism.equals("ALL SPECIES")) {
+
+						l = tag.getPathway().getSpecies();
+
+						if (l.equals(organism)) {
+							results.add(tag.getPathway().getId()); // storing
+																	// pathways
+																	// belonging
+																	// to
+																	// certain
+																	// collection
+																	// and
+																	// selected
+																	// species
+						}
+
+					} else {
+						results.add(tag.getPathway().getId());// storing all
+																// pathways
+																// belonging to
+																// certain
+																// collection
+					}
+
+				}
+
+			}
+
+			private void getPathwaysOfSpecCollCur() {
+
+				Iterator itr = results.iterator();
+				while (itr.hasNext()) {
+					String sid = itr.next().toString();
+					try {
+						ptags = client.getCurationTags(sid);
+					} catch (RemoteException e) {
+
+						e.printStackTrace();
+					}
+					for (WSCurationTag tag : ptags) {
+						String op = tag.getName();
+						if (curkey.equals(op)) {
+							// storing pathways belonging to certain collection
+							// tag and selected species and curation tag
+							results2.add(tag);
+							i++;
+						}
+					}
+
+				}
+			}
+
 		};
 
 		sw.execute();
@@ -469,11 +514,16 @@ public class BrowsePanel extends JPanel {
 		resultTable.setDefaultRenderer(JPanel.class, new TableCellRenderer() {
 
 			@Override
-			public Component getTableCellRendererComponent(JTable arg0,
-					Object value, boolean arg2, boolean arg3, int arg4, int arg5) {
+			public Component getTableCellRendererComponent(JTable table,
+					Object value, boolean isSelected, boolean arg3, int arg4,
+					int arg5) {
 				// TODO Auto-generated method stub
 				JPanel p = (JPanel) value;
-
+				/*
+				 * Component[] c = p.getComponents(); for (Component component :
+				 * c) { if(component instanceof JLabel) { JLabel l= (JLabel)
+				 * component; setToolTipText(l.getToolTipText()); } }
+				 */
 				return p;
 			}
 		});
@@ -481,88 +531,6 @@ public class BrowsePanel extends JPanel {
 
 	}
 
-	/*
-	 * protected void browseByCurationTag() throws RemoteException,
-	 * InterruptedException, ExecutionException {
-	 * 
-	 * String clientName = clientDropdown.getSelectedItem().toString(); final
-	 * WikiPathwaysClient client = plugin.getClients().get(clientName); final
-	 * ProgressKeeper pk = new ProgressKeeper(); final ProgressDialog d = new
-	 * ProgressDialog( JOptionPane.getFrameForComponent(this), "", pk, true,
-	 * true);
-	 * 
-	 * SwingWorker<WSCurationTag[], Void> sw = new SwingWorker<WSCurationTag[],
-	 * Void>() { protected WSCurationTag[] doInBackground() throws Exception {
-	 * 
-	 * pk.setTaskName("Browsing"); WSCurationTag[] results3 = null;
-	 * ArrayList<WSCurationTag> results2 = new ArrayList<WSCurationTag>(); int i
-	 * = 0; String key = null; try { for (Entry<String, String> entry :
-	 * curationtags.entrySet()) { if ((curationOpt.getSelectedItem().toString())
-	 * .equals(entry.getValue())) { key = entry.getKey(); break; // breaking
-	 * because its one to one map } }
-	 * 
-	 * results3 = client.getCurationTagsByName(key);
-	 * 
-	 * for (WSCurationTag tag : results3) { String p =
-	 * organismOpt.getSelectedItem().toString(); if (!p.equals("ALL SPECIES")) {
-	 * String l = tag.getPathway().getSpecies(); if (l.equals(p)) {
-	 * results2.add(tag); i++; } } }
-	 * 
-	 * } catch (Exception e) { throw e; } finally { pk.finished(); } if (i > 0)
-	 * { results3 = new WSCurationTag[i]; results2.toArray(results3); return
-	 * results3; } else return results3; } };
-	 * 
-	 * sw.execute(); d.setVisible(true);
-	 * 
-	 * resultTable.setModel(new BrowseTableModel2(sw.get(), clientName));
-	 * resultTable.setRowSorter(new TableRowSorter(resultTable.getModel())); }
-	 * 
-	 * protected void browseByCollection() throws RemoteException,
-	 * InterruptedException, ExecutionException { String clientName =
-	 * clientDropdown.getSelectedItem().toString(); final WikiPathwaysClient
-	 * client = plugin.getClients().get(clientName); final ProgressKeeper pk =
-	 * new ProgressKeeper(); final ProgressDialog d = new ProgressDialog(
-	 * JOptionPane.getFrameForComponent(this), "", pk, true, true);
-	 * 
-	 * SwingWorker<WSCurationTag[], Void> sw = new SwingWorker<WSCurationTag[],
-	 * Void>() { protected WSCurationTag[] doInBackground() throws Exception {
-	 * 
-	 * pk.setTaskName("Browsing"); WSPathwayInfo[] results = null;
-	 * WSCurationTag[] results3 = null; ArrayList<WSCurationTag> results2 = new
-	 * ArrayList<WSCurationTag>(); int i = 0; String key = null; try {
-	 * 
-	 * for (Entry<String, String> entry : coll.entrySet()) { if
-	 * ((collOpt.getSelectedItem().toString()).equals(entry .getValue())) { key
-	 * = entry.getKey(); break; // breaking because its one to one map } }
-	 * String p = organismOpt.getSelectedItem().toString(); if
-	 * (!key.equals("Curation:All")) { results3 =
-	 * client.getCurationTagsByName(key); for (WSCurationTag tag : results3) {
-	 * if (!p.equals("ALL SPECIES")) { String l = tag.getPathway().getSpecies();
-	 * if (l.equals(p)) { results2.add(tag); i++; } } }
-	 * 
-	 * } else { if (!p.equals("ALL SPECIES")) { results =
-	 * client.listPathways(Organism .fromLatinName(organismOpt
-	 * .getSelectedItem().toString()));
-	 * 
-	 * for (WSPathwayInfo pa : results) { WSCurationTag[] lo =
-	 * client.getCurationTags(pa .getId()); for (WSCurationTag tag2 : lo) { if
-	 * (coll.containsKey(tag2.getName())) { if (!tag2.getName().equals(
-	 * "Curation:All")) { results2.add(tag2); i++; } } } } } else { for
-	 * (Entry<String, String> entry : coll.entrySet()) {
-	 * 
-	 * key = entry.getKey(); if (!key.equals("Curation:All")) { WSCurationTag[]
-	 * lo = client .getCurationTagsByName(key); for (WSCurationTag tag2 : lo) {
-	 * results2.add(tag2); i++; } } } } } }
-	 * 
-	 * catch (Exception e) { throw e; } finally { pk.finished(); } if (i > 0) {
-	 * results3 = new WSCurationTag[i]; results2.toArray(results3); return
-	 * results3; } else return results3; } };
-	 * 
-	 * sw.execute(); d.setVisible(true);
-	 * 
-	 * resultTable.setModel(new BrowseTableModel2(sw.get(), clientName));
-	 * resultTable.setRowSorter(new TableRowSorter(resultTable.getModel())); }
-	 */
 	private class BrowseTableModel2 extends AbstractTableModel {
 		WSCurationTag[] results;
 		String[] columnNames = new String[] { "ID", "Name", "Species",
@@ -602,15 +570,6 @@ public class BrowsePanel extends JPanel {
 			case 3: {
 				String IMG_SEARCH = "";
 
-				HashMap<String, String> tags = new HashMap<String, String>();
-				tags.put("Curation:MissingXRef", "MissingXRef");
-				tags.put("Curation:Stub", "Stub");
-				tags.put("Curation:NeedsWork", "NeedsWork");
-				tags.put("Curation:AnalysisCollection", "Curated");
-				tags.put("Curation:MissingDescription", "MissingDescription");
-				tags.put("Curation:NoInteractions", "UnConnected");
-				tags.put("Curation:NeedsReference", "NeedsRef");
-
 				JPanel p = new JPanel();
 				p.setLayout(new FlowLayout(FlowLayout.CENTER, 2, 1));
 
@@ -620,16 +579,20 @@ public class BrowsePanel extends JPanel {
 					for (WSCurationTag tag : client.getCurationTags(r
 							.getPathway().getId())) {
 
-						String[] re = tag.getName().split(":");
 						if (tags.containsKey(tag.getName())) {
 							IMG_SEARCH = "resources/" + tags.get(tag.getName())
 									+ ".png";
 							URL url = this.getClass().getClassLoader()
 									.getResource(IMG_SEARCH);
 							icon = new ImageIcon(url);
+							Image img = icon.getImage();
+							Image newimg = img.getScaledInstance(15, 10,
+									java.awt.Image.SCALE_SMOOTH);
+							ImageIcon newIcon = new ImageIcon(newimg);
 
-							JLabel l = new JLabel(icon);
-							l.setToolTipText(tags.get(tag.getName()));
+							l = new JLabel(newIcon);
+
+							p.setBackground(Color.white);
 							p.add(l);
 
 						}
