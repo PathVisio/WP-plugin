@@ -179,7 +179,7 @@ public class WikiPathwaysClientPlugin implements Plugin {
 	public class UploadAction extends AbstractAction {
 
 		public void actionPerformed(ActionEvent e) {
-			LoginPanel p = new LoginPanel(WikiPathwaysClientPlugin.this);
+			LoginPanel p = new LoginPanel();
 			JDialog d = new JDialog(desktop.getFrame(), "WikiPathways login",
 					false);
 
