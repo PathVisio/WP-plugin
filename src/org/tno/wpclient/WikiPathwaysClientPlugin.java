@@ -21,6 +21,7 @@ import javax.swing.SwingWorker;
 import javax.xml.rpc.ServiceException;
 
 import org.bridgedb.DataSource;
+import org.bridgedb.Xref;
 import org.pathvisio.core.Engine;
 import org.pathvisio.core.debug.Logger;
 import org.pathvisio.core.model.ConverterException;
@@ -35,6 +36,7 @@ import org.pathvisio.desktop.plugin.Plugin;
 import org.pathvisio.gui.PathwayElementMenuListener.PathwayElementMenuHook;
 import org.pathvisio.gui.ProgressDialog;
 import org.pathvisio.wikipathways.webservice.WSPathway;
+import org.pathvisio.wikipathways.webservice.WSSearchResult;
 import org.wikipathways.client.WikiPathwaysClient;
 
 /**
@@ -302,11 +304,12 @@ public class WikiPathwaysClientPlugin implements Plugin
 	WikiPathwaysClient findRegisteredClient(String url) 
 	{
 		for (String clientStr : clients.keySet()) 
-		{
+		{/*
 			if (isSameServer(clientStr, url))
 			{
 				return clients.get(clientStr);
-			}
+			}*/
+			return clients.get(clientStr);
 		}
 		return null;
 	}
@@ -388,6 +391,68 @@ public class WikiPathwaysClientPlugin implements Plugin
 			add(searchTabbedPane);
 		}
 
+	}
+
+
+	public void openPathwayXrefWithProgress(final WikiPathwaysClient client, final Xref x,
+			final int i, File tmpDir2) throws InterruptedException, ExecutionException {
+
+		final ProgressKeeper pk = new ProgressKeeper();
+		final ProgressDialog d = new ProgressDialog(JOptionPane.getFrameForComponent(desktop.getSwingEngine().getApplicationPanel()), "", pk, false, true);
+		
+		SwingWorker<Boolean, Void> sw = new SwingWorker<Boolean, Void>() 
+			{
+			protected Boolean doInBackground() throws Exception
+			{
+				pk.setTaskName("Opening pathway");
+				try 
+				{
+					openPathwayXref(client, x, i, tmpDir);
+				}
+				catch (Exception e) 
+				{
+					Logger.log.error("The Pathway is not found", e);
+					JOptionPane.showMessageDialog(null,"The Pathway is not found", "ERROR",JOptionPane.ERROR_MESSAGE);
+				}
+				finally 
+				{
+					pk.finished();
+				}
+				return true;
+			}
+
+			
+		};
+
+		sw.execute();
+		d.setVisible(true);
+		sw.get();
+		
+	}
+	private void openPathwayXref(WikiPathwaysClient client, Xref x,
+			int i, File tmpDir) {
+		
+		WSSearchResult[] wsp;
+		try {
+			wsp = client.findPathwaysByXref(x);
+		
+		
+			PathwayPanel p = new PathwayPanel(WikiPathwaysClientPlugin.this,wsp,tmpDir);
+		JDialog d = new JDialog(desktop.getFrame(), "Related Pathways from WikiPathways",false);
+
+		d.getContentPane().add(p);
+		d.pack();
+		d.setVisible(true);
+		d.setResizable(false);
+		d.setLocationRelativeTo(desktop.getSwingEngine().getFrame());
+		d.setVisible(true);
+		
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 	}
 
 }

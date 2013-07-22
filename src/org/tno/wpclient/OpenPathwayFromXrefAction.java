@@ -26,7 +26,7 @@ class OpenPathwayFromXrefAction extends AbstractAction
 
 	public OpenPathwayFromXrefAction(WikiPathwaysClientPlugin plugin, PathwayElement elm)
 	{
-		putValue(NAME, "Open pathway from " + elm.getXref().getDataSource().getFullName());
+		putValue(NAME, "Open pathway from Wikipathways");
 		this.plugin = plugin;
 		this.elm = elm;
 	}
@@ -40,7 +40,7 @@ class OpenPathwayFromXrefAction extends AbstractAction
 	{
 		try
 		{
-			int flag=0;
+			int flag=0,flag2=0;
 			Xref x = elm.getXref();
 			try
 			{
@@ -48,6 +48,11 @@ class OpenPathwayFromXrefAction extends AbstractAction
 				{
 				flag++;
 				throw new Exception();
+				}
+				else
+				{
+				flag2++;
+				
 				}
 			}
 			catch (Exception e)
@@ -60,6 +65,12 @@ class OpenPathwayFromXrefAction extends AbstractAction
 			 File tmpDir= new File(plugin.getTmpDir(), x.getDataSource().getFullName());
 			 tmpDir.mkdirs();
 			 plugin.openPathwayWithProgress(client, x.getId(), 0, tmpDir);					
+			}
+			else
+			{File tmpDir= new File(plugin.getTmpDir(), x.getDataSource().getFullName());
+			 tmpDir.mkdirs();
+			 plugin.openPathwayXrefWithProgress(client, x, 0, tmpDir);
+				
 			}
 		} 
 		catch (Exception e) 
