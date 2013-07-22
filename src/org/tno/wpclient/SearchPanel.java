@@ -44,7 +44,17 @@ import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-public class SearchPanel extends JPanel {
+/**
+ * This class creates the content in the Browse Dialog
+ * Basic Search
+ * Search by query as on http://www.wikipathways.org itself.
+ * 1.Search for pathways by name, pathway element labels
+ * 2.Search by text but for specific species
+ * 	@author Sravanthi Sinha
+ * 	@version 1.0
+ */
+public class SearchPanel extends JPanel 
+{
 	WikiPathwaysClientPlugin plugin;
 	JTextField searchField;
 	JComboBox clientDropdown;
@@ -53,8 +63,9 @@ public class SearchPanel extends JPanel {
 	int i;
 
 	private JScrollPane resultspane;
-public static	Border etch = BorderFactory.createEtchedBorder();
+	public static	Border etch = BorderFactory.createEtchedBorder();
 	private JLabel tipLabel;
+	
 
 	public SearchPanel(final WikiPathwaysClientPlugin plugin) 
 	{
@@ -181,6 +192,11 @@ public static	Border etch = BorderFactory.createEtchedBorder();
 		return clientName;
 	}
 
+	/**
+	 * Search method for-
+	 * Search for pathways by name, pathway element labels
+	 * Search of pathways belonging to specific species
+	 */
 	private void search() throws RemoteException, InterruptedException,ExecutionException 
 	{
 	final String query = searchField.getText();
@@ -233,6 +249,10 @@ public static	Border etch = BorderFactory.createEtchedBorder();
 	}
 	
 
+	/**
+	 * This class creates the SearchTableModel 
+	 * Based on the Search Criteria
+	 */
 	private class SearchTableModel extends AbstractTableModel
 	{
 		WSSearchResult[] results;
