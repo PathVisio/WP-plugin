@@ -27,7 +27,7 @@ Basic Browse
 
 2.Browse by curation tags
 
-3.Browse by categories
+3.Browse by Collections
 
 
 Refer: http://plugins.pathvisio.org/wp-client/blog/
