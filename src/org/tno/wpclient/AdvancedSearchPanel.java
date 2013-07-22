@@ -59,7 +59,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 public class AdvancedSearchPanel extends JPanel {
 	WikiPathwaysClientPlugin plugin;
-	JTextField searchField;
+	JTextField pTitleOrId;
 	JComboBox clientDropdown;
 	java.util.HashMap<String, String> curationtags = new HashMap<String, String>();
 	JTable resultTable;
@@ -73,20 +73,22 @@ public class AdvancedSearchPanel extends JPanel {
 	private JComboBox cbSyscode;
 	private JComboBox cbSearchBy;
 	private Component symbolOpt;
+	private JTextField pubref;
 
 	public AdvancedSearchPanel(final WikiPathwaysClientPlugin plugin) {
 
 		this.plugin = plugin;
 
 		setLayout(new BorderLayout());
-		searchField = new JTextField();
+		pTitleOrId = new JTextField();
+		pubref = new JTextField();
 
 		Action searchAction = new AbstractAction("Search") {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					resultspane.setBorder(BorderFactory.createTitledBorder(
 							etch, "Pathways"));
-					if (searchField.getText().startsWith("WP"))
+					if (pTitleOrId.getText().startsWith("WP"))
 						searchID();
 					else {
 
@@ -103,50 +105,62 @@ public class AdvancedSearchPanel extends JPanel {
 			}
 
 		};
-		searchField.addActionListener(searchAction);
-		// tipLabel = new JLabel("Tip: pathway identifier, title, curator')");
-		// tipLabel.setFont(new Font("SansSerif", Font.ITALIC, 11));
-		// searchField.setToolTipText("Enter any search query (e.g. 'Apoptosis' or 'P53').");
-		// Curation Combobox
-		curationtags.put("Not specified", "Not specified");
-		curationtags.put("Curation:MissingXRef", "missing annotations");
-		curationtags.put("Curation:NoInteractions", "unconnected lines");
-		curationtags.put("Curation:UnderConstruction", "under construction");
-		curationtags.put("Curation:Stub", "stub");
-		curationtags.put("Curation:NeedsWork", "needs work");
-		curationOpt = new JComboBox();
-		Iterator<String> it = curationtags.keySet().iterator();
-		while (it.hasNext()) {
-			curationOpt.addItem(curationtags.get(it.next()));
-		}
-
-		curationOpt.setSelectedItem("Not specified");
-		DefaultFormBuilder curationOptBuilder = new DefaultFormBuilder(
-				new FormLayout("right:pref, 3dlu,right:pref"));
-		curationOptBuilder.append(curationOpt);
-		curationOpt.addActionListener(new ActionListener() {
-
-			@Override
+		Action searchRefAction = new AbstractAction(" searchRef") {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					resultspane.setBorder(BorderFactory.createTitledBorder(
 							etch, "Pathways"));
 
-					browseByCurationTag();
+					searchPublicationRef();
 
 				} catch (Exception ex) {
-					JOptionPane.showMessageDialog(AdvancedSearchPanel.this,
-							ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane
+							.showMessageDialog(AdvancedSearchPanel.this,
+									ex.getMessage(), "Error",
+									JOptionPane.ERROR_MESSAGE);
 					Logger.log.error("Error searching WikiPathways", ex);
 				}
 			}
-		});
 
-		final JPanel opts4 = new JPanel();
-		final CardLayout opt4Cards = new CardLayout();
-		opts4.setLayout(opt4Cards);
-		JPanel curOpt = curationOptBuilder.getPanel();
-		opts4.add(curOpt, "Curation Tags");
+		};
+		pTitleOrId.addActionListener(searchAction);
+		pubref.addActionListener(searchRefAction);
+		// tipLabel = new JLabel("Tip: pathway identifier, title, curator')");
+		// tipLabel.setFont(new Font("SansSerif", Font.ITALIC, 11));
+		// pTitleOrId.setToolTipText("Enter any search query (e.g. 'Apoptosis' or 'P53').");
+		// Curation Combobox
+		/*
+		 * curationtags.put("Not specified", "Not specified");
+		 * curationtags.put("Curation:MissingXRef", "missing annotations");
+		 * curationtags.put("Curation:NoInteractions", "unconnected lines");
+		 * curationtags.put("Curation:UnderConstruction", "under construction");
+		 * curationtags.put("Curation:Stub", "stub");
+		 * curationtags.put("Curation:NeedsWork", "needs work"); curationOpt =
+		 * new JComboBox(); Iterator<String> it =
+		 * curationtags.keySet().iterator(); while (it.hasNext()) {
+		 * curationOpt.addItem(curationtags.get(it.next())); }
+		 * 
+		 * curationOpt.setSelectedItem("Not specified"); DefaultFormBuilder
+		 * curationOptBuilder = new DefaultFormBuilder( new
+		 * FormLayout("right:pref, 3dlu,right:pref"));
+		 * curationOptBuilder.append(curationOpt);
+		 * curationOpt.addActionListener(new ActionListener() {
+		 * 
+		 * @Override public void actionPerformed(ActionEvent e) { try {
+		 * resultspane.setBorder(BorderFactory.createTitledBorder( etch,
+		 * "Pathways"));
+		 * 
+		 * browseByCurationTag();
+		 * 
+		 * } catch (Exception ex) {
+		 * JOptionPane.showMessageDialog(AdvancedSearchPanel.this,
+		 * ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+		 * Logger.log.error("Error searching WikiPathways", ex); } } });
+		 * 
+		 * final JPanel opts4 = new JPanel(); final CardLayout opt4Cards = new
+		 * CardLayout(); opts4.setLayout(opt4Cards); JPanel curOpt =
+		 * curationOptBuilder.getPanel(); opts4.add(curOpt, "Curation Tags");
+		 */
 
 		// preparing the container for the labels and comboboxes
 
@@ -160,11 +174,13 @@ public class AdvancedSearchPanel extends JPanel {
 		searchOptBox.setBorder(BorderFactory.createTitledBorder(etch,
 				"Search options"));
 		searchOptBox.add(new JLabel("Title/ID"), cc.xy(1, 1));
-		searchOptBox.add(searchField, cc.xyw(1, 2, 3));
+		searchOptBox.add(pTitleOrId, cc.xyw(1, 2, 3));
 
-		searchOptBox.add(new JLabel("Curator Tag"), cc.xy(6, 1));
+		// searchOptBox.add(new JLabel("Curator Tag"), cc.xy(6, 1));
+		searchOptBox.add(new JLabel("Publication Title/ID"), cc.xy(6, 1));
 		searchOptBox.add(new JLabel("(OR)"), cc.xyw(5, 2, 1));
-		searchOptBox.add(opts4, cc.xyw(6, 2, 3));
+		searchOptBox.add(pubref, cc.xyw(6, 2, 3));
+		// searchOptBox.add(opts4, cc.xyw(6, 2, 3));
 		// JButton searchButton = new JButton(searchAction);
 		// searchOptBox.add(searchButton, cc.xy(7, 1));
 
@@ -187,33 +203,32 @@ public class AdvancedSearchPanel extends JPanel {
 				}
 			}
 		});
-		cbSyscode = new JComboBox(new DataSourceModel());
 
-		DefaultFormBuilder idOptBuilder = new DefaultFormBuilder(
-				new FormLayout("pref, 4dlu, fill:pref:grow"));
-		idOptBuilder.append("Id:", txtId);
-		idOptBuilder.append("System Code:", cbSyscode);
-		JPanel idOpt = idOptBuilder.getPanel();
-
-		final JPanel opts = new JPanel();
-		final CardLayout optCards = new CardLayout();
-		opts.setLayout(optCards);
-
-		opts.add(idOpt, "ID");
-
-		JPanel searchOptBox2 = new JPanel();
-		FormLayout layout2 = new FormLayout(
-				"4dlu, pref, 4dlu, fill:pref:grow, 4dlu, pref, 4dlu",
-				"4dlu, pref, 4dlu, pref, 4dlu, pref, 4dlu, pref, 4dlu, pref, 4dlu, pref, 4dlu");
-		CellConstraints cc2 = new CellConstraints();
-
-		searchOptBox2.setLayout(layout2);
-		Border etch = BorderFactory.createEtchedBorder();
-		searchOptBox2.setBorder(BorderFactory.createTitledBorder(etch,
-				"Search options"));
-
-		searchOptBox2.add(opts, cc.xyw(2, 4, 5));
-
+		/*
+		 * cbSyscode = new JComboBox(new DataSourceModel());
+		 * 
+		 * DefaultFormBuilder idOptBuilder = new DefaultFormBuilder( new
+		 * FormLayout("pref, 4dlu, fill:pref:grow")); idOptBuilder.append("Id:",
+		 * txtId); idOptBuilder.append("System Code:", cbSyscode); JPanel idOpt
+		 * = idOptBuilder.getPanel();
+		 * 
+		 * final JPanel opts = new JPanel(); final CardLayout optCards = new
+		 * CardLayout(); opts.setLayout(optCards);
+		 * 
+		 * opts.add(idOpt, "ID");
+		 * 
+		 * JPanel searchOptBox2 = new JPanel(); FormLayout layout2 = new
+		 * FormLayout( "4dlu, pref, 4dlu, fill:pref:grow, 4dlu, pref, 4dlu",
+		 * "4dlu, pref, 4dlu, pref, 4dlu, pref, 4dlu, pref, 4dlu, pref, 4dlu, pref, 4dlu"
+		 * ); CellConstraints cc2 = new CellConstraints();
+		 * 
+		 * searchOptBox2.setLayout(layout2); Border etch =
+		 * BorderFactory.createEtchedBorder();
+		 * searchOptBox2.setBorder(BorderFactory.createTitledBorder(etch,
+		 * "Search options"));
+		 * 
+		 * searchOptBox2.add(opts, cc.xyw(2, 4, 5));
+		 */
 		Vector<String> clients = new Vector<String>(plugin.getClients()
 				.keySet());
 		Collections.sort(clients);
@@ -234,7 +249,7 @@ public class AdvancedSearchPanel extends JPanel {
 		// searchOptBox.add(tipLabel, cc.xyw(1, 3, 8));
 		if (plugin.getClients().size() < 2)
 			clientDropdown.setVisible(false);
-	//	searchOptBox.add(searchOptBox2, cc.xyw(1, 4,8));
+		// searchOptBox.add(searchOptBox2, cc.xyw(1, 4,8));
 		add(searchOptBox, BorderLayout.NORTH);
 
 		// Center contains table model for results
@@ -243,7 +258,7 @@ public class AdvancedSearchPanel extends JPanel {
 
 		add(resultspane, BorderLayout.CENTER);
 
-		searchField.requestDefaultFocus();
+		pTitleOrId.requestDefaultFocus();
 
 		resultTable.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
@@ -272,9 +287,14 @@ public class AdvancedSearchPanel extends JPanel {
 		});
 	}
 
+	protected void searchPublicationRef() {
+		
+		
+	}
+
 	protected void doSearch() throws RemoteException, InterruptedException,
 			ExecutionException {
-		final String query = searchField.getText();
+		final String query = pTitleOrId.getText();
 		String clientName = clientDropdown.getSelectedItem().toString();
 
 		final WikiPathwaysClient client = plugin.getClients().get(clientName);
@@ -290,9 +310,11 @@ public class AdvancedSearchPanel extends JPanel {
 				ArrayList<WSSearchResult> results2 = new ArrayList<WSSearchResult>();
 				try {
 
-					//results = client.findPathwaysByXref(new Xref(txtId.getText(), DataSource.getByFullName(""+ cbSyscode.getSelectedItem())));
+					// results = client.findPathwaysByXref(new
+					// Xref(txtId.getText(), DataSource.getByFullName(""+
+					// cbSyscode.getSelectedItem())));
 					results = client.findPathwaysByXref(txtId.getText());
-				
+
 				} catch (Exception e) {
 					throw e;
 				} finally {
@@ -378,7 +400,7 @@ public class AdvancedSearchPanel extends JPanel {
 
 	private void search() throws RemoteException, InterruptedException,
 			ExecutionException {
-		final String query = searchField.getText();
+		final String query = pTitleOrId.getText();
 		String clientName = clientDropdown.getSelectedItem().toString();
 
 		final WikiPathwaysClient client = plugin.getClients().get(clientName);
@@ -502,7 +524,7 @@ public class AdvancedSearchPanel extends JPanel {
 
 	private void searchID() throws RemoteException, InterruptedException,
 			ExecutionException {
-		final String query = searchField.getText();
+		final String query = pTitleOrId.getText();
 
 		if (!query.isEmpty()) {
 			String clientName = clientDropdown.getSelectedItem().toString();
@@ -582,6 +604,7 @@ public class AdvancedSearchPanel extends JPanel {
 			return "";
 
 		}
+
 		public String getColumnName(int column) {
 			return columnNames[column];
 		}
