@@ -196,16 +196,7 @@ public class WikiPathwaysClientPlugin implements Plugin
 
 		public void actionPerformed(ActionEvent e)
 		{
-			LoginPanel p = new LoginPanel();
-			JDialog d = new JDialog(desktop.getFrame(), "WikiPathways login",
-					false);
-
-			d.getContentPane().add(p);
-			d.pack();
-			d.setVisible(true);
-			d.setResizable(false);
-			d.setLocationRelativeTo(desktop.getSwingEngine().getFrame());
-			d.setVisible(true);
+		
 		}
 	}
 
@@ -214,7 +205,15 @@ public class WikiPathwaysClientPlugin implements Plugin
 
 		public void actionPerformed(ActionEvent e) 
 		{
-			// needs to be implemented
+			LoginPanel p = new LoginPanel();
+			JDialog d = new JDialog(desktop.getFrame(), "WikiPathways Login",false);
+
+			d.getContentPane().add(p);
+			d.pack();
+			d.setVisible(true);
+			d.setResizable(false);
+			d.setLocationRelativeTo(desktop.getSwingEngine().getFrame());
+			d.setVisible(true);
 		}
 	}
 

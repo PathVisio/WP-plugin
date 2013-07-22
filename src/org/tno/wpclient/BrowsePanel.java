@@ -174,15 +174,17 @@ public class BrowsePanel extends JPanel
 		organismOpt = new JComboBox(org.toArray());
 		organismOpt.setSelectedItem(Organism.HomoSapiens.latinName());
 
-		DefaultFormBuilder idOptBuilder = new DefaultFormBuilder(
-				new FormLayout("right:pref, 3dlu,right:pref"));
+		DefaultFormBuilder idOptBuilder = new DefaultFormBuilder(new FormLayout("right:pref, 3dlu,right:pref"));
 		idOptBuilder.append(organismOpt);
+		
+		
 		final JPanel opts = new JPanel();
 		final CardLayout optCards = new CardLayout();
 		opts.setLayout(optCards);
 		JPanel idOpt = idOptBuilder.getPanel();
 		opts.add(idOpt, "Species");
 
+		
 		collOpt = new JComboBox();
 		Iterator it = coll.keySet().iterator();
 		while (it.hasNext())
@@ -190,8 +192,8 @@ public class BrowsePanel extends JPanel
 			collOpt.addItem(coll.get(it.next()));
 		}
 		collOpt.setSelectedItem("All pathways");
-		DefaultFormBuilder colOptBuilder = new DefaultFormBuilder(
-				new FormLayout("right:pref, 3dlu,right:pref"));
+		
+		DefaultFormBuilder colOptBuilder = new DefaultFormBuilder(new FormLayout("right:pref, 3dlu,right:pref"));
 		colOptBuilder.append(collOpt);
 
 		JPanel opts2 = new JPanel();
@@ -200,6 +202,8 @@ public class BrowsePanel extends JPanel
 		JPanel collOptBuilder = colOptBuilder.getPanel();
 		opts2.add(collOptBuilder, "Collections");
 
+		
+		
 		curationOpt = new JComboBox();
 		it = curationtags.keySet().iterator();
 		while (it.hasNext())
@@ -207,8 +211,7 @@ public class BrowsePanel extends JPanel
 			curationOpt.addItem(curationtags.get(it.next()));
 		}
 		curationOpt.setSelectedItem("No Curation");
-		DefaultFormBuilder curationOptBuilder = new DefaultFormBuilder(
-				new FormLayout("right:pref, 3dlu,right:pref"));
+		DefaultFormBuilder curationOptBuilder = new DefaultFormBuilder(	new FormLayout("right:pref, 3dlu,right:pref"));
 		curationOptBuilder.append(curationOpt);
 
 		final JPanel opts4 = new JPanel();
@@ -221,14 +224,11 @@ public class BrowsePanel extends JPanel
 		// preparing the container for the labels and comboboxes
 
 		JPanel browseOptBox = new JPanel();
-		FormLayout layout = new FormLayout(
-				"left:pref,6dlu,left:pref,6dlu,left:pref,6dlu,left:pref,6dlu,left:pref,6dlu",
-				"p,14dlu");
+		FormLayout layout = new FormLayout("left:pref,6dlu,left:pref,6dlu,left:pref,6dlu,left:pref,6dlu,left:pref,6dlu","p,14dlu");
 		CellConstraints cc = new CellConstraints();
 
 		browseOptBox.setLayout(layout);
-		browseOptBox.setBorder(BorderFactory.createTitledBorder(etch,
-				"Browse options"));
+		browseOptBox.setBorder(BorderFactory.createTitledBorder(etch,"Browse options"));
 		browseOptBox.add(speciesLabel, cc.xy(1, 1));
 		browseOptBox.add(opts, cc.xy(1, 2));
 		browseOptBox.add(CollecLabel, cc.xy(3, 1));
@@ -241,20 +241,18 @@ public class BrowsePanel extends JPanel
 		browseOptBox.add(browseButton, cc.xy(7, 2));
 		add(browseOptBox, BorderLayout.CENTER);
 
-		Vector<String> clients = new Vector<String>(plugin.getClients()
-				.keySet());
+		Vector<String> clients = new Vector<String>(plugin.getClients().keySet());
 		Collections.sort(clients);
 
 		clientDropdown = new JComboBox(clients);
 		clientDropdown.setSelectedIndex(0);
-		clientDropdown.setRenderer(new DefaultListCellRenderer() {
-			public Component getListCellRendererComponent(final JList list,
-					final Object value, final int index,
-					final boolean isSelected, final boolean cellHasFocus) {
+		clientDropdown.setRenderer(new DefaultListCellRenderer() 
+		{
+			public Component getListCellRendererComponent(final JList list,final Object value, final int index,final boolean isSelected, final boolean cellHasFocus)
+			{
 				String strValue = SearchPanel.shortClientName(value.toString());
 
-				return super.getListCellRendererComponent(list, strValue,
-						index, isSelected, cellHasFocus);
+				return super.getListCellRendererComponent(list, strValue,index, isSelected, cellHasFocus);
 
 			}
 		});
@@ -271,27 +269,27 @@ public class BrowsePanel extends JPanel
 		resultspane = new JScrollPane(resultTable);
 		add(resultspane, BorderLayout.CENTER);
 
-		resultTable.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 2) {
+		resultTable.addMouseListener(new MouseAdapter() 
+		{
+			public void mouseClicked(MouseEvent e) 
+			{
+				if (e.getClickCount() == 2)
+				{
 					JTable target = (JTable) e.getSource();
 					int row = target.getSelectedRow();
 
-					BrowseTableModel model = (BrowseTableModel) target
-							.getModel();
+					BrowseTableModel model = (BrowseTableModel) target.getModel();
 
-					File tmpDir = new File(plugin.getTmpDir(), SearchPanel
-							.shortClientName(model.clientName));
+					File tmpDir = new File(plugin.getTmpDir(), SearchPanel.shortClientName(model.clientName));
 					tmpDir.mkdirs();
 
-					try {
-						plugin.openPathwayWithProgress(
-								plugin.getClients().get(model.clientName),
-								model.getValueAt(row, 0).toString(), 0, tmpDir);
-					} catch (Exception ex) {
-						JOptionPane.showMessageDialog(BrowsePanel.this,
-								ex.getMessage(), "Error",
-								JOptionPane.ERROR_MESSAGE);
+					try 
+					{
+						plugin.openPathwayWithProgress(plugin.getClients().get(model.clientName),model.getValueAt(row, 0).toString(), 0, tmpDir);
+					} 
+					catch (Exception ex)
+					{
+						JOptionPane.showMessageDialog(BrowsePanel.this,ex.getMessage(), "Error",JOptionPane.ERROR_MESSAGE);
 						Logger.log.error("Error", ex);
 					}
 				}
@@ -362,23 +360,24 @@ public class BrowsePanel extends JPanel
 					}
 
 				}
-				catch (Exception e) 
+				catch (Exception ex)
 				{
-					throw e;
-				} 
+					JOptionPane.showMessageDialog(BrowsePanel.this,ex.getMessage(), "Error",JOptionPane.ERROR_MESSAGE);
+					Logger.log.error("Error", ex);
+				}
 				finally 
 				{
 					pk.finished();
 				}
-				if (i > 0) {
+				if (i > 0) 
+				{
 					pcolltags = new WSCurationTag[i];
 					results2.toArray(pcolltags);
 					return pcolltags;
-				} else {
-					WSCurationTag[] result = Arrays.copyOf(pcolltags,
-							pcolltags.length + ptags.length);
-					System.arraycopy(ptags, 0, result, pcolltags.length,
-							ptags.length);
+				} else
+				{
+					WSCurationTag[] result = Arrays.copyOf(pcolltags,pcolltags.length + ptags.length);
+					System.arraycopy(ptags, 0, result, pcolltags.length,ptags.length);
 					return result;
 				}
 			}
@@ -417,9 +416,10 @@ public class BrowsePanel extends JPanel
 								}
 							}
 						}
-						catch (Exception e)
+						catch (Exception ex)
 						{
-							e.printStackTrace();					
+							JOptionPane.showMessageDialog(BrowsePanel.this,ex.getMessage(), "Error",JOptionPane.ERROR_MESSAGE);
+							Logger.log.error("Error", ex);
 						}
 					}
 
@@ -452,18 +452,21 @@ public class BrowsePanel extends JPanel
 
 								if (l.equals(organism))
 								{
-									results.add(tag.getPathway().getId()); // storing pathways belonging to certain collection and selected species
+									// storing pathways belonging to certain collection and selected species
+									results.add(tag.getPathway().getId()); 
 								}
 
 							}
 							else
 							{
-								results.add(tag.getPathway().getId());// storing all pathways belonging to certain collection
+								// storing all pathways belonging to certain collection
+								results.add(tag.getPathway().getId());
 							}
 					}
-					catch (RemoteException e)
+					catch (Exception ex)
 					{
-						e.printStackTrace();
+						JOptionPane.showMessageDialog(BrowsePanel.this,ex.getMessage(), "Error",JOptionPane.ERROR_MESSAGE);
+						Logger.log.error("Error", ex);
 					}
 				}
 
@@ -486,12 +489,15 @@ public class BrowsePanel extends JPanel
 
 						if (l.equals(organism)) 
 						{
-							results.add(tag.getPathway().getId()); // storing pathways belonging to certain collection and selected species
+							// storing pathways belonging to certain collection and selected species
+							results.add(tag.getPathway().getId());
 						}
 
-					} else
+					}
+					else
 					{
-						results.add(tag.getPathway().getId());// storing all pathways belonging to certain collection
+						// storing all pathways belonging to certain collection
+						results.add(tag.getPathway().getId());
 					}
 
 				}
@@ -536,12 +542,12 @@ public class BrowsePanel extends JPanel
 		d.setVisible(true);
 
 		resultTable.setModel(new BrowseTableModel(sw.get(), clientName));
-		resultTable.setDefaultRenderer(JPanel.class, new TableCellRenderer() {
+		resultTable.setDefaultRenderer(JPanel.class, new TableCellRenderer() 
+		{
 
 			@Override
-			public Component getTableCellRendererComponent(JTable table,
-					Object value, boolean isSelected, boolean arg3, int arg4,
-					int arg5) {
+			public Component getTableCellRendererComponent(JTable table,Object value, boolean isSelected, boolean arg3, int arg4,int arg5) 
+			{
 				
 				JPanel p = (JPanel) value;
 				/*
@@ -592,7 +598,8 @@ public class BrowsePanel extends JPanel
 		{
 			WSCurationTag r = results[rowIndex];
 
-			switch (columnIndex) {
+			switch (columnIndex)
+			{
 			case 0:
 				return r.getPathway().getId();
 			case 1:
@@ -629,9 +636,11 @@ public class BrowsePanel extends JPanel
 
 						}
 					}
-				} catch (RemoteException e)
+				} 
+				catch (Exception ex)
 				{
-					e.printStackTrace();
+					JOptionPane.showMessageDialog(BrowsePanel.this,ex.getMessage(), "Error",JOptionPane.ERROR_MESSAGE);
+					Logger.log.error("Error", ex);
 				}
 				return p;
 
@@ -640,7 +649,8 @@ public class BrowsePanel extends JPanel
 			return "";
 		}
 
-		public String getColumnName(int column) {
+		public String getColumnName(int column) 
+		{
 			return columnNames[column];
 		}
 
