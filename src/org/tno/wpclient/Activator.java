@@ -8,14 +8,15 @@ public class Activator implements BundleActivator
 {
 
 	@Override
-	public void start(BundleContext context) throws Exception {
-
+	public void start(BundleContext context) throws Exception 
+	{
 		WikiPathwaysClientPlugin plugin = new WikiPathwaysClientPlugin();
 		context.registerService(Plugin.class.getName(), plugin, null);
 	}
 
 	@Override
-	public void stop(BundleContext context) throws Exception {
-		// TODO Auto-generated method stub
+	public void stop(BundleContext context) throws Exception 
+	{
+		
 	}
 }
