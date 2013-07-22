@@ -32,7 +32,9 @@ Basic Browse
 
 Features: 
 ---------
+
 1.Open pathway for pathway node that is annotated with pathway identifier
+
 2.Open pathways which contain similar element as of the selected DataNode(which is well annotated)
 
 Refer: http://plugins.pathvisio.org/wp-client/blog/
