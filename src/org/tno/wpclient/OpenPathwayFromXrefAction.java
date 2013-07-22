@@ -10,14 +10,20 @@ import org.pathvisio.core.debug.Logger;
 import org.pathvisio.core.model.PathwayElement;
 import org.wikipathways.client.WikiPathwaysClient;
 
-import com.sun.xml.internal.org.jvnet.fastinfoset.ExternalVocabulary;
-
+/**
+* This class handles the GUI for the pathway to load 
+* Load Pathway into PathVisio on choosing option of "Open Pathway from Wikipathways"
+* from right click menu of pathway element (consedering the Xref of the selected element)
+* 	@author Sravanthi Sinha
+* 	@version 1.0
+*/
 class OpenPathwayFromXrefAction extends AbstractAction
 {
 	private PathwayElement elm;
 	private WikiPathwaysClient client;
 	private WikiPathwaysClientPlugin plugin;
 	
+
 	public OpenPathwayFromXrefAction(WikiPathwaysClientPlugin plugin, PathwayElement elm)
 	{
 		putValue(NAME, "Open pathway from " + elm.getXref().getDataSource().getFullName());
