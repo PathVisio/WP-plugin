@@ -77,6 +77,13 @@ public class BrowsePanel extends JPanel
 	HashMap<String, String> curationtags = new HashMap<String, String>();
 	HashMap<String, String> coll = new HashMap<String, String>();
 	HashMap<String, String> tags = new HashMap<String, String>();
+	HashMap<String, WSCurationTag[]> imagetags = new HashMap<String, WSCurationTag[]>();
+	final ArrayList<String> results = new ArrayList<String>();
+	WikiPathwaysClient client;
+	WSCurationTag[] pcolltags = null;
+	WSCurationTag[] ptags = null;
+	int i = 0;;
+	ArrayList<WSCurationTag> results2 = new ArrayList<WSCurationTag>();
 	JLabel l;
 
 	public BrowsePanel(final WikiPathwaysClientPlugin plugin) {
@@ -300,18 +307,15 @@ public class BrowsePanel extends JPanel
 
 	protected void browse() throws RemoteException, InterruptedException,ExecutionException 
 	{
-		final ArrayList<String> results = new ArrayList<String>();
+		
 		String clientName = clientDropdown.getSelectedItem().toString();
-		final WikiPathwaysClient client = plugin.getClients().get(clientName);
+		client = plugin.getClients().get(clientName);
 		final ProgressKeeper pk = new ProgressKeeper();
 		final ProgressDialog d = new ProgressDialog(JOptionPane.getFrameForComponent(this), "", pk, true, true);
 
 		SwingWorker<WSCurationTag[], Void> sw = new SwingWorker<WSCurationTag[], Void>() 
 		{
-			WSCurationTag[] pcolltags = null;
-			WSCurationTag[] ptags = null;
-			int i = 0;;
-			ArrayList<WSCurationTag> results2 = new ArrayList<WSCurationTag>();
+		
 
 			protected WSCurationTag[] doInBackground() throws Exception 
 			{
@@ -381,12 +385,37 @@ public class BrowsePanel extends JPanel
 					return result;
 				}
 			}
+		};
+
+		sw.execute();
+		d.setVisible(true);
+
+		resultTable.setModel(new BrowseTableModel(sw.get(), clientName));
+		resultTable.setDefaultRenderer(JPanel.class, new TableCellRenderer() 
+		{
+
+			@Override
+			public Component getTableCellRendererComponent(JTable table,Object value, boolean isSelected, boolean arg3, int arg4,
+					int arg5) {
 				
-			/*
+				JPanel p = (JPanel) value;
+				/*
+				 * Component[] c = p.getComponents(); for (Component component :
+				 * c) { if(component instanceof JLabel) { JLabel l= (JLabel)
+				 * component; setToolTipText(l.getToolTipText()); } }
+				 */
+				return p;
+			}
+		});
+		resultTable.setRowSorter(new TableRowSorter(resultTable.getModel()));
+
+	}
+				
+			/**
 			 * storing pathways belonging to certain collection
 			 *  tag and selected species and curation tag
 			 */
-			private void getPathwaysOfSpecColl()
+			private	void getPathwaysOfSpecColl()
 			{
 				Iterator itr = results.iterator();
 				while (itr.hasNext())
@@ -395,6 +424,7 @@ public class BrowsePanel extends JPanel
 					try 
 					{
 						ptags = client.getCurationTags(sid);
+						imagetags.put(sid, ptags);
 					} catch (RemoteException e)
 					{
 						e.printStackTrace();
@@ -416,10 +446,9 @@ public class BrowsePanel extends JPanel
 								}
 							}
 						}
-						catch (Exception ex)
+						catch (Exception e)
 						{
-							JOptionPane.showMessageDialog(BrowsePanel.this,ex.getMessage(), "Error",JOptionPane.ERROR_MESSAGE);
-							Logger.log.error("Error", ex);
+							e.printStackTrace();					
 						}
 					}
 
@@ -463,10 +492,9 @@ public class BrowsePanel extends JPanel
 								results.add(tag.getPathway().getId());
 							}
 					}
-					catch (Exception ex)
+					catch (RemoteException e)
 					{
-						JOptionPane.showMessageDialog(BrowsePanel.this,ex.getMessage(), "Error",JOptionPane.ERROR_MESSAGE);
-						Logger.log.error("Error", ex);
+						e.printStackTrace();
 					}
 				}
 
@@ -517,6 +545,7 @@ public class BrowsePanel extends JPanel
 					try 
 					{
 						ptags = client.getCurationTags(sid);
+						imagetags.put(sid, ptags);
 					}
 					catch (RemoteException e)
 					{
@@ -536,31 +565,7 @@ public class BrowsePanel extends JPanel
 				}
 			}
 
-		};
-
-		sw.execute();
-		d.setVisible(true);
-
-		resultTable.setModel(new BrowseTableModel(sw.get(), clientName));
-		resultTable.setDefaultRenderer(JPanel.class, new TableCellRenderer() 
-		{
-
-			@Override
-			public Component getTableCellRendererComponent(JTable table,Object value, boolean isSelected, boolean arg3, int arg4,int arg5) 
-			{
-				
-				JPanel p = (JPanel) value;
-				/*
-				 * Component[] c = p.getComponents(); for (Component component :
-				 * c) { if(component instanceof JLabel) { JLabel l= (JLabel)
-				 * component; setToolTipText(l.getToolTipText()); } }
-				 */
-				return p;
-			}
-		});
-		resultTable.setRowSorter(new TableRowSorter(resultTable.getModel()));
-
-	}
+		
 	/**
 	 * This class creates the BrowseTableModel 
 	 * Based on the Browse Criteria
@@ -598,8 +603,7 @@ public class BrowsePanel extends JPanel
 		{
 			WSCurationTag r = results[rowIndex];
 
-			switch (columnIndex)
-			{
+			switch (columnIndex) {
 			case 0:
 				return r.getPathway().getId();
 			case 1:
@@ -614,33 +618,26 @@ public class BrowsePanel extends JPanel
 
 				ImageIcon icon = null;
 
-				try {
-					// storing images of the curated tags belonging to certain pathways in Panel
-					for (WSCurationTag tag : client.getCurationTags(r.getPathway().getId())) 
-					{
-
-						if (tags.containsKey(tag.getName())) 
-						{
-							IMG_SEARCH = "resources/" + tags.get(tag.getName())+ ".png";
-							URL url = this.getClass().getClassLoader().getResource(IMG_SEARCH);
-							icon = new ImageIcon(url);
-							
-							Image img = icon.getImage();
-							Image newimg = img.getScaledInstance(15, 10,java.awt.Image.SCALE_SMOOTH);//SCALING THE IMAGE
-							ImageIcon newIcon = new ImageIcon(newimg);
-
-							l = new JLabel(newIcon);
-
-							p.setBackground(Color.white);
-							p.add(l);
-
-						}
-					}
-				} 
-				catch (Exception ex)
+				// storing images of the curated tags belonging to certain pathways in Panel
+				for (WSCurationTag tag : imagetags.get(r.getPathway().getId())) 
 				{
-					JOptionPane.showMessageDialog(BrowsePanel.this,ex.getMessage(), "Error",JOptionPane.ERROR_MESSAGE);
-					Logger.log.error("Error", ex);
+
+					if (tags.containsKey(tag.getName())) 
+					{
+						IMG_SEARCH = "resources/" + tags.get(tag.getName())+ ".png";
+						URL url = this.getClass().getClassLoader().getResource(IMG_SEARCH);
+						icon = new ImageIcon(url);
+						
+						Image img = icon.getImage();
+						Image newimg = img.getScaledInstance(15, 10,java.awt.Image.SCALE_SMOOTH);//SCALING THE IMAGE
+						ImageIcon newIcon = new ImageIcon(newimg);
+
+						l = new JLabel(newIcon);
+
+						p.setBackground(Color.white);
+						p.add(l);
+
+					}
 				}
 				return p;
 
@@ -649,8 +646,7 @@ public class BrowsePanel extends JPanel
 			return "";
 		}
 
-		public String getColumnName(int column) 
-		{
+		public String getColumnName(int column) {
 			return columnNames[column];
 		}
 

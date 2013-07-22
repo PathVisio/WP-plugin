@@ -1,11 +1,8 @@
 package org.tno.wpclient;
 
 import java.awt.BorderLayout;
-import java.awt.CardLayout;
 import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -15,7 +12,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
+
 import java.util.Vector;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
@@ -25,7 +22,6 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -39,21 +35,14 @@ import javax.swing.border.Border;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableRowSorter;
 
-import org.bridgedb.DataSource;
-import org.bridgedb.Xref;
-import org.bridgedb.bio.Organism;
-
 import org.pathvisio.core.debug.Logger;
 import org.pathvisio.core.util.ProgressKeeper;
-import org.pathvisio.gui.DataSourceModel;
 import org.pathvisio.gui.ProgressDialog;
 import org.pathvisio.wikipathways.webservice.WSCurationTag;
 import org.pathvisio.wikipathways.webservice.WSPathwayInfo;
 import org.pathvisio.wikipathways.webservice.WSSearchResult;
-
 import org.wikipathways.client.WikiPathwaysClient;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
@@ -192,13 +181,13 @@ public class AdvancedSearchPanel extends JPanel {
 				try {
 					doSearch();
 				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
+
 					e.printStackTrace();
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
+
 					e.printStackTrace();
 				} catch (ExecutionException e) {
-					// TODO Auto-generated catch block
+
 					e.printStackTrace();
 				}
 			}
@@ -288,8 +277,7 @@ public class AdvancedSearchPanel extends JPanel {
 	}
 
 	protected void searchPublicationRef() {
-		
-		
+
 	}
 
 	protected void doSearch() throws RemoteException, InterruptedException,
