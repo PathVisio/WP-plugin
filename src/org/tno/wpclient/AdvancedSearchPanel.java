@@ -36,6 +36,7 @@ import javax.swing.table.TableRowSorter;
 import org.pathvisio.core.debug.Logger;
 import org.pathvisio.core.util.ProgressKeeper;
 import org.pathvisio.gui.ProgressDialog;
+import org.pathvisio.wikipathways.webservice.WSIndexField;
 import org.pathvisio.wikipathways.webservice.WSPathwayInfo;
 import org.pathvisio.wikipathways.webservice.WSSearchResult;
 import org.wikipathways.client.WikiPathwaysClient;
@@ -433,7 +434,7 @@ public class AdvancedSearchPanel extends JPanel {
 	private class SearchTableModel2 extends AbstractTableModel 
 	{
 		WSSearchResult[] results;
-		String[] columnNames = new String[] { "ID", "Name", "Species" };
+		String[] columnNames = new String[] { "ID", "Name", "Species","Literature Title" };
 		String clientName;
 
 		public SearchTableModel2(WSSearchResult[] results, String clientName) 
@@ -444,7 +445,7 @@ public class AdvancedSearchPanel extends JPanel {
 
 		public int getColumnCount() 
 		{
-			return 3;
+			return 4;
 		}
 
 		public int getRowCount() 
@@ -463,6 +464,10 @@ public class AdvancedSearchPanel extends JPanel {
 				return r.getName();
 			case 2:
 				return r.getSpecies();
+			case 3:
+			{
+				return r.getFields(1).getValues(0).toString();
+			}	
 			}
 			return "";
 		}
