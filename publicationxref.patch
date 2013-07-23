@@ -1,0 +1,16 @@
+### Eclipse Workspace Patch 1.0
+#P org.wikipathways.client
+Index: src/org/wikipathways/client/WikiPathwaysClient.java
+===================================================================
+--- src/org/wikipathways/client/WikiPathwaysClient.java	(revision 3919)
++++ src/org/wikipathways/client/WikiPathwaysClient.java	(working copy)
+@@ -386,4 +386,9 @@
+ 		if(r == null) r = new WSSearchResult[0];
+ 		return r;
+ 	}
++	public WSSearchResult[] findPathwaysByLiterature(String query) throws RemoteException {
++		WSSearchResult[] r = port.findPathwaysByLiterature(query);
++		if(r == null) r = new WSSearchResult[0];
++		return r;
++	}
+ }
