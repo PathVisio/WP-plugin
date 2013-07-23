@@ -109,7 +109,7 @@ public class AdvancedSearchPanel extends JPanel {
 	
 
 		JPanel searchOptBox = new JPanel();
-		FormLayout layout = new FormLayout("p,3dlu,120px,2dlu,40px,fill:pref:grow,3dlu,fill:pref:grow,3dlu","pref, pref, 4dlu, pref, 4dlu, pref");
+		FormLayout layout = new FormLayout("p,3dlu,120px,2dlu,30px,fill:pref:grow,3dlu,fill:pref:grow,3dlu","pref, pref, 4dlu, pref, 4dlu, pref");
 		CellConstraints cc = new CellConstraints();
 
 		searchOptBox.setLayout(layout);
