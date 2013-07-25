@@ -47,12 +47,6 @@ import com.jgoodies.forms.layout.FormLayout;
 
 /**
  *	This class creates the content in the Dialog of the AdvancesSearch TabbedPane of Search 
- *	Basic Browse-
- *	Browse by organism
- *	Browse by curation tags
- *	Browse by Collections 
- * 	@author Sravanthi Sinha
- * 	@version 1.0
  */
 public class AdvancedSearchPanel extends JPanel 
 {
@@ -138,16 +132,20 @@ public class AdvancedSearchPanel extends JPanel
 		
 		pTitleOrId.addActionListener(searchAction);
 		pubXref.addActionListener(searchLiteratureAction);
-		
 		JPanel searchBox = new JPanel();
-		FormLayout layout = new FormLayout("p,3dlu,120px,2dlu,30px,fill:pref:grow,3dlu,fill:pref:grow,3dlu","pref, pref, 4dlu, pref, 4dlu, pref");
-		CellConstraints cc = new CellConstraints();
+		FormLayout layoutf = new FormLayout("p,3dlu,120px,2dlu,30px,fill:pref:grow,3dlu,fill:pref:grow,3dlu",
+				"pref, pref, 4dlu, pref, 4dlu, pref");
+		CellConstraints ccf = new CellConstraints();
 
-		searchBox.setLayout(layout);
+		searchBox.setLayout(layoutf);
 		searchBox.setBorder(BorderFactory.createTitledBorder(WikiPathwaysClientPlugin.etch));
 
 		JPanel searchOptBox = new JPanel();
-		
+		FormLayout layout = new FormLayout(
+				"p,3dlu,120px,2dlu,30px,fill:pref:grow,3dlu,fill:pref:grow,3dlu",
+				"pref, pref, 4dlu, pref, 4dlu, pref");
+		CellConstraints cc = new CellConstraints();
+
 		searchOptBox.setLayout(layout);
 		searchOptBox.setBorder(BorderFactory.createTitledBorder(WikiPathwaysClientPlugin.etch,
 				"Search options"));
@@ -163,31 +161,37 @@ public class AdvancedSearchPanel extends JPanel
 
 		cbSyscode = new JComboBox(new DataSourceModel());
 
-		JPanel searchXreferenceOptBox = new JPanel();
-		FormLayout layout2 = new FormLayout("p,3dlu,140px,1dlu,70px,fill:pref:grow,3dlu,fill:pXref:grow","pref, pref, 4dlu, pref, 4dlu, pref");
+		JPanel searchReferenceBox = new JPanel();
+		FormLayout layout2 = new FormLayout(
+				"p,3dlu,140px,1dlu,70px,fill:pref:grow,3dlu,fill:pref:grow",
+				"pref, pref, 4dlu, pref, 4dlu, pref");
 		CellConstraints cc2 = new CellConstraints();
 
-		searchXreferenceOptBox.setLayout(layout2);		
-		searchXreferenceOptBox.setBorder(BorderFactory.createTitledBorder(WikiPathwaysClientPlugin.etch,"Search By Xreference"));
+		searchReferenceBox.setLayout(layout2);
+	
+		searchReferenceBox.setBorder(BorderFactory.createTitledBorder(WikiPathwaysClientPlugin.etch,
+				"Search By Reference"));
 
-		searchXreferenceOptBox.add(new JLabel("ID"), cc.xy(1, 1));
-		searchXreferenceOptBox.add(txtId, cc2.xy(3, 1));
-		searchXreferenceOptBox.add(new JLabel("System Code"), cc.xy(5, 1));
-		searchXreferenceOptBox.add(cbSyscode, cc2.xy(6, 1));
+		searchReferenceBox.add(new JLabel("ID"), cc.xy(1, 1));
+		searchReferenceBox.add(txtId, cc2.xy(3, 1));
+		searchReferenceBox.add(new JLabel("System Code"), cc.xy(5, 1));
+		searchReferenceBox.add(cbSyscode, cc2.xy(6, 1));
 		JButton searchButton = new JButton(searchXrefAction);
-		searchXreferenceOptBox.add(searchButton, cc2.xy(8, 1));
-		
-		Vector<String> clients = new Vector<String>(plugin.getClients().keySet());
+		searchReferenceBox.add(searchButton, cc2.xy(8, 1));
+		Vector<String> clients = new Vector<String>(plugin.getClients()
+				.keySet());
 		Collections.sort(clients);
 
 		clientDropdown = new JComboBox(clients);
 		clientDropdown.setSelectedIndex(0);
-		clientDropdown.setRenderer(new DefaultListCellRenderer() 
-		{
-			public Component getListCellRendererComponent(final JList list,final Object value, final int index,	final boolean isSelected, final boolean cellHasFocus) 
+		clientDropdown.setRenderer(new DefaultListCellRenderer() {
+			public Component getListCellRendererComponent(final JList list,
+					final Object value, final int index,
+					final boolean isSelected, final boolean cellHasFocus)
 			{
-				String strValue =WikiPathwaysClientPlugin.shortClientName(value.toString());
-				return super.getListCellRendererComponent(list, strValue,index, isSelected, cellHasFocus);
+				String strValue = WikiPathwaysClientPlugin.shortClientName(value.toString());
+				return super.getListCellRendererComponent(list, strValue,
+						index, isSelected, cellHasFocus);
 			}
 		});
 
@@ -195,8 +199,8 @@ public class AdvancedSearchPanel extends JPanel
 
 		if (plugin.getClients().size() < 2)
 			clientDropdown.setVisible(false);
-		searchBox.add(searchOptBox, cc.xyw(1, 1, 8));
-		searchBox.add(searchXreferenceOptBox, cc.xyw(1, 4, 8));
+		searchBox.add(searchOptBox, ccf.xyw(1, 1, 8));
+		searchBox.add(searchReferenceBox, ccf.xyw(1, 4, 8));
 		add(searchBox, BorderLayout.NORTH);
 
 		// Center contains table model for results
@@ -207,12 +211,9 @@ public class AdvancedSearchPanel extends JPanel
 
 		pTitleOrId.requestDefaultFocus();
 
-		resultTable.addMouseListener(new MouseAdapter() 
-		{
-			public void mouseClicked(MouseEvent e) 
-			{
-				if (e.getClickCount() == 2) 
-				{
+		resultTable.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
 					JTable target = (JTable) e.getSource();
 					int row = target.getSelectedRow();
 					
