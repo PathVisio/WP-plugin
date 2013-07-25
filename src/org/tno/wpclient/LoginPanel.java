@@ -1,9 +1,8 @@
 package org.tno.wpclient;
 
 /**
- * Class: LoginPane
+ * Class: LoginPanel
  * Description: A simple class to get user's loginname and password.
- * NOTE: This class is not very secure!
  * @author SravanthiSinha
  **/
 
