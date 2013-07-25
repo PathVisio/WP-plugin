@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: org.tno.wpclient
-Bundle-SymbolicName: org.tno.wpclient
+Bundle-Name: org.pathvisio.wpclient
+Bundle-SymbolicName: org.pathvisio.wpclient
 Bundle-Version: 1.0.0
-Bundle-Activator: org.tno.wpclient.Activator
+Bundle-Activator: org.pathvisio.wpclient.Activator
 Bundle-ActivationPolicy: lazy
 Import-Package: org.osgi.framework;version="1.3.0"
 Require-Bundle: org.pathvisio.core;bundle-version="2.0.11",
