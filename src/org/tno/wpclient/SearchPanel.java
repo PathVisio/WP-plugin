@@ -158,7 +158,7 @@ public class SearchPanel extends JPanel
 				{
 					JTable target = (JTable) e.getSource();
 					int row = target.getSelectedRow();
-					SearchTableModel model = (SearchTableModel) target.getModel();
+					ResultTableModel model = (ResultTableModel) target.getModel();
 
 					File tmpDir = new File(plugin.getTmpDir(),WikiPathwaysClientPlugin.shortClientName(model.clientName));
 					tmpDir.mkdirs();
@@ -225,7 +225,7 @@ public class SearchPanel extends JPanel
 		sw.execute();
 		d.setVisible(true);
 		
-		resultTable.setModel(new SearchTableModel(sw.get(), clientName));
+		resultTable.setModel(new ResultTableModel(sw.get(), clientName));
 		resultTable.setRowSorter(new TableRowSorter(resultTable.getModel()));
 	 } 
 	 else
@@ -234,50 +234,4 @@ public class SearchPanel extends JPanel
 	 }
 	}
 	
-
-	/**
-	 * This class creates the SearchTableModel 
-	 * Based on the Search Criteria
-	 */
-	private class SearchTableModel extends AbstractTableModel
-	{
-		WSSearchResult[] results;
-		String[] columnNames = new String[] { "ID", "Name", "Species" };
-		String clientName;
-
-		public SearchTableModel(WSSearchResult[] results, String clientName) 
-		{
-			this.clientName = clientName;
-			this.results = results;
-		}
-
-		public int getColumnCount()
-		{
-			return 3;
-		}
-
-		public int getRowCount() 
-		{
-			return results.length;
-		}
-
-		public Object getValueAt(int rowIndex, int columnIndex)
-		{
-			WSSearchResult r = results[rowIndex];
-			switch (columnIndex) {
-			case 0:
-				return r.getId();
-			case 1:
-				return r.getName();
-			case 2:
-				return r.getSpecies();
-			}
-			return "";
-		}
-
-		public String getColumnName(int column) 
-		{
-			return columnNames[column];
-		}
-	}
 }
