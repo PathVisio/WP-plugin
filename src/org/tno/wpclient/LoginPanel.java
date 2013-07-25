@@ -4,9 +4,8 @@ package org.tno.wpclient;
  * Class: LoginPane
  * Description: A simple class to get user's loginname and password.
  * NOTE: This class is not very secure!
- * @author Le Cuong Nguyen
+ * @author SravanthiSinha
  **/
-//package atnf.atoms.mon.util;
 
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -14,13 +13,13 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-public class LoginPanel extends JPanel implements ActionListener {
+public class LoginPanel extends JPanel implements ActionListener 
+{
 	String itsUsername = "";
 	String itsPassword = "";
 	boolean itsFirst = true;
@@ -30,7 +29,8 @@ public class LoginPanel extends JPanel implements ActionListener {
 	JCheckBox itsKeepBox = new JCheckBox("Save details:", false);
 	boolean itsInit = false;
 
-	public LoginPanel() {
+	public LoginPanel()
+	{
 		super();
 
 		setLayout(new GridLayout(3, 2));
@@ -45,11 +45,14 @@ public class LoginPanel extends JPanel implements ActionListener {
 
 	}
 
-	public String[] getLogin() {
-		if (!itsKeep && !itsFirst) {
+	public String[] getLogin()
+	{
+		if (!itsKeep && !itsFirst) 
+		{
 			return null;
 		}
-		if (!itsInit) {
+		if (!itsInit) 
+		{
 			return null;
 		}
 		itsFirst = false;
@@ -63,7 +66,8 @@ public class LoginPanel extends JPanel implements ActionListener {
 		return res;
 	}
 
-	public void actionPerformed(ActionEvent e) {
+	public void actionPerformed(ActionEvent e)
+	{
 		itsUsername = itsUserField.getText();
 		itsPassword = new String(itsPassField.getPassword());
 		itsKeep = itsKeepBox.isSelected();
