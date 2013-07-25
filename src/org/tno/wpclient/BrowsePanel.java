@@ -67,8 +67,7 @@ public class BrowsePanel extends JPanel
 	JComboBox clientDropdown;
 	private JComboBox organismOpt;
 	JTable resultTable;
-	private JScrollPane resultspane;
-	Border etch = BorderFactory.createEtchedBorder();
+	private JScrollPane resultspane;	
 	private JLabel speciesLabel, CollecLabel, CuraLabel;
 	private JComboBox collOpt;
 	private JComboBox curationOpt;
@@ -158,7 +157,7 @@ public class BrowsePanel extends JPanel
 			{
 				try 
 				{
-					resultspane.setBorder(BorderFactory.createTitledBorder(etch, "Pathways"));
+					resultspane.setBorder(BorderFactory.createTitledBorder(WikiPathwaysClientPlugin.etch, "Pathways"));
 					browse();
 				}
 				catch (Exception ex) 
@@ -235,7 +234,7 @@ public class BrowsePanel extends JPanel
 		CellConstraints cc = new CellConstraints();
 
 		browseOptBox.setLayout(layout);
-		browseOptBox.setBorder(BorderFactory.createTitledBorder(etch,"Browse options"));
+		browseOptBox.setBorder(BorderFactory.createTitledBorder(WikiPathwaysClientPlugin.etch,"Browse options"));
 		browseOptBox.add(speciesLabel, cc.xy(1, 1));
 		browseOptBox.add(opts, cc.xy(1, 2));
 		browseOptBox.add(CollecLabel, cc.xy(3, 1));
