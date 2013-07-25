@@ -140,7 +140,7 @@ public class AdvancedSearchPanel extends JPanel
 		pubXref.addActionListener(searchLiteratureAction);
 		
 		JPanel searchBox = new JPanel();
-		FormLayout layout = new FormLayout("p,3dlu,120px,2dlu,30px,fill:pXref:grow,3dlu,fill:pXref:grow,3dlu","pXref, pXref, 4dlu, pXref, 4dlu, pXref");
+		FormLayout layout = new FormLayout("p,3dlu,120px,2dlu,30px,fill:pref:grow,3dlu,fill:pref:grow,3dlu","pref, pref, 4dlu, pref, 4dlu, pref");
 		CellConstraints cc = new CellConstraints();
 
 		searchBox.setLayout(layout);
@@ -164,7 +164,7 @@ public class AdvancedSearchPanel extends JPanel
 		cbSyscode = new JComboBox(new DataSourceModel());
 
 		JPanel searchXreferenceOptBox = new JPanel();
-		FormLayout layout2 = new FormLayout("p,3dlu,140px,1dlu,70px,fill:pXref:grow,3dlu,fill:pXref:grow","pXref, pXref, 4dlu, pXref, 4dlu, pXref");
+		FormLayout layout2 = new FormLayout("p,3dlu,140px,1dlu,70px,fill:pref:grow,3dlu,fill:pXref:grow","pref, pref, 4dlu, pref, 4dlu, pref");
 		CellConstraints cc2 = new CellConstraints();
 
 		searchXreferenceOptBox.setLayout(layout2);		
