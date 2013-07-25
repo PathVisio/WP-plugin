@@ -8,7 +8,11 @@ import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JMenu;
@@ -18,6 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingWorker;
+import javax.swing.border.Border;
 import javax.xml.rpc.ServiceException;
 
 import org.bridgedb.DataSource;
@@ -52,6 +57,7 @@ import org.wikipathways.client.WikiPathwaysClient;
  */
 public class WikiPathwaysClientPlugin implements Plugin 
 {
+	public static Border etch = BorderFactory.createEtchedBorder();
 	Map<String, WikiPathwaysClient> clients = new HashMap<String, WikiPathwaysClient>();
 	PvDesktop desktop;
 	File tmpDir = new File(GlobalPreference.getApplicationDir(),"wpclient-cache");
@@ -260,6 +266,19 @@ public class WikiPathwaysClientPlugin implements Plugin
 		engine.setWrapper(desktop.getSwingEngine().createWrapper());
 		engine.openPathway(tmp);
 
+	}
+	
+	public static String shortClientName(String clientName) 
+	{
+		Pattern pattern = Pattern.compile("http://(.*?)/");
+		Matcher matcher = pattern.matcher(clientName);
+		
+		if (matcher.find())
+		{
+			clientName = matcher.group(1);
+		}
+		
+		return clientName;
 	}
 
 	static boolean isSameServer(String clientStr, String url) 
