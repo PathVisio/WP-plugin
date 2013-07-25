@@ -1,9 +1,7 @@
 package org.tno.wpclient;
 
 import java.awt.BorderLayout;
-import java.awt.CardLayout;
 import java.awt.Component;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -12,11 +10,9 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-
 import java.util.Vector;
 import java.util.concurrent.ExecutionException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -31,9 +27,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingWorker;
-import javax.swing.border.Border;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import org.bridgedb.DataSource;
@@ -47,148 +41,153 @@ import org.pathvisio.wikipathways.webservice.WSPathwayInfo;
 import org.pathvisio.wikipathways.webservice.WSSearchResult;
 import org.wikipathways.client.WikiPathwaysClient;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
+
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-public class AdvancedSearchPanel extends JPanel {
+/**
+ *	This class creates the content in the Dialog of the AdvancesSearch TabbedPane of Search 
+ *	Basic Browse-
+ *	Browse by organism
+ *	Browse by curation tags
+ *	Browse by Collections 
+ * 	@author Sravanthi Sinha
+ * 	@version 1.0
+ */
+public class AdvancedSearchPanel extends JPanel 
+{
 	WikiPathwaysClientPlugin plugin;
 	JTextField pTitleOrId;
 	JComboBox clientDropdown;
 	java.util.HashMap<String, String> curationtags = new HashMap<String, String>();
 	JTable resultTable;
-	int i;
+	int i=0;
 	private JComboBox curationOpt;
 	private JTextField txtId;
 	private JComboBox cbSyscode;
 	private JComboBox cbSearchBy;
 	private Component symbolOpt;
 	private JScrollPane resultspane;
-	Border etch = BorderFactory.createEtchedBorder();
+	
 	public int flag = 0;
-	private JTextField pubref;
+	private JTextField pubXref;
 
-	public AdvancedSearchPanel(final WikiPathwaysClientPlugin plugin) {
+	public AdvancedSearchPanel(final WikiPathwaysClientPlugin plugin) 
+	{
 
 		this.plugin = plugin;
 
 		setLayout(new BorderLayout());
 		pTitleOrId = new JTextField();
-		pubref = new JTextField();
+		pubXref = new JTextField();
 
-		Action searchAction = new AbstractAction("Search") {
+		Action searchAction = new AbstractAction("Search")
+		{
 			public void actionPerformed(ActionEvent e) {
 				try {
-					resultspane.setBorder(BorderFactory.createTitledBorder(
-							etch, "Pathways"));
+					resultspane.setBorder(BorderFactory.createTitledBorder(WikiPathwaysClientPlugin.etch, "Pathways"));
 					if (pTitleOrId.getText().startsWith("WP"))
 						searchID();
-					else {
+					else 
+					{
 						search();
 					}
-				} catch (Exception ex) {
-					JOptionPane
-							.showMessageDialog(AdvancedSearchPanel.this,
-									ex.getMessage(), "Error",
-									JOptionPane.ERROR_MESSAGE);
+				}
+				catch (Exception ex) 
+				{
+					JOptionPane.showMessageDialog(AdvancedSearchPanel.this,	ex.getMessage(), "Error",JOptionPane.ERROR_MESSAGE);
 					Logger.log.error("Error searching WikiPathways", ex);
 				}
 			}
 
 		};
-		Action searchLiteratureAction = new AbstractAction("searchlit") {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					resultspane.setBorder(BorderFactory.createTitledBorder(
-							etch, "Pathways"));
+		Action searchLiteratureAction = new AbstractAction("searchlit") 
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				try 
+				{
+					resultspane.setBorder(BorderFactory.createTitledBorder(WikiPathwaysClientPlugin.etch, "Pathways"));
 					searchByLiterature();
-				} catch (Exception ex) {
-					JOptionPane
-							.showMessageDialog(AdvancedSearchPanel.this,
-									ex.getMessage(), "Error",
-									JOptionPane.ERROR_MESSAGE);
+				} 
+				catch (Exception ex)
+				{
+					JOptionPane.showMessageDialog(AdvancedSearchPanel.this,ex.getMessage(), "Error",JOptionPane.ERROR_MESSAGE);
 					Logger.log.error("Error searching WikiPathways", ex);
 				}
 			}
 
 		};
-		Action searchRefAction = new AbstractAction("search") {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					resultspane.setBorder(BorderFactory.createTitledBorder(
-							etch, "Pathways"));
-					searchByRef();
-				} catch (Exception ex) {
-					JOptionPane
-							.showMessageDialog(AdvancedSearchPanel.this,
-									ex.getMessage(), "Error",
-									JOptionPane.ERROR_MESSAGE);
+		Action searchXrefAction = new AbstractAction("Search") 
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				try
+				{
+					resultspane.setBorder(BorderFactory.createTitledBorder(WikiPathwaysClientPlugin.etch, "Pathways"));
+					searchByXref();
+				}
+				catch (Exception ex) 
+				{
+					JOptionPane.showMessageDialog(AdvancedSearchPanel.this,	ex.getMessage(), "Error",JOptionPane.ERROR_MESSAGE);
 					Logger.log.error("Error searching WikiPathways", ex);
 				}
 			}
 
 		};
+		
 		pTitleOrId.addActionListener(searchAction);
-		pubref.addActionListener(searchLiteratureAction);
+		pubXref.addActionListener(searchLiteratureAction);
+		
 		JPanel searchBox = new JPanel();
-		FormLayout layoutf = new FormLayout("p,3dlu,120px,2dlu,30px,fill:pref:grow,3dlu,fill:pref:grow,3dlu",
-				"pref, pref, 4dlu, pref, 4dlu, pref");
-		CellConstraints ccf = new CellConstraints();
-
-		searchBox.setLayout(layoutf);
-		searchBox.setBorder(BorderFactory.createTitledBorder(etch));
-
-		JPanel searchOptBox = new JPanel();
-		FormLayout layout = new FormLayout(
-				"p,3dlu,120px,2dlu,30px,fill:pref:grow,3dlu,fill:pref:grow,3dlu",
-				"pref, pref, 4dlu, pref, 4dlu, pref");
+		FormLayout layout = new FormLayout("p,3dlu,120px,2dlu,30px,fill:pXref:grow,3dlu,fill:pXref:grow,3dlu","pXref, pXref, 4dlu, pXref, 4dlu, pXref");
 		CellConstraints cc = new CellConstraints();
 
+		searchBox.setLayout(layout);
+		searchBox.setBorder(BorderFactory.createTitledBorder(WikiPathwaysClientPlugin.etch));
+
+		JPanel searchOptBox = new JPanel();
+		
 		searchOptBox.setLayout(layout);
-		searchOptBox.setBorder(BorderFactory.createTitledBorder(etch,
+		searchOptBox.setBorder(BorderFactory.createTitledBorder(WikiPathwaysClientPlugin.etch,
 				"Search options"));
 		searchOptBox.add(new JLabel("Title/ID"), cc.xy(1, 1));
 		searchOptBox.add(pTitleOrId, cc.xyw(1, 2, 3));
 
 		searchOptBox.add(new JLabel("Publication Title/ID"), cc.xy(6, 1));
 		searchOptBox.add(new JLabel("(OR)"), cc.xyw(5, 2, 1));
-		searchOptBox.add(pubref, cc.xyw(6, 2, 3));
+		searchOptBox.add(pubXref, cc.xyw(6, 2, 3));
 	
 		// NEXT PANEL
 		txtId = new JTextField();
 
 		cbSyscode = new JComboBox(new DataSourceModel());
 
-		JPanel searchOptBox2 = new JPanel();
-		FormLayout layout2 = new FormLayout(
-				"p,3dlu,140px,1dlu,70px,fill:pref:grow,3dlu,fill:pref:grow",
-				"pref, pref, 4dlu, pref, 4dlu, pref");
+		JPanel searchXreferenceOptBox = new JPanel();
+		FormLayout layout2 = new FormLayout("p,3dlu,140px,1dlu,70px,fill:pXref:grow,3dlu,fill:pXref:grow","pXref, pXref, 4dlu, pXref, 4dlu, pXref");
 		CellConstraints cc2 = new CellConstraints();
 
-		searchOptBox2.setLayout(layout2);
-		Border etch = BorderFactory.createEtchedBorder();
-		searchOptBox2.setBorder(BorderFactory.createTitledBorder(etch,
-				"Search By Reference"));
+		searchXreferenceOptBox.setLayout(layout2);		
+		searchXreferenceOptBox.setBorder(BorderFactory.createTitledBorder(WikiPathwaysClientPlugin.etch,"Search By Xreference"));
 
-		searchOptBox2.add(new JLabel("ID"), cc.xy(1, 1));
-		searchOptBox2.add(txtId, cc2.xy(3, 1));
-		searchOptBox2.add(new JLabel("System Code"), cc.xy(5, 1));
-		searchOptBox2.add(cbSyscode, cc2.xy(6, 1));
-		JButton searchButton = new JButton(searchRefAction);
-		searchOptBox2.add(searchButton, cc2.xy(8, 1));
-		Vector<String> clients = new Vector<String>(plugin.getClients()
-				.keySet());
+		searchXreferenceOptBox.add(new JLabel("ID"), cc.xy(1, 1));
+		searchXreferenceOptBox.add(txtId, cc2.xy(3, 1));
+		searchXreferenceOptBox.add(new JLabel("System Code"), cc.xy(5, 1));
+		searchXreferenceOptBox.add(cbSyscode, cc2.xy(6, 1));
+		JButton searchButton = new JButton(searchXrefAction);
+		searchXreferenceOptBox.add(searchButton, cc2.xy(8, 1));
+		
+		Vector<String> clients = new Vector<String>(plugin.getClients().keySet());
 		Collections.sort(clients);
 
 		clientDropdown = new JComboBox(clients);
 		clientDropdown.setSelectedIndex(0);
-		clientDropdown.setRenderer(new DefaultListCellRenderer() {
-			public Component getListCellRendererComponent(final JList list,
-					final Object value, final int index,
-					final boolean isSelected, final boolean cellHasFocus) {
-				String strValue = SearchPanel.shortClientName(value.toString());
-				return super.getListCellRendererComponent(list, strValue,
-						index, isSelected, cellHasFocus);
+		clientDropdown.setRenderer(new DefaultListCellRenderer() 
+		{
+			public Component getListCellRendererComponent(final JList list,final Object value, final int index,	final boolean isSelected, final boolean cellHasFocus) 
+			{
+				String strValue =WikiPathwaysClientPlugin.shortClientName(value.toString());
+				return super.getListCellRendererComponent(list, strValue,index, isSelected, cellHasFocus);
 			}
 		});
 
@@ -196,8 +195,8 @@ public class AdvancedSearchPanel extends JPanel {
 
 		if (plugin.getClients().size() < 2)
 			clientDropdown.setVisible(false);
-		searchBox.add(searchOptBox, ccf.xyw(1, 1, 8));
-		searchBox.add(searchOptBox2, ccf.xyw(1, 4, 8));
+		searchBox.add(searchOptBox, cc.xyw(1, 1, 8));
+		searchBox.add(searchXreferenceOptBox, cc.xyw(1, 4, 8));
 		add(searchBox, BorderLayout.NORTH);
 
 		// Center contains table model for results
@@ -208,63 +207,54 @@ public class AdvancedSearchPanel extends JPanel {
 
 		pTitleOrId.requestDefaultFocus();
 
-		resultTable.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 2) {
+		resultTable.addMouseListener(new MouseAdapter() 
+		{
+			public void mouseClicked(MouseEvent e) 
+			{
+				if (e.getClickCount() == 2) 
+				{
 					JTable target = (JTable) e.getSource();
 					int row = target.getSelectedRow();
 					
-					try {
-					switch (flag) {
+					try
+					{
+					switch (flag) 
+					{
+					
+					case 0:
+					{
+						ResultTableModel	model = (ResultTableModel) target.getModel();
+						File tmpDir = new File(plugin.getTmpDir(), WikiPathwaysClientPlugin.shortClientName(model.clientName));
+						tmpDir.mkdirs();
+
+						plugin.openPathwayWithProgress(plugin.getClients().get(model.clientName),model.getValueAt(row, 0).toString(), 0, tmpDir);
+						break;
+					}
 					case 1:
 					{
-						SearchTableModel	model = (SearchTableModel) target
-								.getModel();
-						File tmpDir = new File(plugin.getTmpDir(), SearchPanel
-								.shortClientName(model.clientName));
+						SearchTableModel	model = (SearchTableModel) target.getModel();
+						File tmpDir = new File(plugin.getTmpDir(), WikiPathwaysClientPlugin.shortClientName(model.clientName));
 						tmpDir.mkdirs();
 
-						
-							plugin.openPathwayWithProgress(
-									plugin.getClients().get(model.clientName),
-									model.getValueAt(row, 0).toString(), 0, tmpDir);
+						plugin.openPathwayWithProgress(plugin.getClients().get(model.clientName),model.getValueAt(row, 0).toString(), 0, tmpDir);
 						break;
 					}
-
 					case 2:
 					{
-						SearchTableModel2	model = (SearchTableModel2) target.getModel();
-						File tmpDir = new File(plugin.getTmpDir(), SearchPanel
-								.shortClientName(model.clientName));
+						LiteratureResultTableModel	model = (LiteratureResultTableModel) target.getModel();
+						File tmpDir = new File(plugin.getTmpDir(), WikiPathwaysClientPlugin.shortClientName(model.clientName));
 						tmpDir.mkdirs();
-
 						
-							plugin.openPathwayWithProgress(
-									plugin.getClients().get(model.clientName),
-									model.getValueAt(row, 0).toString(), 0, tmpDir);
+						plugin.openPathwayWithProgress(plugin.getClients().get(model.clientName),model.getValueAt(row, 0).toString(), 0, tmpDir);
 						break;
 					}
-					case 3:
-					{
-						SearchTableModel3	model = (SearchTableModel3) target.getModel();
-						File tmpDir = new File(plugin.getTmpDir(), SearchPanel
-								.shortClientName(model.clientName));
-						tmpDir.mkdirs();
-
-						
-							plugin.openPathwayWithProgress(
-									plugin.getClients().get(model.clientName),
-									model.getValueAt(row, 0).toString(), 0, tmpDir);
-						break;
-					}
-					}
-
-				
 					
-					} catch (Exception ex) {
-						JOptionPane.showMessageDialog(AdvancedSearchPanel.this,
-								ex.getMessage(), "Error",
-								JOptionPane.ERROR_MESSAGE);
+					}			
+					
+					}
+					catch (Exception ex) 
+					{
+						JOptionPane.showMessageDialog(AdvancedSearchPanel.this,ex.getMessage(), "Error",JOptionPane.ERROR_MESSAGE);
 						Logger.log.error("Error", ex);
 					}
 				}
@@ -272,32 +262,32 @@ public class AdvancedSearchPanel extends JPanel {
 		});
 	}
 
-	private void searchByRef() throws RemoteException, InterruptedException,
-			ExecutionException {
-
+	private void searchByXref() throws RemoteException, InterruptedException,ExecutionException 
+	{
 		String clientName = clientDropdown.getSelectedItem().toString();
 
 		final WikiPathwaysClient client = plugin.getClients().get(clientName);
 
 		final ProgressKeeper pk = new ProgressKeeper();
-		final ProgressDialog d = new ProgressDialog(
-				JOptionPane.getFrameForComponent(this), "", pk, true, true);
-		i = 0;
-		SwingWorker<WSSearchResult[], Void> sw = new SwingWorker<WSSearchResult[], Void>() {
-			protected WSSearchResult[] doInBackground() throws Exception {
+		final ProgressDialog d = new ProgressDialog(JOptionPane.getFrameForComponent(this), "", pk, true, true);
+	
+		SwingWorker<WSSearchResult[], Void> sw = new SwingWorker<WSSearchResult[], Void>()
+		{
+			protected WSSearchResult[] doInBackground() throws Exception
+			{
 				pk.setTaskName("Searching");
 				WSSearchResult[] results = null;
-				ArrayList<WSSearchResult> results2 = new ArrayList<WSSearchResult>();
-				try {
-
-					Xref pxref = new Xref(txtId.getText(),
-							DataSource.getByFullName(""
-									+ cbSyscode.getSelectedItem()));
-					results = client.findPathwaysByXref(pxref);
-
-				} catch (Exception e) {
+				try
+				{
+					Xref pxXref = new Xref(txtId.getText(),	DataSource.getByFullName(""	+ cbSyscode.getSelectedItem()));
+					results = client.findPathwaysByXref(pxXref);
+				}
+				catch (Exception e) 
+				{
 					throw e;
-				} finally {
+				}
+				finally 
+				{
 					pk.finished();
 				}
 				return results;
@@ -307,31 +297,38 @@ public class AdvancedSearchPanel extends JPanel {
 		sw.execute();
 		d.setVisible(true);
 
-		resultTable.setModel(new SearchTableModel3(sw.get(), clientName));
+		resultTable.setModel(new ResultTableModel(sw.get(), clientName));
 		resultTable.setRowSorter(new TableRowSorter(resultTable.getModel()));
 	}
 
-	private void searchByLiterature() throws RemoteException,
-			InterruptedException, ExecutionException {
-		final String query = pubref.getText();
+	private void searchByLiterature() throws RemoteException,InterruptedException, ExecutionException 
+	{
+		final String query = pubXref.getText();
 
-		if (!query.isEmpty()) {
+		if (!query.isEmpty()) 
+		{
 			String clientName = clientDropdown.getSelectedItem().toString();
-			final WikiPathwaysClient client = plugin.getClients().get(
-					clientName);
+			final WikiPathwaysClient client = plugin.getClients().get(clientName);
+			
 			final ProgressKeeper pk = new ProgressKeeper();
-			final ProgressDialog d = new ProgressDialog(
-					JOptionPane.getFrameForComponent(this), "", pk, true, true);
+			final ProgressDialog d = new ProgressDialog(JOptionPane.getFrameForComponent(this), "", pk, true, true);
 
-			SwingWorker<WSSearchResult[], Void> sw = new SwingWorker<WSSearchResult[], Void>() {
-				protected WSSearchResult[] doInBackground() throws Exception {
+			SwingWorker<WSSearchResult[], Void> sw = new SwingWorker<WSSearchResult[], Void>() 
+			{
+				protected WSSearchResult[] doInBackground() throws Exception 
+				{
 					pk.setTaskName("Searching");
 					WSSearchResult[] results = null;
-					try {
+					try 
+					{
 						results = client.findPathwaysByLiterature(query);
-					} catch (Exception e) {
+					}
+					catch (Exception e) 
+					{
 						throw e;
-					} finally {
+					} 
+					finally 
+					{
 						pk.finished();
 					}
 					return results;
@@ -341,63 +338,16 @@ public class AdvancedSearchPanel extends JPanel {
 			sw.execute();
 			d.setVisible(true);
 
-			resultTable.setModel(new SearchTableModel2(sw.get(), clientName));
-			resultTable
-					.setRowSorter(new TableRowSorter(resultTable.getModel()));
-		} else {
-			JOptionPane.showMessageDialog(null, "Please Enter a Search Query",
-					"ERROR", JOptionPane.ERROR_MESSAGE);
+			resultTable.setModel(new LiteratureResultTableModel(sw.get(), clientName));
+			resultTable.setRowSorter(new TableRowSorter(resultTable.getModel()));
+		} 
+		else
+		{
+			JOptionPane.showMessageDialog(null, "Please Enter a Search Query","ERROR", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
-	protected void doSearch() throws RemoteException, InterruptedException,
-			ExecutionException {
-		final String query = pTitleOrId.getText();
-		String clientName = clientDropdown.getSelectedItem().toString();
-
-		final WikiPathwaysClient client = plugin.getClients().get(clientName);
-
-		final ProgressKeeper pk = new ProgressKeeper();
-		final ProgressDialog d = new ProgressDialog(
-				JOptionPane.getFrameForComponent(this), "", pk, true, true);
-		i = 0;
-		SwingWorker<WSSearchResult[], Void> sw = new SwingWorker<WSSearchResult[], Void>() {
-			protected WSSearchResult[] doInBackground() throws Exception {
-				pk.setTaskName("Searching");
-				WSSearchResult[] results = null;
-				ArrayList<WSSearchResult> results2 = new ArrayList<WSSearchResult>();
-				try {
-					// results = client.findPathwaysByXref(new
-					// Xref(txtId.getText(), DataSource.getByFullName(""+
-					// cbSyscode.getSelectedItem())));
-					results = client.findPathwaysByXref(txtId.getText());
-				} catch (Exception e) {
-					throw e;
-				} finally {
-					pk.finished();
-				}
-
-				for (WSSearchResult wsSearchResult : results) {
-					if (wsSearchResult.getName().toUpperCase()
-							.indexOf(query.toUpperCase()) != -1) {
-						results2.add(wsSearchResult);
-						i++;
-
-					}
-				}
-				results = new WSSearchResult[i];
-				results2.toArray(results);
-				return results;
-
-			}
-		};
-
-		sw.execute();
-		d.setVisible(true);
-		resultTable.setModel(new SearchTableModel2(sw.get(), clientName));
-		resultTable.setRowSorter(new TableRowSorter(resultTable.getModel()));
-	}
-
+	
 	private void search() throws RemoteException, InterruptedException,
 			ExecutionException {
 		final String query = pTitleOrId.getText();
@@ -409,22 +359,28 @@ public class AdvancedSearchPanel extends JPanel {
 		final ProgressDialog d = new ProgressDialog(
 				JOptionPane.getFrameForComponent(this), "", pk, true, true);
 		i = 0;
-		SwingWorker<WSSearchResult[], Void> sw = new SwingWorker<WSSearchResult[], Void>() {
-			protected WSSearchResult[] doInBackground() throws Exception {
+		SwingWorker<WSSearchResult[], Void> sw = new SwingWorker<WSSearchResult[], Void>() 
+			{
+			protected WSSearchResult[] doInBackground() throws Exception 
+			{
 				pk.setTaskName("Searching");
 				WSSearchResult[] results = null;
 				ArrayList<WSSearchResult> results2 = new ArrayList<WSSearchResult>();
-				try {
+				try 
+				{
 					results = client.findPathwaysByText(query);
-				} catch (Exception e) {
+				} 
+				catch (Exception e)
+				{
 					throw e;
 				} finally {
 					pk.finished();
 				}
 
-				for (WSSearchResult wsSearchResult : results) {
-					if (wsSearchResult.getName().toUpperCase()
-							.indexOf(query.toUpperCase()) != -1) {
+				for (WSSearchResult wsSearchResult : results)
+				{
+					if (wsSearchResult.getName().toUpperCase().indexOf(query.toUpperCase()) != -1) 
+					{
 						results2.add(wsSearchResult);
 						i++;
 
@@ -439,31 +395,33 @@ public class AdvancedSearchPanel extends JPanel {
 
 		sw.execute();
 		d.setVisible(true);
-		resultTable.setModel(new SearchTableModel3(sw.get(), clientName));
+		resultTable.setModel(new ResultTableModel(sw.get(), clientName));
 		resultTable.setRowSorter(new TableRowSorter(resultTable.getModel()));
 	}
 
-	private void searchID() throws RemoteException, InterruptedException,
-			ExecutionException {
+	private void searchID() throws RemoteException, InterruptedException,ExecutionException 
+	{
 		final String query = pTitleOrId.getText();
 
-		if (!query.isEmpty()) {
+		if (!query.isEmpty())
+		{
 			String clientName = clientDropdown.getSelectedItem().toString();
-			final WikiPathwaysClient client = plugin.getClients().get(
-					clientName);
+			final WikiPathwaysClient client = plugin.getClients().get(clientName);
 			final ProgressKeeper pk = new ProgressKeeper();
-			final ProgressDialog d = new ProgressDialog(
-					JOptionPane.getFrameForComponent(this), "", pk, true, true);
+			final ProgressDialog d = new ProgressDialog(JOptionPane.getFrameForComponent(this), "", pk, true, true);
 
-			SwingWorker<WSPathwayInfo[], Void> sw = new SwingWorker<WSPathwayInfo[], Void>() {
-				protected WSPathwayInfo[] doInBackground() throws Exception {
+			SwingWorker<WSPathwayInfo[], Void> sw = new SwingWorker<WSPathwayInfo[], Void>()
+				{
+				protected WSPathwayInfo[] doInBackground() throws Exception 
+				{
 					i = 0;
 					pk.setTaskName("Searching");
 
 					WSPathwayInfo[] results3 = null;
 
 					ArrayList<WSPathwayInfo> results2 = new ArrayList<WSPathwayInfo>();
-					try {
+					try
+					{
 						results2.add(client.getPathwayInfo(query));
 						i++;
 					} catch (Exception e) {
@@ -491,27 +449,32 @@ public class AdvancedSearchPanel extends JPanel {
 		}
 	}
 
-	private class SearchTableModel2 extends AbstractTableModel {
+	private class LiteratureResultTableModel extends AbstractTableModel
+	{
 		WSSearchResult[] results;
 		String[] columnNames = new String[] { "ID", "Name", "Species",
 				"Literature Title" };
 		String clientName;
 
-		public SearchTableModel2(WSSearchResult[] results, String clientName) {
+		public LiteratureResultTableModel(WSSearchResult[] results, String clientName) 
+		{
 			this.clientName = clientName;
 			this.results = results;
 			flag = 2;
 		}
 
-		public int getColumnCount() {
+		public int getColumnCount()
+		{
 			return 4;
 		}
 
-		public int getRowCount() {
+		public int getRowCount() 
+		{
 			return results.length;
 		}
 
-		public Object getValueAt(int rowIndex, int columnIndex) {
+		public Object getValueAt(int rowIndex, int columnIndex) 
+		{
 			WSSearchResult r = results[rowIndex];
 			switch (columnIndex) {
 			case 0:
@@ -520,12 +483,13 @@ public class AdvancedSearchPanel extends JPanel {
 				return r.getName();
 			case 2:
 				return r.getSpecies();
-			case 3: {
+			case 3:
+			{
 			WSIndexField[] fields = r.getFields();
-			for (int i = 0; i < fields.length; i++) {
-				if(fields[i].getName().toString().equals("literature.title"))
-					return fields[i].getValues(0).toString();
-				
+				for (int i = 0; i < fields.length; i++)
+				{
+					if(fields[i].getName().toString().equals("literature.title"))
+						return fields[i].getValues(0).toString();					
 				}
 				
 			}
@@ -534,70 +498,38 @@ public class AdvancedSearchPanel extends JPanel {
 			return "";
 		}
 
-		public String getColumnName(int column) {
+		public String getColumnName(int column) 
+		{
 			return columnNames[column];
 		}
 	}
 
-	private class SearchTableModel3 extends AbstractTableModel {
-		WSSearchResult[] results;
-		String[] columnNames = new String[] { "ID", "Name", "Species" };
-		String clientName;
-
-		public SearchTableModel3(WSSearchResult[] results, String clientName) {
-			this.clientName = clientName;
-			this.results = results;
-			flag = 3;
-		}
-
-		public int getColumnCount() {
-			return 4;
-		}
-
-		public int getRowCount() {
-			return results.length;
-		}
-
-		public Object getValueAt(int rowIndex, int columnIndex) {
-			WSSearchResult r = results[rowIndex];
-			switch (columnIndex) {
-			case 0:
-				return r.getId();
-			case 1:
-				return r.getName();
-			case 2:
-				return r.getSpecies();
-			
-			}
-			return "";
-		}
-
-		public String getColumnName(int column) {
-			return columnNames[column];
-		}
-	}
-
-	private class SearchTableModel extends AbstractTableModel {
+	
+	private class SearchTableModel extends AbstractTableModel
+	{
 		WSPathwayInfo[] results;
 		String[] columnNames = new String[] { "ID", "Name", "Species" };
 		String clientName;
 
-		public SearchTableModel(WSPathwayInfo[] wsPathwayInfos,
-				String clientName) {
+		public SearchTableModel(WSPathwayInfo[] wsPathwayInfos,	String clientName) 
+		{
 			this.clientName = clientName;
 			this.results = wsPathwayInfos;
 			flag = 1;
 		}
 
-		public int getColumnCount() {
+		public int getColumnCount() 
+		{
 			return 3;
 		}
 
-		public int getRowCount() {
+		public int getRowCount() 
+		{
 			return results.length;
 		}
 
-		public Object getValueAt(int rowIndex, int columnIndex) {
+		public Object getValueAt(int rowIndex, int columnIndex)
+		{
 			WSPathwayInfo r = results[rowIndex];
 			switch (columnIndex) {
 			case 0:
@@ -611,7 +543,8 @@ public class AdvancedSearchPanel extends JPanel {
 
 		}
 
-		public String getColumnName(int column) {
+		public String getColumnName(int column)
+		{
 			return columnNames[column];
 		}
 
