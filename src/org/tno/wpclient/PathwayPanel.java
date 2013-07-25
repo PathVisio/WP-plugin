@@ -33,17 +33,10 @@ import com.jgoodies.forms.layout.CellConstraints;
 public class PathwayPanel extends JPanel 
 {
 	WikiPathwaysClientPlugin plugin;
-
 	JComboBox clientDropdown;
-
 	JTable resultTable;
+	private JScrollPane resultspane;	
 	
-
-	private JScrollPane resultspane;
-	
-	private JLabel tipLabel;
-	
-
 	public PathwayPanel(final WikiPathwaysClientPlugin plugin, WSSearchResult[] wsp, final File tmpDir) 
 	{
 		this.plugin = plugin;
