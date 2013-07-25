@@ -19,6 +19,14 @@ Search by query as on http://www.wikipathways.org itself.
 
 2.Search by text but for specific species
 
+Advanced Search
+
+1.Search for pathways by identifier/Title
+
+2.Search for pathways by pathway element identifier
+
+3.Search for pathways by publication reference
+
 Browse Pathways:
 ----------------
 
@@ -29,6 +37,7 @@ Basic Browse
 2.Browse by curation tags
 
 3.Browse by Collections
+
 
 Features: 
 ---------
