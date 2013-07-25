@@ -61,7 +61,6 @@ public class SearchPanel extends JPanel
 	private JScrollPane resultspane;
 	private JLabel tipLabel;
 	
-
 	public SearchPanel(final WikiPathwaysClientPlugin plugin) 
 	{
 		this.plugin = plugin;
