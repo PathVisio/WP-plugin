@@ -1,4 +1,4 @@
-package org.tno.wpclient;
+package org.pathvisio.wpclient;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;

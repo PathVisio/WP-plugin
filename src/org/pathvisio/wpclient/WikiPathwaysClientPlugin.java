@@ -1,4 +1,4 @@
-package org.tno.wpclient;
+package org.pathvisio.wpclient;
 
 import java.awt.event.ActionEvent;
 import java.io.File;

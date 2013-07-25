@@ -1,4 +1,4 @@
-package org.tno.wpclient;
+package org.pathvisio.wpclient;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;

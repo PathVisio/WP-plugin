@@ -1,4 +1,4 @@
-package org.tno.wpclient;
+package org.pathvisio.wpclient;
 
 /**
  * Class: LoginPanel
