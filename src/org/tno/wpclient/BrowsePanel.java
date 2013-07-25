@@ -257,7 +257,7 @@ public class BrowsePanel extends JPanel
 		{
 			public Component getListCellRendererComponent(final JList list,final Object value, final int index,final boolean isSelected, final boolean cellHasFocus)
 			{
-				String strValue = SearchPanel.shortClientName(value.toString());
+				String strValue = WikiPathwaysClientPlugin.shortClientName(value.toString());
 
 				return super.getListCellRendererComponent(list, strValue,index, isSelected, cellHasFocus);
 
@@ -287,7 +287,7 @@ public class BrowsePanel extends JPanel
 
 					BrowseTableModel model = (BrowseTableModel) target.getModel();
 
-					File tmpDir = new File(plugin.getTmpDir(), SearchPanel.shortClientName(model.clientName));
+					File tmpDir = new File(plugin.getTmpDir(), WikiPathwaysClientPlugin.shortClientName(model.clientName));
 					tmpDir.mkdirs();
 
 					try 
@@ -408,162 +408,153 @@ public class BrowsePanel extends JPanel
 			}
 		});
 		resultTable.setRowSorter(new TableRowSorter(resultTable.getModel()));
-
 	}
 				
-			/**
-			 * storing pathways belonging to certain collection
-			 *  tag and selected species and curation tag
-			 */
-			private	void getPathwaysOfSpecColl()
+	/**
+	* storing pathways belonging to certain collection
+	*  tag and selected species and curation tag
+	*/
+	private	void getPathwaysOfSpecColl()
+	{
+		Iterator itr = results.iterator();
+		while (itr.hasNext())
+		{
+			String sid = itr.next().toString();
+			try 
 			{
-				Iterator itr = results.iterator();
-				while (itr.hasNext())
-				{
-					String sid = itr.next().toString();
-					try 
-					{
-						ptags = client.getCurationTags(sid);
-						imagetags.put(sid, ptags);
-					} catch (RemoteException e)
-					{
-						e.printStackTrace();
-					}
+				ptags = client.getCurationTags(sid);
+				imagetags.put(sid, ptags);
+			}
+			catch (RemoteException e)
+			{
+				e.printStackTrace();
+			}
 					
-					for (Entry<String, String> entry : curationtags.entrySet()) 
+			for (Entry<String, String> entry : curationtags.entrySet()) 
+			{
+				curkey = entry.getKey();
+				try 
 					{
-						curkey = entry.getKey();
-
-						try 
+						for (WSCurationTag tag : ptags)
 						{
-							for (WSCurationTag tag : ptags)
+							if (curkey.equals(tag)) 
 							{
-						
-								if (curkey.equals(tag)) 
-								{
-									results2.add(tag);
-									i++;
-								}
+								results2.add(tag);
+								i++;
 							}
 						}
-						catch (Exception e)
-						{
-							e.printStackTrace();					
-						}
 					}
-
-				}
-				
+					catch (Exception e)
+					{
+						e.printStackTrace();					
+					}
 			}
+
+		}
+				
+	}
 			
-			/**
-			 * storing pathways belonging to all collections and/or selected Species
-			 * 
-			 */
-			private void getPathwaysOfColl(String organism)
-					 {
-				
-				 HashMap<String, String> tempcoll = coll;
-				 tempcoll.remove("Curation:All");
+	/**
+	 * storing pathways belonging to all collections and/or selected Species
+	 * 
+     */
+	private void getPathwaysOfColl(String organism)
+	 {
+	
+		HashMap<String, String> tempcoll = coll;
+		tempcoll.remove("Curation:All");
 
-				for (Entry<String, String> entry : tempcoll.entrySet()) 
-				{
-					String l = "";
+		for (Entry<String, String> entry : tempcoll.entrySet()) 
+		{
+		 String l = "";
+		 collkey = entry.getKey();
 
-					collkey = entry.getKey();
-
-					try {
-						for (WSCurationTag tag : client.getCurationTagsByName((collkey)))
-							if (!organism.equals("ALL SPECIES"))
-							{
-
-								l = tag.getPathway().getSpecies();
-
-								if (l.equals(organism))
-								{
-									// storing pathways belonging to certain collection and selected species
-									results.add(tag.getPathway().getId()); 
-								}
-
-							}
-							else
-							{
-								// storing all pathways belonging to certain collection
-								results.add(tag.getPathway().getId());
-							}
-					}
-					catch (RemoteException e)
-					{
-						e.printStackTrace();
-					}
-				}
-
-			}
-
-			/**
-			 * storing pathways belonging to certain collection and/or selected Species
-			 * 
-			 */
-			private void getPathwaysOfSpecColl(WSCurationTag[] pcolltags,String organism) 
+		 try 
+		 {
+			for (WSCurationTag tag : client.getCurationTagsByName((collkey)))
 			{
-
-				String l = "";
-				for (WSCurationTag tag : pcolltags)
+			if (!organism.equals("ALL SPECIES"))
 				{
-					if (!organism.equals("ALL SPECIES"))
+				l = tag.getPathway().getSpecies();
+				if (l.equals(organism))
 					{
-
-						l = tag.getPathway().getSpecies();
-
-						if (l.equals(organism)) 
-						{
-							// storing pathways belonging to certain collection and selected species
-							results.add(tag.getPathway().getId());
-						}
-
+					// storing pathways belonging to certain collection and selected species
+					results.add(tag.getPathway().getId()); 
 					}
-					else
-					{
-						// storing all pathways belonging to certain collection
-						results.add(tag.getPathway().getId());
-					}
-
 				}
-
+				else
+				{
+				// storing all pathways belonging to certain collection
+				results.add(tag.getPathway().getId());
+				}
 			}
-			/**
-			 * storing pathways belonging to certain collection
-			 * tag and selected species and curation tag
-			 */
-			private void getPathwaysOfSpecCollCur() 
+	 	}
+		catch (RemoteException e)
+		{
+		e.printStackTrace();
+		}
+	
+		}
+	}
+
+	/**
+	 * storing pathways belonging to certain collection and/or selected Species
+	 * 
+	 */
+	private void getPathwaysOfSpecColl(WSCurationTag[] pcolltags,String organism) 
+	{
+		String l = "";
+		for (WSCurationTag tag : pcolltags)
+		{
+		if (!organism.equals("ALL SPECIES"))
 			{
-
-				Iterator itr = results.iterator();
-				while (itr.hasNext())
+				l = tag.getPathway().getSpecies();
+				if (l.equals(organism)) 
 				{
-					String sid = itr.next().toString();
-					try 
-					{
-						ptags = client.getCurationTags(sid);
-						imagetags.put(sid, ptags);
-					}
-					catch (RemoteException e)
-					{
-						e.printStackTrace();
-					}
-					for (WSCurationTag tag : ptags)
-					{
-						String op = tag.getName();
-						if (curkey.equals(op)) 
-						{
-							// storing pathways belonging to certain collection tag and selected species and curation tag
-							results2.add(tag);
-							i++;
-						}
-					}
-
+				// storing pathways belonging to certain collection and selected species
+				results.add(tag.getPathway().getId());
 				}
 			}
+			else
+			{
+				// storing all pathways belonging to certain collection
+				results.add(tag.getPathway().getId());
+			}
+
+		}
+	}
+	
+	/**
+	 * storing pathways belonging to certain collection
+	 * tag and selected species and curation tag
+	 */
+	private void getPathwaysOfSpecCollCur() 
+	{
+		Iterator itr = results.iterator();
+			while (itr.hasNext())
+			{
+				String sid = itr.next().toString();
+				try 
+				{
+					ptags = client.getCurationTags(sid);
+					imagetags.put(sid, ptags);
+				}
+				catch (RemoteException e)
+				{
+					e.printStackTrace();
+				}
+				for (WSCurationTag tag : ptags)
+				{
+					String op = tag.getName();
+					if (curkey.equals(op)) 
+					{
+						// storing pathways belonging to certain collection tag and selected species and curation tag
+						results2.add(tag);
+						i++;
+					}
+				}
+			}
+	}
 
 		
 	/**
