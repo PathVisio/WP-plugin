@@ -44,30 +44,34 @@ class OpenPathwayFromXrefAction extends AbstractAction
 			Xref x = elm.getXref();
 			try
 			{
-				if((x.getDataSource().toString().isEmpty()) ||x.getId().isEmpty() ||(!x.getId().matches(".*\\d.*")) || (!x.getId().startsWith("WP")))
+				if((x.getDataSource().toString().isEmpty()) ||x.getId().isEmpty())
+				{				
+				throw new Exception();
+				}
+				if((x.getId().matches(".*\\d.*")) && (x.getId().startsWith("WP")))
 				{
 				flag++;
-				throw new Exception();
 				}
 				else
 				{
 				flag2++;
-				
 				}
+				
 			}
 			catch (Exception e)
 			{
 			Logger.log.error("The Pathway was annotated with an invalid identifier", e);
 			JOptionPane.showMessageDialog(null,"The Pathway is annotated with an invalid identifier", "ERROR", JOptionPane.ERROR_MESSAGE);
 			}
-			if(flag==0)
+			if(flag>0)
 			{
 			 File tmpDir= new File(plugin.getTmpDir(), x.getDataSource().getFullName());
 			 tmpDir.mkdirs();
 			 plugin.openPathwayWithProgress(client, x.getId(), 0, tmpDir);					
 			}
 			else
-			{File tmpDir= new File(plugin.getTmpDir(), x.getDataSource().getFullName());
+			{
+			File tmpDir= new File(plugin.getTmpDir(), x.getDataSource().getFullName());
 			 tmpDir.mkdirs();
 			 plugin.openPathwayXrefWithProgress(client, x, 0, tmpDir);
 				
