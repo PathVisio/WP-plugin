@@ -375,6 +375,26 @@ public class WikiPathwaysClientPlugin implements Plugin
 	}
 	
 	/**
+	 *Load Search Dialog with Search and AdvancedSearch in the TabbedPane
+	 */
+	private class Browse extends JPanel
+	{
+		JTabbedPane searchTabbedPane;
+
+		public Browse(final WikiPathwaysClientPlugin plugin)
+		{
+			BrowsePanel p = new BrowsePanel(plugin);
+			OntologyBrowsePanel a = new OntologyBrowsePanel(plugin);
+			searchTabbedPane = new JTabbedPane();
+			searchTabbedPane.addTab("Browse", p);
+			searchTabbedPane.addTab("Ontology Search", a);
+			add(searchTabbedPane);
+		}
+
+	}
+	
+	
+	/**
 	 * Search menu action in the WikiPathways menu
 	 */
 	private class SearchAction extends AbstractAction
@@ -420,7 +440,7 @@ public class WikiPathwaysClientPlugin implements Plugin
 
 		public void actionPerformed(ActionEvent e) 
 		{
-			BrowsePanel p = new BrowsePanel(WikiPathwaysClientPlugin.this);
+			Browse p = new Browse(WikiPathwaysClientPlugin.this);
 			JDialog d = new JDialog(desktop.getFrame(), "Browse WikiPathways",false);
 
 			d.getContentPane().add(p);
