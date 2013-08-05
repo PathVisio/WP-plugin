@@ -1,5 +1,6 @@
 package org.pathvisio.wpclient;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.net.MalformedURLException;
@@ -27,12 +28,13 @@ import javax.xml.rpc.ServiceException;
 
 import org.bridgedb.DataSource;
 import org.bridgedb.Xref;
+
+import org.pathvisio.core.preferences.GlobalPreference;
 import org.pathvisio.core.Engine;
 import org.pathvisio.core.debug.Logger;
 import org.pathvisio.core.model.ConverterException;
 import org.pathvisio.core.model.Pathway;
 import org.pathvisio.core.model.PathwayElement;
-import org.pathvisio.core.preferences.GlobalPreference;
 import org.pathvisio.core.util.ProgressKeeper;
 import org.pathvisio.core.view.Graphics;
 import org.pathvisio.core.view.VPathwayElement;
@@ -384,6 +386,7 @@ public class WikiPathwaysClientPlugin implements Plugin
 		public Browse(final WikiPathwaysClientPlugin plugin)
 		{
 			BrowsePanel p = new BrowsePanel(plugin);
+			
 			OntologyBrowsePanel a = new OntologyBrowsePanel(plugin);
 			searchTabbedPane = new JTabbedPane();
 			searchTabbedPane.addTab("Browse", p);
@@ -446,7 +449,7 @@ public class WikiPathwaysClientPlugin implements Plugin
 			d.getContentPane().add(p);
 			d.pack();
 			d.setVisible(true);
-			d.setResizable(false);
+			
 			d.setLocationRelativeTo(desktop.getSwingEngine().getFrame());
 			d.setVisible(true);
 		}
