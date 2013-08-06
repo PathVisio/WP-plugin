@@ -2,6 +2,7 @@ package org.pathvisio.wpclient;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -55,6 +56,7 @@ public class PathwaySearchPanel extends JPanel
 	private JScrollPane resultspane;
 	
 	public int flag = 0;
+	private JLabel tipLabel;
 
 
 	public PathwaySearchPanel(final WikiPathwaysClientPlugin plugin) 
@@ -89,6 +91,8 @@ public class PathwaySearchPanel extends JPanel
 		
 		
 		pTitleOrId.addActionListener(searchAction);
+		tipLabel = new JLabel("Tip: use Pathway Title or Id (e.g.:'Sandbox Pathway','WP4')");
+		tipLabel.setFont(new Font("SansSerif", Font.ITALIC, 11));
 		
 		JPanel searchBox = new JPanel();
 		FormLayout layoutf = new FormLayout("p,3dlu,120px,2dlu,30px,fill:pref:grow,3dlu,fill:pref:grow,3dlu",
@@ -100,14 +104,14 @@ public class PathwaySearchPanel extends JPanel
 
 		JPanel searchOptBox = new JPanel();
 		FormLayout layout = new FormLayout(
-				"p,3dlu,120px,2dlu,30px,fill:pref:grow,3dlu,fill:pref:grow,3dlu",
+				"p,6dlu,120px,2dlu,30px,3dlu,fill:pref:grow,3dlu,fill:pref:grow,3dlu",
 				"pref, pref, 4dlu, pref, 4dlu, pref");
 		CellConstraints cc = new CellConstraints();
 
 		searchOptBox.setLayout(layout);
 		searchOptBox.setBorder(BorderFactory.createTitledBorder(WikiPathwaysClientPlugin.etch,
 				"Search options"));
-		searchOptBox.add(new JLabel("Title/ID"), cc.xy(1, 1));
+		searchOptBox.add(new JLabel("Pathway Title/ID"), cc.xy(1, 1));
 		searchOptBox.add(pTitleOrId, cc.xyw(3, 1, 3));	
 		
 		Vector<String> clients = new Vector<String>(plugin.getClients()
@@ -128,6 +132,7 @@ public class PathwaySearchPanel extends JPanel
 		});
 
 		searchOptBox.add(clientDropdown, cc.xy(8, 1));
+		searchOptBox.add(tipLabel,cc.xyw(7, 1,3));
 
 		if (plugin.getClients().size() < 2)
 			clientDropdown.setVisible(false);
