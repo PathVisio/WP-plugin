@@ -2,6 +2,7 @@ package org.pathvisio.wpclient;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -64,6 +65,7 @@ public class SearchByIdentifierPanel extends JPanel
 	private JScrollPane resultspane;
 	
 	public int flag = 0;
+	private JLabel tipLabel;
 
 
 	public SearchByIdentifierPanel(final WikiPathwaysClientPlugin plugin) 
@@ -120,8 +122,8 @@ public class SearchByIdentifierPanel extends JPanel
 
 		JPanel searchReferenceBox = new JPanel();
 		FormLayout layout2 = new FormLayout(
-				"p,3dlu,140px,1dlu,70px,fill:pref:grow,3dlu,fill:pref:grow",
-				"pref, 4dlu");
+				"p,3dlu,140px,1dlu,70px,fill:pref,3dlu,fill:pref,30dlu",
+				"pref,pref");
 		CellConstraints cc2 = new CellConstraints();
 
 		searchReferenceBox.setLayout(layout2);
@@ -129,12 +131,16 @@ public class SearchByIdentifierPanel extends JPanel
 		searchReferenceBox.setBorder(BorderFactory.createTitledBorder(WikiPathwaysClientPlugin.etch,
 				"Search By Reference"));
 
-		searchReferenceBox.add(new JLabel("ID"), cc.xy(1, 1));
+		searchReferenceBox.add(new JLabel("ID"), cc2.xy(1, 1));
 		searchReferenceBox.add(new JScrollPane(txtId), cc2.xy(3, 1));
-		searchReferenceBox.add(new JLabel("System Code"), cc.xy(5, 1));
+		searchReferenceBox.add(new JLabel("System Code"), cc2.xy(5, 1));
 		searchReferenceBox.add(cbSyscode, cc2.xy(6, 1));
 		JButton searchButton = new JButton(searchXrefAction);
 		searchReferenceBox.add(searchButton, cc2.xy(8, 1));
+		tipLabel = new JLabel("Enter DataNode identifiers (semicolon seperated) and choose the codes from dropdown (e.g.: '1234;3949' , 'EntrezGene')");
+		tipLabel.setFont(new Font("SansSerif", Font.ITALIC, 11));
+	
+		
 		Vector<String> clients = new Vector<String>(plugin.getClients()
 				.keySet());
 		Collections.sort(clients);
@@ -151,13 +157,14 @@ public class SearchByIdentifierPanel extends JPanel
 						index, isSelected, cellHasFocus);
 			}
 		});
-
+		searchReferenceBox.add(tipLabel,cc2.xyw(1, 2,9));
 		searchOptBox.add(clientDropdown, cc.xy(8, 1));
 
 		if (plugin.getClients().size() < 2)
 			clientDropdown.setVisible(false);
 		
 		searchBox.add(searchReferenceBox, ccf.xyw(1, 4, 8));
+		
 		add(searchBox, BorderLayout.NORTH);
 
 		// Center contains table model for results
@@ -165,7 +172,6 @@ public class SearchByIdentifierPanel extends JPanel
 		resultspane = new JScrollPane(resultTable);
 
 		add(resultspane, BorderLayout.CENTER);
-
 	
 
 		resultTable.addMouseListener(new MouseAdapter() {
