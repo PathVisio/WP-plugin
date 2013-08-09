@@ -2,6 +2,7 @@ package org.pathvisio.wpclient;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -12,6 +13,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Vector;
 import java.util.concurrent.ExecutionException;
+import java.util.regex.Pattern;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -64,6 +66,8 @@ public class ReferenceSearchPanel extends JPanel
 	public int flag = 0;
 	private JTextField pubXref;
 
+	private JLabel tipLabel;
+
 	public ReferenceSearchPanel(final WikiPathwaysClientPlugin plugin) 
 	{
 
@@ -73,7 +77,8 @@ public class ReferenceSearchPanel extends JPanel
 	
 		pubXref = new JTextField();
 
-		
+		tipLabel = new JLabel("Tip: use Pubmed id or Literature Title (e.g.: '18651794' , 'WikiPathways: pathway editing for the people.')");
+		tipLabel.setFont(new Font("SansSerif", Font.ITALIC, 11));
 		Action searchLiteratureAction = new AbstractAction("searchlit") 
 		{
 			public void actionPerformed(ActionEvent e)
@@ -116,7 +121,7 @@ public class ReferenceSearchPanel extends JPanel
 
 		searchOptBox.add(new JLabel("Publication Title/ID"), cc.xy(2, 1));
 		searchOptBox.add(pubXref, cc.xyw(4, 1, 5));
-	
+		searchOptBox.add(tipLabel,cc.xyw(2, 2,8));
 	
 		Vector<String> clients = new Vector<String>(plugin.getClients()
 				.keySet());
@@ -189,7 +194,7 @@ public class ReferenceSearchPanel extends JPanel
 			
 			final ProgressKeeper pk = new ProgressKeeper();
 			final ProgressDialog d = new ProgressDialog(JOptionPane.getFrameForComponent(this), "", pk, true, true);
-
+			final ArrayList<WSSearchResult> results2 = new ArrayList<WSSearchResult>();
 			SwingWorker<WSSearchResult[], Void> sw = new SwingWorker<WSSearchResult[], Void>() 
 			{
 				protected WSSearchResult[] doInBackground() throws Exception 
@@ -199,6 +204,7 @@ public class ReferenceSearchPanel extends JPanel
 					try 
 					{
 						results = client.findPathwaysByLiterature(query);
+						
 					}
 					catch (Exception e) 
 					{
@@ -207,6 +213,26 @@ public class ReferenceSearchPanel extends JPanel
 					finally 
 					{
 						pk.finished();
+					}
+					i=0;
+					if(!Pattern.matches("-?[0-9]+", query))
+					{
+					for (WSSearchResult wsSearchResult : results) {
+					WSIndexField[] fields = wsSearchResult.getFields();
+					for (int j = 0; j < fields.length; j++)
+					{
+						
+						if(fields[j].getName().toString().equals("literature.title"))
+						{
+						 if( fields[j].getValues(0).toString().contains(query)){
+							 results2.add(wsSearchResult);
+						i++;
+						 }
+						}
+					}
+					}
+					results = new WSSearchResult[i];
+					results2.toArray(results);
 					}
 					return results;
 				}
