@@ -163,7 +163,7 @@ public class ReferenceSearchPanel extends JPanel
 						LiteratureResultTableModel	model = (LiteratureResultTableModel) target.getModel();
 						File tmpDir = new File(plugin.getTmpDir(), WikiPathwaysClientPlugin.shortClientName(model.clientName));
 						tmpDir.mkdirs();
-						
+						plugin.openPathwayWithProgress(plugin.getClients().get(model.clientName),model.getValueAt(row, 0).toString(), 0, tmpDir);
 					
 					}
 					catch (Exception ex) 
