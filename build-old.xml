@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<project name="org.tno.wpclient" default="jar" basedir=".">
+
+  <property name="pathvisio.dir" value="../../"/>
+  <import file="${pathvisio.dir}/plugin-common.xml"/>
+	<path id="embed.jars">
+			
+		</path>
+  	<path id="project.class.path">
+		<fileset dir="${pathvisio.dir}/modules">
+			<include name="org.pathvisio.core.jar"/>
+			<include name="org.pathvisio.desktop.jar"/>
+			<include name="org.pathvisio.gui.jar"/>
+			
+		</fileset>
+		<fileset dir="${pathvisio.dir}/lib">
+			<include name="org.bridgedb.jar"/>
+			<include name="org.bridgedb.bio.jar"/>
+			<include name="org.eclipse.osgi.jar"/>
+			<include name="com.springsource.org.jdom-1.1.0.jar"/>
+			<include name="javax.xml.rpc_1.1.0.v201005080400.jar"/>
+			<include name="org.pathvisio.jgoodies.forms.jar"/>
+		</fileset>
+		<fileset dir="${pathvisio.dir}/tools/cytoscape-gpml/lib">
+			<include name="**/*.jar"/>
+		</fileset>
+  		<fileset dir="lib">
+  			<include name="org.wikipathways.client.jar"/>
+  		</fileset>
+	</path>
+
+ 	<path id="exe.bundle">
+		<fileset dir="${pathvisio.dir}/modules">
+			<include name="org.pathvisio.core.jar"/>
+			<include name="org.pathvisio.gui.jar"/>
+			<include name="org.pathvisio.desktop.jar"/>
+			<include name="org.pathvisio.statistics.jar"/>
+			<include name="org.pathvisio.visualization.jar"/>
+			<include name="org.pathvisio.gexplugin.jar"/>
+		</fileset>
+		<fileset dir="${pathvisio.dir}/lib">
+			<include name="org.apache*.jar"/>
+			<include name="org.w3c*.jar"/>
+			<!-- <include name="org.eclipse.osgi.jar"/> -->
+			<include name="derby.jar"/>
+			<include name="org.bridgedb*.jar"/>
+			<include name="org.pathvisio.*.jar"/>
+			<include name="javax.xml*.jar"/>
+			<include name="commons-math*.jar"/>
+			<include name="com.springsource*.jar"/>
+		</fileset>
+ 		<!--
+		<fileset dir="lib">
+			<include name="*.jar"/>
+		</fileset>
+		-->
+		<fileset dir=".">
+			<include name="${jar.name}"/>
+		</fileset>
+	</path>
+	
+</project>
