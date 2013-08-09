@@ -29,7 +29,8 @@
 	<target name="prepare">
 		<mkdir dir="build"/>
 		<mkdir dir="${bundle.dest}"/>
-		<copy toDir="build">
+		<mkdir dir="build/resources"/>
+		<copy toDir="build/resources">
 			<fileset dir="resources">
 				<include name="*"/>
 			</fileset>
