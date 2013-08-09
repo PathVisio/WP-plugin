@@ -104,7 +104,7 @@ public class PathwaySearchPanel extends JPanel
 
 		JPanel searchOptBox = new JPanel();
 		FormLayout layout = new FormLayout(
-				"p,6dlu,120px,2dlu,30px,3dlu,fill:pref:grow,3dlu,fill:pref:grow,3dlu",
+				"p,6dlu,120px,2dlu,30px,3dlu,fill:pref:grow,3dlu,fill:pref,3dlu",
 				"pref, pref, 4dlu, pref, 4dlu, pref");
 		CellConstraints cc = new CellConstraints();
 

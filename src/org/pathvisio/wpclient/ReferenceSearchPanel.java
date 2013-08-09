@@ -10,7 +10,6 @@ import java.io.File;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
@@ -19,7 +18,6 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -32,14 +30,10 @@ import javax.swing.SwingWorker;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableRowSorter;
 
-import org.bridgedb.DataSource;
-import org.bridgedb.Xref;
 import org.pathvisio.core.debug.Logger;
 import org.pathvisio.core.util.ProgressKeeper;
-import org.pathvisio.gui.DataSourceModel;
 import org.pathvisio.gui.ProgressDialog;
 import org.pathvisio.wikipathways.webservice.WSIndexField;
-import org.pathvisio.wikipathways.webservice.WSPathwayInfo;
 import org.pathvisio.wikipathways.webservice.WSSearchResult;
 import org.wikipathways.client.WikiPathwaysClient;
 
@@ -110,7 +104,7 @@ public class ReferenceSearchPanel extends JPanel
 
 		JPanel searchOptBox = new JPanel();
 		FormLayout layout = new FormLayout(
-				"3dlu,p,3dlu,2dlu,30px,fill:pref:grow,3dlu,fill:pref:grow,3dlu",
+				"3dlu,p,3dlu,2dlu,30px,fill:pref:grow,2dlu",
 				"pref, pref, 4dlu, pref, 4dlu, pref");
 		CellConstraints cc = new CellConstraints();
 
@@ -120,8 +114,8 @@ public class ReferenceSearchPanel extends JPanel
 		
 
 		searchOptBox.add(new JLabel("Publication Title/ID"), cc.xy(2, 1));
-		searchOptBox.add(pubXref, cc.xyw(4, 1, 5));
-		searchOptBox.add(tipLabel,cc.xyw(2, 2,8));
+		searchOptBox.add(pubXref, cc.xyw(4, 1, 3));
+		searchOptBox.add(tipLabel,cc.xyw(2, 2,5));
 	
 		Vector<String> clients = new Vector<String>(plugin.getClients()
 				.keySet());
@@ -140,7 +134,7 @@ public class ReferenceSearchPanel extends JPanel
 			}
 		});
 
-		searchOptBox.add(clientDropdown, cc.xy(8, 1));
+		searchOptBox.add(clientDropdown, cc.xy(6, 1));
 
 		if (plugin.getClients().size() < 2)
 			clientDropdown.setVisible(false);
