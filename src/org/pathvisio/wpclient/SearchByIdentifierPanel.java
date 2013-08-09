@@ -10,6 +10,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 
@@ -25,6 +26,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 import javax.swing.table.AbstractTableModel;
@@ -57,7 +59,7 @@ public class SearchByIdentifierPanel extends JPanel
 	JTable resultTable;
 	int i=0;
 	private JComboBox curationOpt;
-	private JTextField txtId;
+	private JTextArea txtId;
 	private JComboBox cbSyscode;
 	private JComboBox cbSearchBy;
 	private Component symbolOpt;
@@ -114,14 +116,14 @@ public class SearchByIdentifierPanel extends JPanel
 	
 
 	
-		txtId = new JTextField();
-
+		txtId = new JTextArea(2,2);
+	
 		cbSyscode = new JComboBox(new DataSourceModel());
 
 		JPanel searchReferenceBox = new JPanel();
 		FormLayout layout2 = new FormLayout(
 				"p,3dlu,140px,1dlu,70px,fill:pref:grow,3dlu,fill:pref:grow",
-				"pref, pref, 4dlu, pref, 4dlu, pref");
+				"pref, 4dlu");
 		CellConstraints cc2 = new CellConstraints();
 
 		searchReferenceBox.setLayout(layout2);
@@ -130,7 +132,7 @@ public class SearchByIdentifierPanel extends JPanel
 				"Search By Reference"));
 
 		searchReferenceBox.add(new JLabel("ID"), cc.xy(1, 1));
-		searchReferenceBox.add(txtId, cc2.xy(3, 1));
+		searchReferenceBox.add(new JScrollPane(txtId), cc2.xy(3, 1));
 		searchReferenceBox.add(new JLabel("System Code"), cc.xy(5, 1));
 		searchReferenceBox.add(cbSyscode, cc2.xy(6, 1));
 		JButton searchButton = new JButton(searchXrefAction);
@@ -184,7 +186,6 @@ public class SearchByIdentifierPanel extends JPanel
 						plugin.openPathwayWithProgress(plugin.getClients().get(model.clientName),model.getValueAt(row, 0).toString(), 0, tmpDir);
 					
 					
-					
 							
 					
 					}
@@ -215,8 +216,18 @@ public class SearchByIdentifierPanel extends JPanel
 				WSSearchResult[] results = null;
 				try
 				{
-					Xref pxXref = new Xref(txtId.getText(),	DataSource.getByFullName(""	+ cbSyscode.getSelectedItem()));
-					results = client.findPathwaysByXref(pxXref);
+					String[] xrefids= txtId.getText().split(";");
+					 DataSource ds = DataSource.getByFullName(""	+ cbSyscode.getSelectedItem());
+					List< Xref> pxXref = new ArrayList<Xref>();int i = 0;
+					for (; i < xrefids.length; i++) {
+					 pxXref.add( new Xref(xrefids[i],ds	));	
+					}
+					
+					Xref[] xrefs = new Xref[i];
+					pxXref.toArray(xrefs);
+					
+
+					results = client.findPathwaysByXref(xrefs);
 				}
 				catch (Exception e) 
 				{
