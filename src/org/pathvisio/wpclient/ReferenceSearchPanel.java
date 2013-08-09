@@ -158,8 +158,7 @@ public class ReferenceSearchPanel extends JPanel
 					int row = target.getSelectedRow();
 					
 					try
-					{
-					
+					{				
 					
 						LiteratureResultTableModel	model = (LiteratureResultTableModel) target.getModel();
 						File tmpDir = new File(plugin.getTmpDir(), WikiPathwaysClientPlugin.shortClientName(model.clientName));

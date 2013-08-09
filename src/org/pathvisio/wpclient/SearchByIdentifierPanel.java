@@ -38,8 +38,6 @@ import org.pathvisio.core.debug.Logger;
 import org.pathvisio.core.util.ProgressKeeper;
 import org.pathvisio.gui.DataSourceModel;
 import org.pathvisio.gui.ProgressDialog;
-import org.pathvisio.wikipathways.webservice.WSIndexField;
-import org.pathvisio.wikipathways.webservice.WSPathwayInfo;
 import org.pathvisio.wikipathways.webservice.WSSearchResult;
 import org.wikipathways.client.WikiPathwaysClient;
 
@@ -53,7 +51,7 @@ import com.jgoodies.forms.layout.FormLayout;
 public class SearchByIdentifierPanel extends JPanel 
 {
 	WikiPathwaysClientPlugin plugin;
-	
+	public static Xref[] xrefs;
 	JComboBox clientDropdown;
 	java.util.HashMap<String, String> curationtags = new HashMap<String, String>();
 	JTable resultTable;
@@ -183,7 +181,7 @@ public class SearchByIdentifierPanel extends JPanel
 						File tmpDir = new File(plugin.getTmpDir(), WikiPathwaysClientPlugin.shortClientName(model.clientName));
 						tmpDir.mkdirs();
 
-						plugin.openPathwayWithProgress(plugin.getClients().get(model.clientName),model.getValueAt(row, 0).toString(), 0, tmpDir);
+						plugin.openPathwayWithProgress(plugin.getClients().get(model.clientName),model.getValueAt(row, 0).toString(), 0, tmpDir,xrefs);
 					
 					
 							
@@ -221,9 +219,10 @@ public class SearchByIdentifierPanel extends JPanel
 					List< Xref> pxXref = new ArrayList<Xref>();int i = 0;
 					for (; i < xrefids.length; i++) {
 					 pxXref.add( new Xref(xrefids[i],ds	));	
+					 System.out.println(pxXref.get(i));
 					}
 					
-					Xref[] xrefs = new Xref[i];
+					 xrefs = new Xref[i];
 					pxXref.toArray(xrefs);
 					
 

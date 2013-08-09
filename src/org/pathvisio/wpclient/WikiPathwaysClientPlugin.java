@@ -2,12 +2,14 @@ package org.pathvisio.wpclient;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
+import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,15 +33,20 @@ import org.bridgedb.Xref;
 
 import org.pathvisio.core.preferences.GlobalPreference;
 import org.pathvisio.core.Engine;
+import org.pathvisio.core.data.XrefWithSymbol;
 import org.pathvisio.core.debug.Logger;
 import org.pathvisio.core.model.ConverterException;
 import org.pathvisio.core.model.Pathway;
 import org.pathvisio.core.model.PathwayElement;
 import org.pathvisio.core.util.ProgressKeeper;
+import org.pathvisio.core.view.GeneProduct;
 import org.pathvisio.core.view.Graphics;
+import org.pathvisio.core.view.VPathway;
 import org.pathvisio.core.view.VPathwayElement;
 import org.pathvisio.desktop.PvDesktop;
 import org.pathvisio.desktop.plugin.Plugin;
+import org.pathvisio.desktop.util.MatchResult;
+import org.pathvisio.desktop.util.SearchMethods.ByXrefMatcher;
 import org.pathvisio.gui.PathwayElementMenuListener.PathwayElementMenuHook;
 import org.pathvisio.gui.ProgressDialog;
 import org.pathvisio.wikipathways.webservice.WSPathway;
@@ -254,6 +261,37 @@ public class WikiPathwaysClientPlugin implements Plugin
 		sw.get();
 	}
 
+	protected void openPathwayWithProgress(final WikiPathwaysClient client,final String id, final int rev, final File tmpDir,final Xref[] xrefs)	throws InterruptedException, ExecutionException 
+	{
+		final ProgressKeeper pk = new ProgressKeeper();
+		final ProgressDialog d = new ProgressDialog(JOptionPane.getFrameForComponent(desktop.getSwingEngine().getApplicationPanel()), "", pk, false, true);
+		
+		SwingWorker<Boolean, Void> sw = new SwingWorker<Boolean, Void>() 
+			{
+			protected Boolean doInBackground() throws Exception
+			{
+				pk.setTaskName("Opening pathway");
+				try 
+				{
+					openPathway(client, id, rev, tmpDir,xrefs);
+				}
+				catch (Exception e) 
+				{
+					Logger.log.error("The Pathway is not found", e);
+					JOptionPane.showMessageDialog(null,"The Pathway is not found", "ERROR",JOptionPane.ERROR_MESSAGE);
+				}
+				finally 
+				{
+					pk.finished();
+				}
+				return true;
+			}
+		};
+
+		sw.execute();
+		d.setVisible(true);
+		sw.get();
+	}
 	/**
 	 *Load Pathway into PathVisio on selection of pathway from list provided by any Search/ Browse Dialog.
 	 */
@@ -267,9 +305,56 @@ public class WikiPathwaysClientPlugin implements Plugin
 		Engine engine = desktop.getSwingEngine().getEngine();
 		engine.setWrapper(desktop.getSwingEngine().createWrapper());
 		engine.openPathway(tmp);
-
-	}
+		
 	
+		
+		
+	}
+	/**
+	 *Load Pathway into PathVisio on selection of pathway from list provided by any Search/ Browse Dialog.
+	 */
+	protected void openPathway(WikiPathwaysClient client, String id, int rev, File tmpDir,Xref[] xrefs)throws RemoteException, ConverterException 
+	{
+		WSPathway wsp = client.getPathway(id, rev);
+		Pathway p = WikiPathwaysClient.toPathway(wsp);
+		File tmp = new File(tmpDir, wsp.getId() + ".r" + wsp.getRevision()+ ".gpml");
+		p.writeToXml(tmp, true);
+
+		Engine engine = desktop.getSwingEngine().getEngine();
+		engine.setWrapper(desktop.getSwingEngine().createWrapper());
+		engine.openPathway(tmp);
+		
+	
+		highlightResults(xrefs);
+		
+	}
+	private void highlightResults(Xref[] xrefs) {
+		Rectangle2D interestingRect = null;
+		Engine engine = desktop.getSwingEngine().getEngine();
+		VPathway vpy = engine.getActiveVPathway();
+		for (VPathwayElement velt : vpy.getDrawingObjects())
+		{
+			if (velt instanceof GeneProduct)
+			{
+				GeneProduct gp = (GeneProduct)velt;
+				for (Xref xref: xrefs)
+				{
+				
+					if (xref.equals(gp.getPathwayElement().getXref()))
+					{
+						gp.highlight(Color.YELLOW);
+						if (interestingRect == null)
+						{
+							interestingRect = gp.getVBounds();
+						}
+						break;
+					}
+				}
+			}
+		}
+		if (interestingRect != null)
+			vpy.getWrapper().scrollTo (interestingRect.getBounds());
+	}
 	public static String shortClientName(String clientName) 
 	{
 		Pattern pattern = Pattern.compile("http://(.*?)/");
