@@ -21,6 +21,7 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
@@ -53,6 +54,7 @@ import org.pathvisio.core.debug.Logger;
 import org.pathvisio.core.model.ConverterException;
 import org.pathvisio.core.model.Pathway;
 import org.pathvisio.core.model.PathwayElement;
+import org.pathvisio.core.util.CommonsFileUtils;
 import org.pathvisio.core.util.ProgressKeeper;
 import org.pathvisio.core.view.GeneProduct;
 import org.pathvisio.core.view.Graphics;
@@ -390,6 +392,15 @@ public class WikiPathwaysClientPlugin implements Plugin
 	public void done() 
 	{
 		desktop.unregisterSubMenu("Plugins", wikipathwaysMenu);
+		try {
+			CommonsFileUtils.deleteDirectory(tmpDir);
+			if (tmpDir.exists()) {
+                throw new IOException("Failed to delete  directory '" + tmpDir);
+            }
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	protected void openPathwayXrefWithProgress(final WikiPathwaysClient client,final Xref x, final int rev, final File tmpDir) throws InterruptedException, ExecutionException
