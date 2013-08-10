@@ -1,7 +1,7 @@
 pathvisio-wikipathways-client
 =============================
 
-Plugin for PathVisio that provides a WikiPathways client.
+Plugin that provides a WikiPathways client for PathVisio.
 
 Currently the development of the plugin is in progress.Right now, the plugin does the following:
 
