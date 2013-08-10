@@ -389,7 +389,7 @@ public class WikiPathwaysClientPlugin implements Plugin
 	@Override
 	public void done() 
 	{
-		
+		desktop.unregisterSubMenu("Plugins", wikipathwaysMenu);
 	}
 
 	protected void openPathwayXrefWithProgress(final WikiPathwaysClient client,final Xref x, final int rev, final File tmpDir) throws InterruptedException, ExecutionException

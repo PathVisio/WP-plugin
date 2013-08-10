@@ -44,7 +44,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingWorker;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableRowSorter;
 
 import org.bridgedb.bio.Organism;
@@ -59,7 +58,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 /**
- * This class creates the content in the Search Panel which includes floolwomg functionalities
+ * This class creates the content in the Search Panel which includes following functionalities
  * Basic Search
  * Search by query as on http://www.wikipathways.org itself.
  * 1.Search for pathways by name, pathway element labels
