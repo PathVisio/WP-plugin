@@ -151,7 +151,7 @@ public class WikiPathwaysClientPlugin implements Plugin
 
 			wikipathwaysMenu.add(searchMenu);
 			wikipathwaysMenu.add(browseMenu);
-			wikipathwaysMenu.add(uploadMenu);
+//			wikipathwaysMenu.add(uploadMenu);
 
 			desktop.registerSubMenu("Plugins", wikipathwaysMenu);
 
@@ -504,7 +504,7 @@ public class WikiPathwaysClientPlugin implements Plugin
 			OntologyBrowsePanel a = new OntologyBrowsePanel(plugin);
 			searchTabbedPane = new JTabbedPane();
 			searchTabbedPane.addTab("Browse", p);
-			searchTabbedPane.addTab("Ontology Search", a);
+		  //searchTabbedPane.addTab("Ontology Search", a);
 			add(searchTabbedPane);
 		}
 
