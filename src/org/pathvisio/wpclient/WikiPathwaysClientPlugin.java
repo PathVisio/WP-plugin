@@ -135,19 +135,19 @@ public class WikiPathwaysClientPlugin implements Plugin
 			searchMenu.addActionListener(searchAction);
 			browseMenu.addActionListener(browseAction);
 
-//			uploadMenu = new JMenu("Upload");
-//
-//			JMenuItem createMenu = new JMenuItem("Create Pathway");
-//			JMenuItem updateMenu = new JMenuItem("Update Pathway");
-//
-//			CreateAction createAction = new CreateAction();
-//			UpdateAction updateAction = new UpdateAction();
-//
-//			createMenu.addActionListener(createAction);
-//			updateMenu.addActionListener(updateAction);
-//
-//			uploadMenu.add(createMenu);
-//			uploadMenu.add(updateMenu);
+			uploadMenu = new JMenu("Upload");
+
+			JMenuItem createMenu = new JMenuItem("Create Pathway");
+			JMenuItem updateMenu = new JMenuItem("Update Pathway");
+
+			CreateAction createAction = new CreateAction();
+			UpdateAction updateAction = new UpdateAction();
+
+			createMenu.addActionListener(createAction);
+			updateMenu.addActionListener(updateAction);
+
+			uploadMenu.add(createMenu);
+			uploadMenu.add(updateMenu);
 
 			wikipathwaysMenu.add(searchMenu);
 			wikipathwaysMenu.add(browseMenu);
@@ -398,7 +398,7 @@ public class WikiPathwaysClientPlugin implements Plugin
                 throw new IOException("Failed to delete  directory '" + tmpDir);
             }
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 	}
@@ -504,7 +504,7 @@ public class WikiPathwaysClientPlugin implements Plugin
 			OntologyBrowsePanel a = new OntologyBrowsePanel(plugin);
 			searchTabbedPane = new JTabbedPane();
 			searchTabbedPane.addTab("Browse", p);
-			searchTabbedPane.addTab("Ontology Search", a);
+		  //searchTabbedPane.addTab("Ontology Search", a);
 			add(searchTabbedPane);
 		}
 
