@@ -43,6 +43,7 @@ import org.pathvisio.wikipathways.webservice.WSSearchResult;
 import com.jgoodies.forms.layout.CellConstraints;
 
 /**
+ * This class creates the Table Model List containing the pathways  
  * 	@author Sravanthi Sinha
  * 	@version 1.0
  */

@@ -52,7 +52,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingWorker;
-import javax.swing.border.Border;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableRowSorter;
@@ -68,10 +67,10 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 /**
- *	This class creates the content in the Browse Dialog
- *	Basic Browse-
- *	Browse by organism
- *	Browse by curation tags
+ *	This class creates the content in the Browse Panel
+ *	Basic Browse include-
+ *	Browse by Organism
+ *	Browse by Curation Tags
  *	Browse by Collections 
  * 	@author Sravanthi Sinha
  * 	@version 1.0
@@ -97,7 +96,7 @@ public class BrowsePanel extends JPanel
 	WikiPathwaysClient client;
 	WSCurationTag[] pcolltags = null;
 	WSCurationTag[] ptags = null;
-	int i = 0;;
+	int i = 0;
 	ArrayList<WSCurationTag> results2 = new ArrayList<WSCurationTag>();
 	JLabel l;
 
@@ -319,7 +318,13 @@ public class BrowsePanel extends JPanel
 			}
 		});
 	}
-
+	
+	/**
+	 * 
+	 * @throws RemoteException
+	 * @throws InterruptedException
+	 * @throws ExecutionException
+	 */
 	protected void browse() throws RemoteException, InterruptedException,ExecutionException 
 	{
 		
@@ -414,11 +419,6 @@ public class BrowsePanel extends JPanel
 					int arg5) {
 				
 				JPanel p = (JPanel) value;
-				/*
-				 * Component[] c = p.getComponents(); for (Component component :
-				 * c) { if(component instanceof JLabel) { JLabel l= (JLabel)
-				 * component; setToolTipText(l.getToolTipText()); } }
-				 */
 				return p;
 			}
 		});
@@ -426,9 +426,9 @@ public class BrowsePanel extends JPanel
 	}
 				
 	/**
-	* storing pathways belonging to certain collection
-	*  tag and selected species and curation tag
-	*/
+	 *  Get pathways belonging to certain collection
+	 *  tag and selected species and curation tag
+	 */
 	private	void getPathwaysOfSpecColl()
 	{
 		Iterator itr = results.iterator();
@@ -470,7 +470,7 @@ public class BrowsePanel extends JPanel
 	}
 			
 	/**
-	 * storing pathways belonging to all collections and/or selected Species
+	 * Get pathways belonging to all collections and/or selected Species
 	 * 
      */
 	private void getPathwaysOfColl(String organism)
@@ -513,7 +513,7 @@ public class BrowsePanel extends JPanel
 	}
 
 	/**
-	 * storing pathways belonging to certain collection and/or selected Species
+	 * Get pathways belonging to certain collection and/or selected Species
 	 * 
 	 */
 	private void getPathwaysOfSpecColl(WSCurationTag[] pcolltags,String organism) 
@@ -540,7 +540,7 @@ public class BrowsePanel extends JPanel
 	}
 	
 	/**
-	 * storing pathways belonging to certain collection
+	 * Get pathways belonging to certain collection
 	 * tag and selected species and curation tag
 	 */
 	private void getPathwaysOfSpecCollCur() 

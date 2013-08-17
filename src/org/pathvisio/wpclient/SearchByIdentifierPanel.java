@@ -63,7 +63,10 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 /**
- *	This class creates the content in the Dialog of the SearchByIdentifier TabbedPane of Search 
+ *	This class creates the content in the Dialog 
+ *  of the SearchByIdentifier TabbedPane of Search
+ *  @author Sravanthi Sinha
+ * 	@version 1.0  
  */
 public class SearchByIdentifierPanel extends JPanel 
 {
@@ -73,7 +76,6 @@ public class SearchByIdentifierPanel extends JPanel
 	java.util.HashMap<String, String> curationtags = new HashMap<String, String>();
 	JTable resultTable;
 	int i=0;
-	private JComboBox curationOpt;
 	private JTextArea txtId;
 	private JComboBox cbSyscode;
 	private JComboBox cbSearchBy;
@@ -90,8 +92,6 @@ public class SearchByIdentifierPanel extends JPanel
 		this.plugin = plugin;
 
 		setLayout(new BorderLayout());
-		
-
 		
 		Action searchXrefAction = new AbstractAction("Search") 
 		{
@@ -242,9 +242,8 @@ public class SearchByIdentifierPanel extends JPanel
 					for (; i < xrefids.length; i++) {
 					 pxXref.add( new Xref(xrefids[i],ds	));	
 					 System.out.println(pxXref.get(i));
-					}
-					
-					 xrefs = new Xref[i];
+					}					
+					xrefs = new Xref[i];
 					pxXref.toArray(xrefs);
 					
 

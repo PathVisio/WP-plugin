@@ -20,10 +20,12 @@ import javax.swing.table.AbstractTableModel;
 
 import org.pathvisio.wikipathways.webservice.WSSearchResult;
 
-	/**
-	 * This class creates the ResultTableModel 
-	 * Based on the results
-	 */
+/**
+ * This class creates the ResultTableModel 
+ * Based on the results
+ * @author Sravanthi Sinha
+ * @version 1.0 
+ */
 	 class ResultTableModel extends AbstractTableModel
 	{
 		WSSearchResult[] results;

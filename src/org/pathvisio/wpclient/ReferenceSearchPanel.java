@@ -58,7 +58,10 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 /**
- *	This class creates the content in the Dialog of the ReferenceSearch TabbedPane of Search 
+ *	This class creates the content in the Dialog of the
+ *	ReferenceSearch TabbedPane of Search
+ * @author Sravanthi Sinha
+ * @version 1.0 
  */
 public class ReferenceSearchPanel extends JPanel 
 {

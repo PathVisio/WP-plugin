@@ -59,7 +59,10 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 /**
- *	This class creates the content in the Dialog of the PathwaySearchPanel TabbedPane of Search 
+ *	This class creates the content in the Dialog of the
+ *	PathwaySearchPanel TabbedPane of Search 
+ * @author Sravanthi Sinha
+ * @version 1.0
  */
 public class PathwaySearchPanel extends JPanel 
 {
@@ -90,10 +93,12 @@ public class PathwaySearchPanel extends JPanel
 				try {
 					resultspane.setBorder(BorderFactory.createTitledBorder(WikiPathwaysClientPlugin.etch, "Pathways"));
 					if (pTitleOrId.getText().startsWith("WP"))
-						searchID();
+					{
+						searchByID();
+					}
 					else 
 					{
-						search();
+						searchByTitle();
 					}
 				}
 				catch (Exception ex) 
@@ -189,8 +194,7 @@ public class PathwaySearchPanel extends JPanel
 		});
 	}
 
-	
-	private void search() throws RemoteException, InterruptedException,
+	private void searchByTitle() throws RemoteException, InterruptedException,
 			ExecutionException {
 		final String query = pTitleOrId.getText();
 		String clientName = clientDropdown.getSelectedItem().toString();
@@ -241,7 +245,7 @@ public class PathwaySearchPanel extends JPanel
 		resultTable.setRowSorter(new TableRowSorter(resultTable.getModel()));
 	}
 
-	private void searchID() throws RemoteException, InterruptedException,ExecutionException 
+	private void searchByID() throws RemoteException, InterruptedException,ExecutionException 
 	{
 		final String query = pTitleOrId.getText();
 

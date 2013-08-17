@@ -19,7 +19,8 @@ package org.pathvisio.wpclient;
 /**
  * Class: LoginPanel
  * Description: A simple class to get user's loginname and password.
- * @author SravanthiSinha
+ * @author Sravanthi Sinha
+ * @version 1.0
  **/
 
 import java.awt.GridLayout;
