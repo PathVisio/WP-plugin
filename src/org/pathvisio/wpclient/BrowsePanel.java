@@ -245,7 +245,7 @@ public class BrowsePanel extends JPanel
 		// preparing the container for the labels and comboboxes
 
 		JPanel browseOptBox = new JPanel();
-		FormLayout layout = new FormLayout("left:pref,6dlu,left:pref,6dlu,left:pref,6dlu,left:pref,6dlu,left:pref,6dlu","p,14dlu");
+		FormLayout layout = new FormLayout("left:pref,6dlu,left:pref,6dlu,left:pref,6dlu,left:pref,6dlu,left:pref,6dlu","p,20dlu");
 		CellConstraints cc = new CellConstraints();
 
 		browseOptBox.setLayout(layout);
