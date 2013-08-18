@@ -227,7 +227,8 @@ public class ReferenceSearchPanel extends JPanel
 					{
 						pk.finished();
 					}
-					i=0;
+					/* CODE TO CHECK EXACT PUBLICATION TITLE
+					 i=0;
 					if(!Pattern.matches("-?[0-9]+", query))
 					{
 					for (WSSearchResult wsSearchResult : results) {
@@ -246,7 +247,7 @@ public class ReferenceSearchPanel extends JPanel
 					}
 					results = new WSSearchResult[i];
 					results2.toArray(results);
-					}
+					}*/
 					return results;
 				}
 			};
