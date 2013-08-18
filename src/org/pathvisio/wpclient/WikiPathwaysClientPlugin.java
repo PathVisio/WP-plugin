@@ -501,11 +501,12 @@ public class WikiPathwaysClientPlugin implements Plugin
 		{
 			BrowsePanel p = new BrowsePanel(plugin);
 			
-			OntologyBrowsePanel a = new OntologyBrowsePanel(plugin);
-			searchTabbedPane = new JTabbedPane();
-			searchTabbedPane.addTab("Browse", p);
-		  //searchTabbedPane.addTab("Ontology Search", a);
-			add(searchTabbedPane);
+			//OntologyBrowsePanel a = new OntologyBrowsePanel(plugin);
+			//searchTabbedPane = new JTabbedPane();
+			//searchTabbedPane.addTab("Browse", p);
+			//searchTabbedPane.addTab("Ontology Search", a);
+			//add(searchTabbedPane);
+			add(p);
 		}
 
 	}
@@ -530,15 +531,18 @@ public class WikiPathwaysClientPlugin implements Plugin
 		{
 
 			Search p = new Search(WikiPathwaysClientPlugin.this);
+		
 			JDialog d = new JDialog(desktop.getFrame(), "Search WikiPathways",false);
 
 			d.getContentPane().add(p);
 			d.pack();
 			d.setVisible(true);
 			d.setResizable(false);
+			
 			//loading dialog at the centre of the frame
 			d.setLocationRelativeTo(desktop.getSwingEngine().getFrame());
 			d.setVisible(true);
+			
 		}
 	}
 
