@@ -177,12 +177,23 @@ public class PathwaySearchPanel extends JPanel
 					
 					try
 					{
-					
+						if(flag==1)
+						{
 						SearchTableModel	model = (SearchTableModel) target.getModel();
 						File tmpDir = new File(plugin.getTmpDir(), WikiPathwaysClientPlugin.shortClientName(model.clientName));
 						tmpDir.mkdirs();
-
+						flag=0;
 						plugin.openPathwayWithProgress(plugin.getClients().get(model.clientName),model.getValueAt(row, 0).toString(), 0, tmpDir);
+						}
+						else
+						{
+							ResultTableModel	model = (ResultTableModel) target.getModel();
+							File tmpDir = new File(plugin.getTmpDir(), WikiPathwaysClientPlugin.shortClientName(model.clientName));
+							tmpDir.mkdirs();
+
+							plugin.openPathwayWithProgress(plugin.getClients().get(model.clientName),model.getValueAt(row, 0).toString(), 0, tmpDir);
+
+						}
 					}
 					catch (Exception ex) 
 					{
