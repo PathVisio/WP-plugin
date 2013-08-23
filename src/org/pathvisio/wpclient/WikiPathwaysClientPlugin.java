@@ -151,7 +151,7 @@ public class WikiPathwaysClientPlugin implements Plugin
 
 			wikipathwaysMenu.add(searchMenu);
 			wikipathwaysMenu.add(browseMenu);
-//			wikipathwaysMenu.add(uploadMenu);
+		wikipathwaysMenu.add(uploadMenu);
 
 			desktop.registerSubMenu("Plugins", wikipathwaysMenu);
 
@@ -184,7 +184,7 @@ public class WikiPathwaysClientPlugin implements Plugin
 
 		if (i == 0) // No clients specified, use default wikipathways.org
 		{
-			clients.put("http://www.wikipathways.org/wpi/webservice/webservice.php?wsdl",new WikiPathwaysClient());
+			clients.put("http://test2.wikipathways.org/wpi/webservice/webservice.php?wsdl",new WikiPathwaysClient());
 		}
 	}
 
@@ -578,7 +578,7 @@ public class WikiPathwaysClientPlugin implements Plugin
 
 		public void actionPerformed(ActionEvent e)
 		{
-			// needs to be implemented
+			
 		}
 	}
 
@@ -587,7 +587,7 @@ public class WikiPathwaysClientPlugin implements Plugin
 
 		public void actionPerformed(ActionEvent e) 
 		{
-			LoginPanel p = new LoginPanel();
+			LoginPanel p = new LoginPanel(desktop,WikiPathwaysClientPlugin.this,"create");
 			JDialog d = new JDialog(desktop.getFrame(), "WikiPathways Login",false);
 
 			d.getContentPane().add(p);
@@ -604,7 +604,15 @@ public class WikiPathwaysClientPlugin implements Plugin
 
 		public void actionPerformed(ActionEvent e) 
 		{
-			// needs to be implemented
+			LoginPanel p = new LoginPanel(desktop,WikiPathwaysClientPlugin.this,"update");
+			JDialog d = new JDialog(desktop.getFrame(), "WikiPathways Login",false);
+
+			d.getContentPane().add(p);
+			d.pack();
+			d.setVisible(true);
+			d.setResizable(false);
+			d.setLocationRelativeTo(desktop.getSwingEngine().getFrame());
+			d.setVisible(true);
 		}
 	}
 }
