@@ -177,14 +177,15 @@ public class WikiPathwaysClientPlugin implements Plugin
 				break;
 			}
 
-			WikiPathwaysClient client = new WikiPathwaysClient(new URL(clientStr));
+			WikiPathwaysClient client = new WikiPathwaysClient(new URL("http://test2.wikipathways.org/wpi/webservice/webservice.php?wsdl"));
 			clients.put(clientStr, client);
 			i++;
 		}
 
 		if (i == 0) // No clients specified, use default wikipathways.org
 		{
-			clients.put("http://test2.wikipathways.org/wpi/webservice/webservice.php?wsdl",new WikiPathwaysClient());
+			clients.put("http://test2.wikipathways.org/wpi/webservice/webservice.php",new WikiPathwaysClient(new URL("http://test2.wikipathways.org/wpi/webservice/webservice.php")));
+
 		}
 	}
 

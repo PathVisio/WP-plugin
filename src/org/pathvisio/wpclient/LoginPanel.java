@@ -46,6 +46,7 @@ import org.pathvisio.core.debug.Logger;
 import org.pathvisio.core.model.Pathway;
 import org.pathvisio.desktop.PvDesktop;
 import org.pathvisio.wikipathways.webservice.WSPathway;
+import org.pathvisio.wikipathways.webservice.WSPathwayInfo;
 import org.wikipathways.client.WikiPathwaysClient;
 
 public class LoginPanel extends JPanel implements ActionListener 
@@ -132,18 +133,21 @@ public class LoginPanel extends JPanel implements ActionListener
 	private void login() throws RemoteException {
 		 clientName = clientDropdown.getSelectedItem().toString();
 		 client = plugin.getClients().get(clientName);
-		client.login(user, pass);
+		 client.login(user, pass);
 	
 	
 
 	}
 	public void createPathway(){
 		try {
-			login();
+			 clientName = clientDropdown.getSelectedItem().toString();
+			 client = plugin.getClients().get(clientName);
+			 client.login(user, pass);
 		
-			
-			client.createPathway(desktop.getSwingEngine().getEngine().getActivePathway());
-			
+		
+		
+		WSPathwayInfo l = client.createPathway(desktop.getSwingEngine().getEngine().getActivePathway() );
+			System.out.println(l.getId());
 			JOptionPane.showMessageDialog(null,"The pathway created");
 		
 
