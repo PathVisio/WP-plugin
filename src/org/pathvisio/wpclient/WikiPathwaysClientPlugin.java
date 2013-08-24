@@ -124,7 +124,7 @@ public class WikiPathwaysClientPlugin implements Plugin
 		public WikipathwaysPluginManagerAction(PvDesktop desktop)
 		{
 			//preparing menus and submenus 
-			wikipathwaysMenu = new JMenu("Wikipathways");
+			wikipathwaysMenu = new JMenu("WikiPathways");
 			JMenuItem searchMenu = new JMenuItem("Search");
 			JMenuItem browseMenu = new JMenuItem("Browse");
 
