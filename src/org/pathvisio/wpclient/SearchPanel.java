@@ -213,16 +213,20 @@ public class SearchPanel extends JPanel
 				{
 					protected WSSearchResult[] doInBackground() throws Exception 
 					{
-						pk.setTaskName("Searching");
+						pk.setTaskName("Starting Search");
+						
 						WSSearchResult[] results = null;
 						try
 						{
 							if (organismOpt.getSelectedItem().toString().equalsIgnoreCase("ALL SPECIES")) 
-							{
+							{pk.setTaskName("Search in Species"); 
 								results = client.findPathwaysByText(query);
+								
 							}
 							else
+								pk.setTaskName("Searching");
 								results = client.findPathwaysByText(query, Organism.fromLatinName(organismOpt.getSelectedItem().toString()));
+							 
 
 						} 
 						catch (Exception e) 
