@@ -35,6 +35,7 @@ import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -49,6 +50,8 @@ import org.bridgedb.DataSource;
 import org.bridgedb.Xref;
 
 import org.pathvisio.core.preferences.GlobalPreference;
+import org.pathvisio.core.preferences.Preference;
+import org.pathvisio.core.preferences.PreferenceManager;
 import org.pathvisio.core.Engine;
 import org.pathvisio.core.debug.Logger;
 import org.pathvisio.core.model.ConverterException;
@@ -60,6 +63,7 @@ import org.pathvisio.core.view.GeneProduct;
 import org.pathvisio.core.view.Graphics;
 import org.pathvisio.core.view.VPathway;
 import org.pathvisio.core.view.VPathwayElement;
+import org.pathvisio.desktop.PreferencesDlg;
 import org.pathvisio.desktop.PvDesktop;
 import org.pathvisio.desktop.plugin.Plugin;
 import org.pathvisio.gui.PathwayElementMenuListener.PathwayElementMenuHook;
@@ -95,9 +99,10 @@ public class WikiPathwaysClientPlugin implements Plugin
 			this.desktop = desktop;
 			tmpDir.mkdirs();
 			Logger.log.info ("Initializing WikiPathways Client plugin");
+			initPreferences();
 			loadClients();
 			registerActions();
-		
+			
 			new WikipathwaysPluginManagerAction(desktop);
 			this.desktop = desktop;
 		} 
@@ -108,6 +113,36 @@ public class WikiPathwaysClientPlugin implements Plugin
 		}
 	}
 
+	  private void initPreferences() {
+		  PreferencesDlg dlg = desktop.getPreferencesDlg();
+		  PreferenceManager.getCurrent().setBoolean(UrlPreference.TESTSITE_URL, true);
+		  PreferenceManager.getCurrent().setBoolean(UrlPreference.MAINSITE_URL, false);
+	 dlg.addPanel("WikiPathways Plugin", dlg.builder().booleanField(UrlPreference.TESTSITE_URL, "Test Site")
+			       .booleanField(UrlPreference.TESTSITE_URL, "Main Site")                                   .build()
+			                                       
+			                                );
+			
+			             
+		
+	}
+
+	enum UrlPreference implements Preference
+	                 {
+	                 
+	  	               MAINSITE_URL("http://www.wikipathways.org/wpi/webservice.php"),
+	  	                TESTSITE_URL("http://test3.wikipathways.org/wpi/webservice.php");
+	  	                UrlPreference (String defaultValue)
+	  	                {
+	  	                        this.defaultValue = defaultValue;
+	  	                }
+	  	
+	  	                private String defaultValue;
+	  	
+	  	                public String getDefault() {
+	  	                        return defaultValue;
+	  	                }
+	  	        }
+	
 	public Map<String, WikiPathwaysClient> getClients() 
 	{
 		return clients;
@@ -151,7 +186,7 @@ public class WikiPathwaysClientPlugin implements Plugin
 
 			wikipathwaysMenu.add(searchMenu);
 			wikipathwaysMenu.add(browseMenu);
-		wikipathwaysMenu.add(uploadMenu);
+			wikipathwaysMenu.add(uploadMenu);
 
 			desktop.registerSubMenu("Plugins", wikipathwaysMenu);
 
