@@ -210,10 +210,11 @@ public class ReferenceSearchPanel extends JPanel
 			final ArrayList<WSSearchResult> results2 = new ArrayList<WSSearchResult>();
 			SwingWorker<WSSearchResult[], Void> sw = new SwingWorker<WSSearchResult[], Void>() 
 			{
+				WSSearchResult[] results = null;
 				protected WSSearchResult[] doInBackground() throws Exception 
 				{
 					pk.setTaskName("Searching");
-					WSSearchResult[] results = null;
+					
 					try 
 					{
 						results = client.findPathwaysByLiterature(query);
@@ -249,6 +250,19 @@ public class ReferenceSearchPanel extends JPanel
 					results2.toArray(results);
 					}*/
 					return results;
+				}
+				protected void done() {
+					if(!pk.isCancelled())
+					{
+						if(results.length==0)
+						{
+							 JOptionPane.showMessageDialog(null,"0 results found");
+						}
+					}
+					else if(pk.isCancelled())
+					{
+						pk.finished();
+					}
 				}
 			};
 

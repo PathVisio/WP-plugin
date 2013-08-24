@@ -211,11 +211,12 @@ public class SearchPanel extends JPanel
 
 			SwingWorker<WSSearchResult[], Void> sw = new SwingWorker<WSSearchResult[], Void>() 
 				{
+				WSSearchResult[] results = null;
 					protected WSSearchResult[] doInBackground() throws Exception 
 					{
 						pk.setTaskName("Starting Search");
 						
-						WSSearchResult[] results = null;
+						
 						try
 						{
 							if (organismOpt.getSelectedItem().toString().equalsIgnoreCase("ALL SPECIES")) 
@@ -238,6 +239,20 @@ public class SearchPanel extends JPanel
 							pk.finished();
 						}
 						return results;
+					}
+					
+					protected void done() {
+						if(!pk.isCancelled())
+						{
+							if(results.length==0)
+							{
+								 JOptionPane.showMessageDialog(null,"0 results found");
+							}
+						}
+						else if(pk.isCancelled())
+						{
+							pk.finished();
+						}
 					}
 				};
 
