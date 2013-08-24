@@ -218,10 +218,11 @@ public class PathwaySearchPanel extends JPanel
 		i = 0;
 		SwingWorker<WSSearchResult[], Void> sw = new SwingWorker<WSSearchResult[], Void>() 
 			{
+			WSSearchResult[] results = null;
 			protected WSSearchResult[] doInBackground() throws Exception 
 			{
 				pk.setTaskName("Searching");
-				WSSearchResult[] results = null;
+				
 				ArrayList<WSSearchResult> results2 = new ArrayList<WSSearchResult>();
 				try 
 				{
@@ -249,6 +250,19 @@ public class PathwaySearchPanel extends JPanel
 				return results;
 
 			}
+			protected void done() {
+				if(!pk.isCancelled())
+				{
+					if(results.length==0)
+					{
+						 JOptionPane.showMessageDialog(null,"0 results found");
+					}
+				}
+				else if(pk.isCancelled())
+				{
+					pk.finished();
+				}
+			}
 		};
 
 		sw.execute();
@@ -274,9 +288,8 @@ public class PathwaySearchPanel extends JPanel
 				protected WSPathwayInfo[] doInBackground() throws Exception 
 				{
 					i = 0;
-					pk.setTaskName("Searching");
+					pk.setTaskName("Searching");			
 
-					
 
 					ArrayList<WSPathwayInfo> results2 = new ArrayList<WSPathwayInfo>();
 					try
