@@ -339,7 +339,7 @@ public class BrowsePanel extends JPanel
 
 			protected WSCurationTag[] doInBackground() throws Exception 
 			{
-				pk.setTaskName("Browsing");
+				pk.setTaskName("Started Browse");
 
 				try {
 
@@ -367,19 +367,22 @@ public class BrowsePanel extends JPanel
 					if (!collkey.equals("Curation:All"))
 					{
 						pcolltags = client.getCurationTagsByName(collkey); // Retrieving all pathways belonging to certain curation tag
-
+						pk.setTaskName("Browsing Through CurationTags");
 						getPathwaysOfSpecColl(pcolltags, organism);
 					}
 					else
 					{
+						pk.setTaskName("Browsing Through Collections");
 						getPathwaysOfColl(organism);
 					}
 					if (!curkey.equals("No Curation"))
 					{
+					pk.setTaskName("Filtering Browse");
 					getPathwaysOfSpecCollCur();
 					}
 					else
 					{
+					pk.setTaskName("Browsing");
 					getPathwaysOfSpecColl();
 					}
 
