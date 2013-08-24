@@ -232,7 +232,7 @@ public class SearchByIdentifierPanel extends JPanel
 		{
 			protected WSSearchResult[] doInBackground() throws Exception
 			{
-				pk.setTaskName("Searching");
+				pk.setTaskName("Starting Search");
 				WSSearchResult[] results = null;
 				try
 				{
@@ -246,7 +246,7 @@ public class SearchByIdentifierPanel extends JPanel
 					xrefs = new Xref[i];
 					pxXref.toArray(xrefs);
 					
-
+					pk.setTaskName("Searching ");
 					results = client.findPathwaysByXref(xrefs);
 				}
 				catch (Exception e) 

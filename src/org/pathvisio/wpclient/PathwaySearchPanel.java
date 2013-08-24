@@ -225,6 +225,7 @@ public class PathwaySearchPanel extends JPanel
 				ArrayList<WSSearchResult> results2 = new ArrayList<WSSearchResult>();
 				try 
 				{
+					pk.setTaskName("Searching By Title");
 					results = client.findPathwaysByText(query);
 				} 
 				catch (Exception e)
@@ -279,6 +280,7 @@ public class PathwaySearchPanel extends JPanel
 					ArrayList<WSPathwayInfo> results2 = new ArrayList<WSPathwayInfo>();
 					try
 					{
+						pk.setTaskName("Searching By ID");
 						results2.add(client.getPathwayInfo(query));
 						i++;
 					} catch (Exception e) {
