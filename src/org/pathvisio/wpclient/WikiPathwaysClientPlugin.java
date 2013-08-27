@@ -197,31 +197,10 @@ public class WikiPathwaysClientPlugin implements Plugin
 	private void loadClients() throws MalformedURLException, ServiceException 
 	{
 
-		int i = 0;
+		
+			clients.put("http://org.wikipathways.org/wpi/webservice/webservice.php",new WikiPathwaysClient(new URL("http://test2.wikipathways.org/wpi/webservice/webservice.php")));
 
-		while (true)
-		{
-			String clientStr = System.getProperty("org.tno.wpclient." + i);
-
-			if (clientStr == null) // In case we're running from webstart, try
-			{
-				clientStr = System.getProperty("javaws.org.tno.wpclient." + i);
-			}
-			if (clientStr == null) 
-			{
-				break;
-			}
-
-			WikiPathwaysClient client = new WikiPathwaysClient(new URL("http://test2.wikipathways.org/wpi/webservice/webservice.php?wsdl"));
-			clients.put(clientStr, client);
-			i++;
-		}
-
-		if (i == 0) // No clients specified, use default wikipathways.org
-		{
-			clients.put("http://test2.wikipathways.org/wpi/webservice/webservice.php",new WikiPathwaysClient(new URL("http://test2.wikipathways.org/wpi/webservice/webservice.php")));
-
-		}
+		
 	}
 
 	/**
