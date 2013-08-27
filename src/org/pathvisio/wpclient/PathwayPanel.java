@@ -21,6 +21,7 @@ import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.net.MalformedURLException;
 
 import java.util.Collections;
 import java.util.Vector;
@@ -34,6 +35,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.TableRowSorter;
+import javax.xml.rpc.ServiceException;
 
 import org.pathvisio.core.debug.Logger;
 import org.pathvisio.wikipathways.webservice.WSSearchResult;
@@ -51,11 +53,11 @@ import com.jgoodies.forms.layout.CellConstraints;
 public class PathwayPanel extends JPanel 
 {
 	WikiPathwaysClientPlugin plugin;
-	JComboBox clientDropdown;
+
 	JTable resultTable;
 	private JScrollPane resultspane;	
 	
-	public PathwayPanel(final WikiPathwaysClientPlugin plugin, WSSearchResult[] wsp, final File tmpDir) 
+	public PathwayPanel(final WikiPathwaysClientPlugin plugin, WSSearchResult[] wsp, final File tmpDir) throws MalformedURLException, ServiceException 
 	{
 		this.plugin = plugin;
 
@@ -71,8 +73,8 @@ public class PathwayPanel extends JPanel
 
 		// Center contains table model for results
 		resultTable = new JTable();
-		String clientName = clientDropdown.getSelectedItem().toString();
-		resultTable.setModel(new ResultTableModel(wsp,clientName));
+		
+		resultTable.setModel(new ResultTableModel(wsp,WikiPathwaysClientPlugin.loadClient().toString()));
 		resultTable.setRowSorter(new TableRowSorter(resultTable.getModel()));
 		resultspane = new JScrollPane(resultTable);
 

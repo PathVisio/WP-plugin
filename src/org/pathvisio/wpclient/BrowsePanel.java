@@ -81,7 +81,7 @@ import com.jgoodies.forms.layout.FormLayout;
 public class BrowsePanel extends JPanel
 {
 	WikiPathwaysClientPlugin plugin;
-	JComboBox clientDropdown;
+
 	private JComboBox organismOpt;
 	JTable resultTable;
 	private JScrollPane resultspane;	
@@ -323,7 +323,7 @@ public class BrowsePanel extends JPanel
 
 			protected WSCurationTag[] doInBackground() throws Exception 
 			{
-				pk.setTaskName("Started Browse");
+				pk.setTaskName("Starting Browse");
 
 				try {
 
@@ -350,13 +350,14 @@ public class BrowsePanel extends JPanel
 					String organism = organismOpt.getSelectedItem().toString();
 					if (!collkey.equals("Curation:All"))
 					{
+						pk.setTaskName("Browsing Through "+curationOpt.getSelectedItem().toString());
 						pcolltags = client.getCurationTagsByName(collkey); // Retrieving all pathways belonging to certain curation tag
-						pk.setTaskName("Browsing Through CurationTags");
+						
 						getPathwaysOfSpecColl(pcolltags, organism);
 					}
 					else
 					{
-						pk.setTaskName("Browsing Through "+organism+" Collections");
+						pk.setTaskName("Browsing Through "+collOpt.getSelectedItem().toString()+" Collections");
 						getPathwaysOfColl(organism);
 					}
 					if (!curkey.equals("No Curation"))
@@ -390,6 +391,16 @@ public class BrowsePanel extends JPanel
 					WSCurationTag[] result = Arrays.copyOf(pcolltags,pcolltags.length + ptags.length);
 					System.arraycopy(ptags, 0, result, pcolltags.length,ptags.length);
 					return result;
+				}
+			}
+			protected void done() {
+				if (!pk.isCancelled()) {
+					if ((pcolltags.length + ptags.length) == 0) {
+						JOptionPane.showMessageDialog(null,
+								"0 results found");
+					}
+				} else if (pk.isCancelled()) {
+					pk.finished();
 				}
 			}
 		};
@@ -570,7 +581,8 @@ public class BrowsePanel extends JPanel
 
 		
 		final WikiPathwaysClient client;
-		String clientName = clientDropdown.getSelectedItem().toString();
+		private String clientName;
+		
 		public BrowseTableModel(WSCurationTag[] wsCurationTags,String clientName2) throws MalformedURLException, ServiceException 
 		{
 			client = WikiPathwaysClientPlugin.loadClient();

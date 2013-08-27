@@ -183,7 +183,7 @@ public class WikiPathwaysClientPlugin implements Plugin
 
 			wikipathwaysMenu.add(searchMenu);
 			wikipathwaysMenu.add(browseMenu);
-			wikipathwaysMenu.add(uploadMenu);
+			//wikipathwaysMenu.add(uploadMenu);
 
 			desktop.registerSubMenu("Plugins", wikipathwaysMenu);
 
@@ -197,10 +197,10 @@ public class WikiPathwaysClientPlugin implements Plugin
 		{
 			return new WikiPathwaysClient(new URL("http://test2.wikipathways.org/wpi/webservice/webservice.php"));
 		}
-	else
-	{
-	return new WikiPathwaysClient(new URL("http://www.wikipathways.org/wpi/webservice/webservice.php"));
-	}
+		else
+		{
+			return new WikiPathwaysClient(new URL("http://www.wikipathways.org/wpi/webservice/webservice.php"));
+		}
 	}
 
 	/**
@@ -452,7 +452,7 @@ public class WikiPathwaysClientPlugin implements Plugin
 		
 	}
 	
-	protected void openPathwayXref(WikiPathwaysClient client, Xref x,int rev, File tmpDir)
+	protected void openPathwayXref(WikiPathwaysClient client, Xref x,int rev, File tmpDir) throws MalformedURLException, ServiceException
 	{
 		
 		WSSearchResult[] wsp;
@@ -555,7 +555,7 @@ public class WikiPathwaysClientPlugin implements Plugin
 			//loading dialog at the centre of the frame
 			d.setLocationRelativeTo(desktop.getSwingEngine().getFrame());
 			d.setVisible(true);
-			d.setDefaultCloseOperation( JDialog.DISPOSE_ON_CLOSE);
+			
 			
 		}
 	}
