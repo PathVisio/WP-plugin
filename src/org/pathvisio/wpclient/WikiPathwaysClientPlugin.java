@@ -90,6 +90,7 @@ public class WikiPathwaysClientPlugin implements Plugin
 	PvDesktop desktop;
 	File tmpDir = new File(GlobalPreference.getApplicationDir(),"wpclient-cache");
 	private JMenu uploadMenu, wikipathwaysMenu;
+	private PreferencesDlg preferencesDlg;
 
 	@Override
 	public void init(PvDesktop desktop)
@@ -99,8 +100,9 @@ public class WikiPathwaysClientPlugin implements Plugin
 			this.desktop = desktop;
 			tmpDir.mkdirs();
 			Logger.log.info ("Initializing WikiPathways Client plugin");
+			
 			initPreferences();
-			loadClients();
+			
 			registerActions();
 			
 			new WikipathwaysPluginManagerAction(desktop);
@@ -115,10 +117,9 @@ public class WikiPathwaysClientPlugin implements Plugin
 
 	  private void initPreferences() {
 		  PreferencesDlg dlg = desktop.getPreferencesDlg();
-		  PreferenceManager.getCurrent().setBoolean(UrlPreference.TESTSITE_URL, true);
-		  PreferenceManager.getCurrent().setBoolean(UrlPreference.MAINSITE_URL, false);
-	 dlg.addPanel("WikiPathways Plugin", dlg.builder().booleanField(UrlPreference.TESTSITE_URL, "Test Site")
-			       .booleanField(UrlPreference.TESTSITE_URL, "Main Site")                                   .build()
+		  
+	 dlg.addPanel("WikiPathways Plugin", dlg.builder().booleanField(UrlPreference.TESTSITE_URL, "Test Site (Search or Browse Pathways from Test Site)")
+                               .build()
 			                                       
 			                                );
 			
@@ -129,8 +130,8 @@ public class WikiPathwaysClientPlugin implements Plugin
 	enum UrlPreference implements Preference
 	                 {
 	                 
-	  	               MAINSITE_URL("http://www.wikipathways.org/wpi/webservice.php"),
-	  	                TESTSITE_URL("http://test3.wikipathways.org/wpi/webservice.php");
+	  	               
+	  	                TESTSITE_URL(Boolean.toString(false));
 	  	                UrlPreference (String defaultValue)
 	  	                {
 	  	                        this.defaultValue = defaultValue;
@@ -143,10 +144,6 @@ public class WikiPathwaysClientPlugin implements Plugin
 	  	                }
 	  	        }
 	
-	public Map<String, WikiPathwaysClient> getClients() 
-	{
-		return clients;
-	}
 
 	public File getTmpDir()
 	{
@@ -194,13 +191,16 @@ public class WikiPathwaysClientPlugin implements Plugin
 
 	}
 
-	private void loadClients() throws MalformedURLException, ServiceException 
+	public static WikiPathwaysClient loadClient() throws MalformedURLException, ServiceException 
+	{	
+		if(PreferenceManager.getCurrent().getBoolean(UrlPreference.TESTSITE_URL))
+		{
+			return new WikiPathwaysClient(new URL("http://test2.wikipathways.org/wpi/webservice/webservice.php"));
+		}
+	else
 	{
-
-		
-			clients.put("http://org.wikipathways.org/wpi/webservice/webservice.php",new WikiPathwaysClient(new URL("http://test2.wikipathways.org/wpi/webservice/webservice.php")));
-
-		
+	return new WikiPathwaysClient(new URL("http://www.wikipathways.org/wpi/webservice/webservice.php"));
+	}
 	}
 
 	/**
@@ -231,8 +231,10 @@ public class WikiPathwaysClientPlugin implements Plugin
 					return;
 				}
 
-				WikiPathwaysClient client = findRegisteredClient(ds.getMainUrl());
-
+				WikiPathwaysClient client;
+				try {
+					client = loadClient();
+				
 				if (client == null) 
 				{
 					return;
@@ -241,22 +243,18 @@ public class WikiPathwaysClientPlugin implements Plugin
 				OpenPathwayFromXrefAction action = new OpenPathwayFromXrefAction(WikiPathwaysClientPlugin.this, pe);
 				action.setClient(client);
 				menu.add(action);
+				} catch (MalformedURLException e1) {
+					
+					e1.printStackTrace();
+				} catch (ServiceException e1) {
+					
+					e1.printStackTrace();
+				}
+
 			}
 		});
 	}
 
-	private WikiPathwaysClient findRegisteredClient(String url) 
-	{
-		for (String clientStr : clients.keySet()) 
-		{/*
-			if (isSameServer(clientStr, url))
-			{
-				return clients.get(clientStr);
-			}*/
-			return clients.get(clientStr);
-		}
-		return null;
-	}
 
 	
 	protected void openPathwayWithProgress(final WikiPathwaysClient client,final String id, final int rev, final File tmpDir)	throws InterruptedException, ExecutionException 
@@ -557,6 +555,7 @@ public class WikiPathwaysClientPlugin implements Plugin
 			//loading dialog at the centre of the frame
 			d.setLocationRelativeTo(desktop.getSwingEngine().getFrame());
 			d.setVisible(true);
+			d.setDefaultCloseOperation( JDialog.DISPOSE_ON_CLOSE);
 			
 		}
 	}

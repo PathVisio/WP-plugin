@@ -37,6 +37,7 @@ import javax.swing.table.TableRowSorter;
 
 import org.pathvisio.core.debug.Logger;
 import org.pathvisio.wikipathways.webservice.WSSearchResult;
+import org.wikipathways.client.WikiPathwaysClient;
 
 
 
@@ -64,25 +65,7 @@ public class PathwayPanel extends JPanel
 		
 		CellConstraints cc = new CellConstraints();	
 	
-		Vector<String> clients = new Vector<String>(plugin.getClients().keySet());
-		Collections.sort(clients);
-		
-		clientDropdown = new JComboBox(clients);
-		clientDropdown.setSelectedIndex(0);
-		clientDropdown.setRenderer(new DefaultListCellRenderer() 
-		{
-			public Component getListCellRendererComponent(final JList list,final Object value, final int index,final boolean isSelected, final boolean cellHasFocus) 
-			{
-				String strValue = WikiPathwaysClientPlugin.shortClientName(value.toString());
-				return super.getListCellRendererComponent(list, strValue,index, isSelected, cellHasFocus);
-			}
-		});
-		
-		searchOptBox.add(clientDropdown, cc.xy(8, 1));
-		
-		
-		if (plugin.getClients().size() < 2)
-			clientDropdown.setVisible(false);
+
 
 		add(searchOptBox, BorderLayout.NORTH);
 
@@ -110,7 +93,7 @@ public class PathwayPanel extends JPanel
 					
 					try
 					{
-						plugin.openPathwayWithProgress(plugin.getClients().get(model.clientName),model.getValueAt(row, 0).toString(), 0, tmpDir);
+						plugin.openPathwayWithProgress(WikiPathwaysClientPlugin.loadClient(),model.getValueAt(row, 0).toString(), 0, tmpDir);
 					}
 					catch (Exception ex) 
 					{

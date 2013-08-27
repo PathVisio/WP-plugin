@@ -26,6 +26,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -55,6 +56,7 @@ import javax.swing.SwingWorker;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableRowSorter;
+import javax.xml.rpc.ServiceException;
 
 import org.bridgedb.bio.Organism;
 import org.pathvisio.core.debug.Logger;
@@ -262,27 +264,7 @@ public class BrowsePanel extends JPanel
 		browseOptBox.add(browseButton, cc.xy(7, 2));
 		add(browseOptBox, BorderLayout.CENTER);
 
-		Vector<String> clients = new Vector<String>(plugin.getClients().keySet());
-		Collections.sort(clients);
-
-		clientDropdown = new JComboBox(clients);
-		clientDropdown.setSelectedIndex(0);
-		clientDropdown.setRenderer(new DefaultListCellRenderer() 
-		{
-			public Component getListCellRendererComponent(final JList list,final Object value, final int index,final boolean isSelected, final boolean cellHasFocus)
-			{
-				String strValue = WikiPathwaysClientPlugin.shortClientName(value.toString());
-
-				return super.getListCellRendererComponent(list, strValue,index, isSelected, cellHasFocus);
-
-			}
-		});
-
-		browseOptBox.add(clientDropdown, cc.xy(8, 1));
-
-		if (plugin.getClients().size() < 2)
-			clientDropdown.setVisible(false);
-
+	
 		add(browseOptBox, BorderLayout.NORTH);
 
 		// Center contains table model for results
@@ -306,7 +288,7 @@ public class BrowsePanel extends JPanel
 
 					try 
 					{
-						plugin.openPathwayWithProgress(plugin.getClients().get(model.clientName),model.getValueAt(row, 0).toString(), 0, tmpDir);
+						plugin.openPathwayWithProgress(WikiPathwaysClientPlugin.loadClient(),model.getValueAt(row, 0).toString(), 0, tmpDir);
 					} 
 					catch (Exception ex)
 					{
@@ -324,12 +306,14 @@ public class BrowsePanel extends JPanel
 	 * @throws RemoteException
 	 * @throws InterruptedException
 	 * @throws ExecutionException
+	 * @throws ServiceException 
+	 * @throws MalformedURLException 
 	 */
-	protected void browse() throws RemoteException, InterruptedException,ExecutionException 
+	protected void browse() throws RemoteException, InterruptedException,ExecutionException, MalformedURLException, ServiceException 
 	{
 		
-		String clientName = clientDropdown.getSelectedItem().toString();
-		client = plugin.getClients().get(clientName);
+		
+		client = WikiPathwaysClientPlugin.loadClient();
 		final ProgressKeeper pk = new ProgressKeeper();
 		final ProgressDialog d = new ProgressDialog(JOptionPane.getFrameForComponent(this), "", pk, true, true);
 
@@ -372,7 +356,7 @@ public class BrowsePanel extends JPanel
 					}
 					else
 					{
-						pk.setTaskName("Browsing Through Collections");
+						pk.setTaskName("Browsing Through "+organism+" Collections");
 						getPathwaysOfColl(organism);
 					}
 					if (!curkey.equals("No Curation"))
@@ -413,7 +397,7 @@ public class BrowsePanel extends JPanel
 		sw.execute();
 		d.setVisible(true);
 
-		resultTable.setModel(new BrowseTableModel(sw.get(), clientName));
+		resultTable.setModel(new BrowseTableModel(sw.get(), client.toString()));
 		resultTable.setDefaultRenderer(JPanel.class, new TableCellRenderer() 
 		{
 
@@ -584,11 +568,13 @@ public class BrowsePanel extends JPanel
 		WSCurationTag[] results;
 		String[] columnNames = new String[] { "ID", "Name", "Species","Curation Tag" };
 
+		
+		final WikiPathwaysClient client;
 		String clientName = clientDropdown.getSelectedItem().toString();
-		final WikiPathwaysClient client = plugin.getClients().get(clientName);
-
-		public BrowseTableModel(WSCurationTag[] wsCurationTags,String clientName2) 
+		public BrowseTableModel(WSCurationTag[] wsCurationTags,String clientName2) throws MalformedURLException, ServiceException 
 		{
+			client = WikiPathwaysClientPlugin.loadClient();
+		 clientName = client.toString();
 			this.clientName = clientName2;
 			this.results = wsCurationTags;
 		}

@@ -23,6 +23,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,6 +49,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableRowSorter;
+import javax.xml.rpc.ServiceException;
 
 import org.bridgedb.DataSource;
 import org.bridgedb.Xref;
@@ -72,7 +74,7 @@ public class SearchByIdentifierPanel extends JPanel
 {
 	WikiPathwaysClientPlugin plugin;
 	public static Xref[] xrefs;
-	JComboBox clientDropdown;
+
 	java.util.HashMap<String, String> curationtags = new HashMap<String, String>();
 	JTable resultTable;
 	int i=0;
@@ -157,28 +159,11 @@ public class SearchByIdentifierPanel extends JPanel
 		tipLabel.setFont(new Font("SansSerif", Font.ITALIC, 11));
 	
 		
-		Vector<String> clients = new Vector<String>(plugin.getClients()
-				.keySet());
-		Collections.sort(clients);
+	
 
-		clientDropdown = new JComboBox(clients);
-		clientDropdown.setSelectedIndex(0);
-		clientDropdown.setRenderer(new DefaultListCellRenderer() {
-			public Component getListCellRendererComponent(final JList list,
-					final Object value, final int index,
-					final boolean isSelected, final boolean cellHasFocus)
-			{
-				String strValue = WikiPathwaysClientPlugin.shortClientName(value.toString());
-				return super.getListCellRendererComponent(list, strValue,
-						index, isSelected, cellHasFocus);
-			}
-		});
 		searchReferenceBox.add(tipLabel,cc2.xyw(1, 2,9));
-		searchOptBox.add(clientDropdown, cc.xy(8, 1));
+	
 
-		if (plugin.getClients().size() < 2)
-			clientDropdown.setVisible(false);
-		
 		searchBox.add(searchReferenceBox, ccf.xyw(1, 4, 8));
 		
 		add(searchBox, BorderLayout.NORTH);
@@ -203,7 +188,7 @@ public class SearchByIdentifierPanel extends JPanel
 						File tmpDir = new File(plugin.getTmpDir(), WikiPathwaysClientPlugin.shortClientName(model.clientName));
 						tmpDir.mkdirs();
 
-						plugin.openPathwayWithProgress(plugin.getClients().get(model.clientName),model.getValueAt(row, 0).toString(), 0, tmpDir,xrefs);
+						plugin.openPathwayWithProgress(WikiPathwaysClientPlugin.loadClient(),model.getValueAt(row, 0).toString(), 0, tmpDir,xrefs);
 					
 					
 							
@@ -219,11 +204,11 @@ public class SearchByIdentifierPanel extends JPanel
 		});
 	}
 
-	private void searchByXref() throws RemoteException, InterruptedException,ExecutionException 
+	private void searchByXref() throws RemoteException, InterruptedException,ExecutionException, MalformedURLException, ServiceException 
 	{
-		String clientName = clientDropdown.getSelectedItem().toString();
+		
 
-		final WikiPathwaysClient client = plugin.getClients().get(clientName);
+		final WikiPathwaysClient client = WikiPathwaysClientPlugin.loadClient();
 
 		final ProgressKeeper pk = new ProgressKeeper();
 		final ProgressDialog d = new ProgressDialog(JOptionPane.getFrameForComponent(this), "", pk, true, true);
@@ -278,7 +263,7 @@ public class SearchByIdentifierPanel extends JPanel
 		sw.execute();
 		d.setVisible(true);
 
-		resultTable.setModel(new ResultTableModel(sw.get(), clientName));
+		resultTable.setModel(new ResultTableModel(sw.get(), client.toString()));
 		resultTable.setRowSorter(new TableRowSorter(resultTable.getModel()));
 	}
 

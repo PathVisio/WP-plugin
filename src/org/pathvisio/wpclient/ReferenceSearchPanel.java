@@ -23,6 +23,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,6 +46,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableRowSorter;
+import javax.xml.rpc.ServiceException;
 
 import org.pathvisio.core.debug.Logger;
 import org.pathvisio.core.util.ProgressKeeper;
@@ -136,27 +138,10 @@ public class ReferenceSearchPanel extends JPanel
 		searchOptBox.add(pubXref, cc.xyw(4, 1, 3));
 		searchOptBox.add(tipLabel,cc.xyw(2, 2,5));
 	
-		Vector<String> clients = new Vector<String>(plugin.getClients()
-				.keySet());
-		Collections.sort(clients);
+	
 
-		clientDropdown = new JComboBox(clients);
-		clientDropdown.setSelectedIndex(0);
-		clientDropdown.setRenderer(new DefaultListCellRenderer() {
-			public Component getListCellRendererComponent(final JList list,
-					final Object value, final int index,
-					final boolean isSelected, final boolean cellHasFocus)
-			{
-				String strValue = WikiPathwaysClientPlugin.shortClientName(value.toString());
-				return super.getListCellRendererComponent(list, strValue,
-						index, isSelected, cellHasFocus);
-			}
-		});
+		
 
-		searchOptBox.add(clientDropdown, cc.xy(6, 1));
-
-		if (plugin.getClients().size() < 2)
-			clientDropdown.setVisible(false);
 		searchBox.add(searchOptBox, ccf.xyw(1, 1, 8));
 		
 		add(searchBox, BorderLayout.NORTH);
@@ -181,7 +166,7 @@ public class ReferenceSearchPanel extends JPanel
 						LiteratureResultTableModel	model = (LiteratureResultTableModel) target.getModel();
 						File tmpDir = new File(plugin.getTmpDir(), WikiPathwaysClientPlugin.shortClientName(model.clientName));
 						tmpDir.mkdirs();
-						plugin.openPathwayWithProgress(plugin.getClients().get(model.clientName),model.getValueAt(row, 0).toString(), 0, tmpDir);
+						plugin.openPathwayWithProgress(WikiPathwaysClientPlugin.loadClient(),model.getValueAt(row, 0).toString(), 0, tmpDir);
 					
 					}
 					catch (Exception ex) 
@@ -196,14 +181,14 @@ public class ReferenceSearchPanel extends JPanel
 
 	
 
-	private void searchByLiterature() throws RemoteException,InterruptedException, ExecutionException 
+	private void searchByLiterature() throws RemoteException,InterruptedException, ExecutionException, MalformedURLException, ServiceException 
 	{
 		final String query = pubXref.getText();
 
 		if (!query.isEmpty()) 
 		{
-			String clientName = clientDropdown.getSelectedItem().toString();
-			final WikiPathwaysClient client = plugin.getClients().get(clientName);
+
+			final WikiPathwaysClient client = WikiPathwaysClientPlugin.loadClient();
 			
 			final ProgressKeeper pk = new ProgressKeeper();
 			final ProgressDialog d = new ProgressDialog(JOptionPane.getFrameForComponent(this), "", pk, true, true);
@@ -269,7 +254,7 @@ public class ReferenceSearchPanel extends JPanel
 			sw.execute();
 			d.setVisible(true);
 
-			resultTable.setModel(new LiteratureResultTableModel(sw.get(), clientName));
+			resultTable.setModel(new LiteratureResultTableModel(sw.get(), client.toString()));
 			resultTable.setRowSorter(new TableRowSorter(resultTable.getModel()));
 		} 
 		else

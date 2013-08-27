@@ -27,6 +27,7 @@ import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.util.Collections;
 import java.util.Vector;
@@ -41,6 +42,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.xml.rpc.ServiceException;
 
 import org.pathvisio.core.debug.Logger;
 import org.pathvisio.core.model.Pathway;
@@ -78,19 +80,7 @@ public class LoginPanel extends JPanel implements ActionListener
 		add(itsKeepBox);
 		JButton submit = new JButton("done");
 		add(submit);
-		Vector<String> clients = new Vector<String>(plugin.getClients().keySet());
-		Collections.sort(clients);
-		
-		clientDropdown = new JComboBox(clients);
-		clientDropdown.setSelectedIndex(0);
-		clientDropdown.setRenderer(new DefaultListCellRenderer() 
-		{
-			public Component getListCellRendererComponent(final JList list,final Object value, final int index,final boolean isSelected, final boolean cellHasFocus) 
-			{
-				String strValue = WikiPathwaysClientPlugin.shortClientName(value.toString());
-				return super.getListCellRendererComponent(list, strValue,index, isSelected, cellHasFocus);
-			}
-		});
+	
 		submit.addActionListener(this);
 
 	}
@@ -130,9 +120,9 @@ public class LoginPanel extends JPanel implements ActionListener
 	
 	String user = "sravanthi";
 	String pass = "kmitkmit";
-	private void login() throws RemoteException {
-		 clientName = clientDropdown.getSelectedItem().toString();
-		 client = plugin.getClients().get(clientName);
+	private void login() throws RemoteException, MalformedURLException, ServiceException {
+	
+		 client = WikiPathwaysClientPlugin.loadClient();
 		 client.login(user, pass);
 	
 	
@@ -140,8 +130,7 @@ public class LoginPanel extends JPanel implements ActionListener
 	}
 	public void createPathway(){
 		try {
-			 clientName = clientDropdown.getSelectedItem().toString();
-			 client = plugin.getClients().get(clientName);
+			 client = WikiPathwaysClientPlugin.loadClient();
 			 client.login(user, pass);
 		
 		
