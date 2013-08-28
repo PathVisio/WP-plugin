@@ -282,6 +282,11 @@ public class WikiPathwaysClientPlugin implements Plugin
 				}
 				return true;
 			}
+			protected void done() {
+				 if (pk.isCancelled()) {
+					pk.finished();
+				}
+			}
 		};
 
 		sw.execute();
@@ -313,6 +318,11 @@ public class WikiPathwaysClientPlugin implements Plugin
 					pk.finished();
 				}
 				return true;
+			}
+			protected void done() {
+				 if (pk.isCancelled()) {
+					pk.finished();
+				}
 			}
 		};
 
