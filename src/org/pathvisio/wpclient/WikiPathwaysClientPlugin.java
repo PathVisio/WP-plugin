@@ -52,7 +52,9 @@ import org.bridgedb.Xref;
 import org.pathvisio.core.preferences.GlobalPreference;
 import org.pathvisio.core.preferences.Preference;
 import org.pathvisio.core.preferences.PreferenceManager;
+import org.pathvisio.core.ApplicationEvent;
 import org.pathvisio.core.Engine;
+import org.pathvisio.core.Engine.ApplicationEventListener;
 import org.pathvisio.core.debug.Logger;
 import org.pathvisio.core.model.ConverterException;
 import org.pathvisio.core.model.Pathway;
@@ -63,6 +65,8 @@ import org.pathvisio.core.view.GeneProduct;
 import org.pathvisio.core.view.Graphics;
 import org.pathvisio.core.view.VPathway;
 import org.pathvisio.core.view.VPathwayElement;
+import org.pathvisio.core.view.VPathwayEvent;
+import org.pathvisio.core.view.VPathwayListener;
 import org.pathvisio.desktop.PreferencesDlg;
 import org.pathvisio.desktop.PvDesktop;
 import org.pathvisio.desktop.plugin.Plugin;
@@ -83,7 +87,7 @@ import org.wikipathways.client.WikiPathwaysClient;
  * @author Thomas Kelder, Sravanthi Sinha
  * @version 1.0
  */
-public class WikiPathwaysClientPlugin implements Plugin 
+public class WikiPathwaysClientPlugin implements Plugin,ApplicationEventListener,VPathwayListener
 {
 	public static Border etch = BorderFactory.createEtchedBorder();
 	Map<String, WikiPathwaysClient> clients = new HashMap<String, WikiPathwaysClient>();
@@ -91,7 +95,10 @@ public class WikiPathwaysClientPlugin implements Plugin
 	File tmpDir = new File(GlobalPreference.getApplicationDir(),"wpclient-cache");
 	private JMenu uploadMenu, wikipathwaysMenu;
 	private PreferencesDlg preferencesDlg;
-
+	
+	UpdateAction updateAction = new UpdateAction();
+	JMenuItem createMenu ;
+	JMenuItem updateMenu;
 	@Override
 	public void init(PvDesktop desktop)
 	{
@@ -106,7 +113,12 @@ public class WikiPathwaysClientPlugin implements Plugin
 			registerActions();
 			
 			new WikipathwaysPluginManagerAction(desktop);
-			this.desktop = desktop;
+			
+			// register a listener to notify when a pathway is opened
+			desktop.getSwingEngine().getEngine().addApplicationEventListener(this);
+
+			
+			
 		} 
 		catch (Exception e) 
 		{
@@ -169,8 +181,8 @@ public class WikiPathwaysClientPlugin implements Plugin
 
 			uploadMenu = new JMenu("Upload");
 
-			JMenuItem createMenu = new JMenuItem("Create Pathway");
-			JMenuItem updateMenu = new JMenuItem("Update Pathway");
+			 createMenu = new JMenuItem("Create Pathway");
+			 updateMenu = new JMenuItem("Update Pathway");
 
 			CreateAction createAction = new CreateAction();
 			UpdateAction updateAction = new UpdateAction();
@@ -183,13 +195,24 @@ public class WikiPathwaysClientPlugin implements Plugin
 
 			wikipathwaysMenu.add(searchMenu);
 			wikipathwaysMenu.add(browseMenu);
-			//wikipathwaysMenu.add(uploadMenu);
+			wikipathwaysMenu.add(uploadMenu);
 
 			desktop.registerSubMenu("Plugins", wikipathwaysMenu);
-
+			updateState();
 		}
 
 	}
+	/**
+	 * Checks if a pathway is open or not. If there is no open pathway, the
+	 * create and update menus are disabled/enabled.
+	 */
+	public void updateState() 
+	{
+		boolean status=(desktop.getSwingEngine().getEngine().hasVPathway());		
+		createMenu.setEnabled(status);
+		updateMenu.setEnabled(status);
+	}
+
 
 	public static WikiPathwaysClient loadClient() throws MalformedURLException, ServiceException 
 	{	
@@ -639,4 +662,16 @@ public class WikiPathwaysClientPlugin implements Plugin
 			d.setVisible(true);
 		}
 	}
+	@Override
+	public void applicationEvent(ApplicationEvent arg0) {
+		
+			updateState();
+		}
+
+	@Override
+	public void vPathwayEvent(VPathwayEvent arg0) {
+		updateState();
+		
+	}		
+		
 }
