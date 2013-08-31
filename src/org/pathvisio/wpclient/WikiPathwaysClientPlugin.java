@@ -634,15 +634,8 @@ public class WikiPathwaysClientPlugin implements Plugin,ApplicationEventListener
 
 		public void actionPerformed(ActionEvent e) 
 		{
-			LoginPanel p = new LoginPanel(desktop,WikiPathwaysClientPlugin.this,"create");
-			JDialog d = new JDialog(desktop.getFrame(), "WikiPathways Login",false);
-
-			d.getContentPane().add(p);
-			d.pack();
-			d.setVisible(true);
-			d.setResizable(false);
-			d.setLocationRelativeTo(desktop.getSwingEngine().getFrame());
-			d.setVisible(true);
+			 new CreatePathwayPanel(desktop,WikiPathwaysClientPlugin.this);
+			
 		}
 	}
 
@@ -651,10 +644,10 @@ public class WikiPathwaysClientPlugin implements Plugin,ApplicationEventListener
 
 		public void actionPerformed(ActionEvent e) 
 		{
-			LoginPanel p = new LoginPanel(desktop,WikiPathwaysClientPlugin.this,"update");
+			//LoginPanel p = new LoginPanel(desktop,WikiPathwaysClientPlugin.this,"update");
 			JDialog d = new JDialog(desktop.getFrame(), "WikiPathways Login",false);
 
-			d.getContentPane().add(p);
+			//d.getContentPane().add(p);
 			d.pack();
 			d.setVisible(true);
 			d.setResizable(false);

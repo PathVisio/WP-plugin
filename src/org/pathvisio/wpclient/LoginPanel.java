@@ -55,8 +55,8 @@ import org.wikipathways.client.WikiPathwaysClient;
 import com.sun.net.httpserver.Authenticator.Success;
 
 public class LoginPanel extends JPanel implements ActionListener {
-	String Username = "";
-	String Password = "";
+	static String Username="";
+	static String Password ="";
 	boolean itsFirst = true;
 	boolean itsKeep = false;
 	JTextField UserField = new JTextField(15);
@@ -69,103 +69,56 @@ public class LoginPanel extends JPanel implements ActionListener {
 	private JComboBox clientDropdown;
 	WikiPathwaysClient client;
 	String actiontype;
+static boolean loggedin ;
 
-	public LoginPanel(PvDesktop desktop, WikiPathwaysClientPlugin plugin,
-			String actiontype) {
+
+	public LoginPanel(PvDesktop desktop, WikiPathwaysClientPlugin plugin) {
 		super();
 		this.plugin = plugin;
-		this.desktop = desktop;
-		this.actiontype = actiontype;
+		this.desktop = desktop;		
 		setLayout(new GridLayout(3, 2));
 		add(new JLabel("Username:"));
 		add(UserField);
 		add(new JLabel("Password:"));
 		add(PassField);
 		add(itsKeepBox);
-		JButton submit = new JButton("done");
-		add(submit);
-
-		submit.addActionListener(this);
-
-	}
-
-	public String[] getLogin() {
+		loggedin=false;
 		
-		itsFirst = false;
-		Username=UserField.getText();
-		Password=PassField.getText();
-		String[] res = new String[2];
-		res[0] = Username;
-		res[1] = Password;
-		if (!itsKeep) {
-			Username = "";
-			Password = "";
-		}
-		return res;
 	}
 
-	public void actionPerformed(ActionEvent e) {
 
-		if (actiontype.equalsIgnoreCase("create"))
-			createPathway();
-		else if (actiontype.equalsIgnoreCase("update"))
-			updatePathway();
 
-	}
 
-	private boolean login() throws RemoteException, MalformedURLException,
+	public  WikiPathwaysClient login() throws RemoteException, MalformedURLException,
 			ServiceException {
-	//	getLogin();
-		boolean success=false;
+	
+		
 		try{
 			
 		client = WikiPathwaysClientPlugin.loadClient();
-		client.login(UserField.getText(), PassField.getText());
-		success=true;
+	
+		Username=UserField.getText();
+		Password=PassField.getText();
+	
+		
+		client.login(Username,Password);
+		loggedin=true;
+		if(!itsKeepBox.isSelected())
+		{
+			Username="";
+			Password="";
+		}
+		
 		}catch(Exception ex)
 		{
 			JOptionPane.showMessageDialog(null, "Please Enter a Valid User Credentials",
 					"ERROR", JOptionPane.ERROR_MESSAGE);
 		}
-		return success;
+		return client;
 	
 	}
 
-	public void createPathway() {
-		
-			try {
-				if(login())
-				{
-				try {
-					
-					
-
-					WSPathwayInfo l = client.createPathway(desktop.getSwingEngine()
-							.getEngine().getActivePathway());	
-					JOptionPane.showMessageDialog(null, "The pathway" +l.getId()+"created");
-					
-
-				} catch (Exception e) {
-					JOptionPane.showMessageDialog(null, "Error While creating a pathway",
-							"ERROR", JOptionPane.ERROR_MESSAGE);
-
-				}
-				}
-			} catch (HeadlessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ServiceException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		
-	}
+	
 
 	public void updatePathway() {
 		try {
@@ -185,6 +138,12 @@ public class LoginPanel extends JPanel implements ActionListener {
 			e.printStackTrace();
 
 		}
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		
+		
 	}
 
 }
