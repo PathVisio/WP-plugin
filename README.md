@@ -46,7 +46,8 @@ Features:
 
 2.Open pathways which contain similar element as of the selected DataNode(which is well annotated)
 
-Refer: http://plugins.pathvisio.org/wp-client/blog/
+Refer:http://plugins.pathvisio.org/wp-client/documentation/
 
 Contact: Sravanthi : kmitsravanthi@gmail.com
+
 
