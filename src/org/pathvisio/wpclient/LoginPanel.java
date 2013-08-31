@@ -18,13 +18,14 @@ package org.pathvisio.wpclient;
 
 /**
  * Class: LoginPanel
- * Description: A simple class to get user's loginname and password.
+ * Description: A simple class to get username and password.
  * @author Sravanthi Sinha
  * @version 1.0
  **/
 
 import java.awt.Component;
 import java.awt.GridLayout;
+import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
@@ -51,121 +52,138 @@ import org.pathvisio.wikipathways.webservice.WSPathway;
 import org.pathvisio.wikipathways.webservice.WSPathwayInfo;
 import org.wikipathways.client.WikiPathwaysClient;
 
-public class LoginPanel extends JPanel implements ActionListener 
-{
-	String itsUsername = "";
-	String itsPassword = "";
+import com.sun.net.httpserver.Authenticator.Success;
+
+public class LoginPanel extends JPanel implements ActionListener {
+	String Username = "";
+	String Password = "";
 	boolean itsFirst = true;
 	boolean itsKeep = false;
-	JTextField itsUserField = new JTextField(15);
-	JPasswordField itsPassField = new JPasswordField(15);
+	JTextField UserField = new JTextField(15);
+	JPasswordField PassField = new JPasswordField(15);
 	JCheckBox itsKeepBox = new JCheckBox("Save details:", false);
 	boolean itsInit = false;
 	private WikiPathwaysClientPlugin plugin;
-	private PvDesktop desktop;String clientName ;
-	private JComboBox clientDropdown; WikiPathwaysClient client ;
+	private PvDesktop desktop;
+	String clientName;
+	private JComboBox clientDropdown;
+	WikiPathwaysClient client;
 	String actiontype;
 
-	public LoginPanel(PvDesktop desktop, WikiPathwaysClientPlugin plugin, String actiontype)
-	{
+	public LoginPanel(PvDesktop desktop, WikiPathwaysClientPlugin plugin,
+			String actiontype) {
 		super();
-		this.plugin=plugin;
-		this.desktop=desktop;
-		this.actiontype=actiontype;
+		this.plugin = plugin;
+		this.desktop = desktop;
+		this.actiontype = actiontype;
 		setLayout(new GridLayout(3, 2));
 		add(new JLabel("Username:"));
-		add(itsUserField);
-		add(new JLabel("Password"));
-		add(itsPassField);
+		add(UserField);
+		add(new JLabel("Password:"));
+		add(PassField);
 		add(itsKeepBox);
 		JButton submit = new JButton("done");
 		add(submit);
-	
+
 		submit.addActionListener(this);
 
 	}
 
-	public String[] getLogin()
-	{
-		if (!itsKeep && !itsFirst) 
-		{
-			return null;
-		}
-		if (!itsInit) 
-		{
-			return null;
-		}
+	public String[] getLogin() {
+		
 		itsFirst = false;
+		Username=UserField.getText();
+		Password=PassField.getText();
 		String[] res = new String[2];
-		res[0] = itsUsername;
-		res[1] = itsPassword;
+		res[0] = Username;
+		res[1] = Password;
 		if (!itsKeep) {
-			itsUsername = "";
-			itsPassword = "";
+			Username = "";
+			Password = "";
 		}
 		return res;
 	}
 
-	public void actionPerformed(ActionEvent e)
-	{
-	
-	
+	public void actionPerformed(ActionEvent e) {
 
-		if(actiontype.equalsIgnoreCase("create"))
+		if (actiontype.equalsIgnoreCase("create"))
 			createPathway();
-		else if(actiontype.equalsIgnoreCase("update"))
+		else if (actiontype.equalsIgnoreCase("update"))
 			updatePathway();
-		
-	}
-	
-	String user = "sravanthi";
-	String pass = "kmitkmit";
-	private void login() throws RemoteException, MalformedURLException, ServiceException {
-	
-		 client = WikiPathwaysClientPlugin.loadClient();
-		 client.login(user, pass);
-	
-	
 
 	}
-	public void createPathway(){
-		try {
-			 client = WikiPathwaysClientPlugin.loadClient();
-			 client.login(user, pass);
-		
-		
-		
-		WSPathwayInfo l = client.createPathway(desktop.getSwingEngine().getEngine().getActivePathway() );
-			System.out.println(l.getId());
-			JOptionPane.showMessageDialog(null,"The pathway created");
-		
 
+	private boolean login() throws RemoteException, MalformedURLException,
+			ServiceException {
+	//	getLogin();
+		boolean success=false;
+		try{
 			
-		} catch(Exception e) {
-			e.printStackTrace();
-			
+		client = WikiPathwaysClientPlugin.loadClient();
+		client.login(UserField.getText(), PassField.getText());
+		success=true;
+		}catch(Exception ex)
+		{
+			JOptionPane.showMessageDialog(null, "Please Enter a Valid User Credentials",
+					"ERROR", JOptionPane.ERROR_MESSAGE);
 		}
-	}
+		return success;
 	
+	}
+
+	public void createPathway() {
+		
+			try {
+				if(login())
+				{
+				try {
+					
+					
+
+					WSPathwayInfo l = client.createPathway(desktop.getSwingEngine()
+							.getEngine().getActivePathway());	
+					JOptionPane.showMessageDialog(null, "The pathway" +l.getId()+"created");
+					
+
+				} catch (Exception e) {
+					JOptionPane.showMessageDialog(null, "Error While creating a pathway",
+							"ERROR", JOptionPane.ERROR_MESSAGE);
+
+				}
+				}
+			} catch (HeadlessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ServiceException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+	}
+
 	public void updatePathway() {
 		try {
 			login();
 			WSPathway wsp = client.getPathway("WP1");
 			Pathway p = WikiPathwaysClient.toPathway(wsp);
-			p.getMappInfo().addComment("Soap test - " + System.currentTimeMillis(), "Soap test");
+			p.getMappInfo().addComment(
+					"Soap test - " + System.currentTimeMillis(), "Soap test");
 
-			client.updatePathway(
-					"WP1", p,
+			client.updatePathway("WP1", p,
 					"Soap test - " + System.currentTimeMillis(),
 					Integer.parseInt(wsp.getRevision()));
-			
-			
-			JOptionPane.showMessageDialog(null,"The pathway updated");
 
-			
-		} catch(Exception e) {
+			JOptionPane.showMessageDialog(null, "The pathway updated");
+
+		} catch (Exception e) {
 			e.printStackTrace();
-			
+
 		}
 	}
 
