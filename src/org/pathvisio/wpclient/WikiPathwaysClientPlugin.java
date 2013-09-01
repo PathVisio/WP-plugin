@@ -493,8 +493,8 @@ public class WikiPathwaysClientPlugin implements Plugin,ApplicationEventListener
 		{
 			wsp = client.findPathwaysByXref(x);
 		
-		
-			PathwayPanel p = new PathwayPanel(WikiPathwaysClientPlugin.this,wsp,tmpDir);
+			Xref[] xref= {x};
+			PathwayPanel p = new PathwayPanel(WikiPathwaysClientPlugin.this,wsp,tmpDir,xref);
 			JDialog d = new JDialog(desktop.getFrame(), "Related Pathways from WikiPathways",false);
 
 			d.getContentPane().add(p);

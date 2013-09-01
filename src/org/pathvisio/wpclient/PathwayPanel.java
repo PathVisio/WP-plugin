@@ -37,6 +37,7 @@ import javax.swing.JTable;
 import javax.swing.table.TableRowSorter;
 import javax.xml.rpc.ServiceException;
 
+import org.bridgedb.Xref;
 import org.pathvisio.core.debug.Logger;
 import org.pathvisio.wikipathways.webservice.WSSearchResult;
 import org.wikipathways.client.WikiPathwaysClient;
@@ -57,7 +58,7 @@ public class PathwayPanel extends JPanel
 	JTable resultTable;
 	private JScrollPane resultspane;	
 	
-	public PathwayPanel(final WikiPathwaysClientPlugin plugin, WSSearchResult[] wsp, final File tmpDir) throws MalformedURLException, ServiceException 
+	public PathwayPanel(final WikiPathwaysClientPlugin plugin, WSSearchResult[] wsp, final File tmpDir,final Xref[] xref) throws MalformedURLException, ServiceException 
 	{
 		this.plugin = plugin;
 
@@ -95,7 +96,7 @@ public class PathwayPanel extends JPanel
 					
 					try
 					{
-						plugin.openPathwayWithProgress(WikiPathwaysClientPlugin.loadClient(),model.getValueAt(row, 0).toString(), 0, tmpDir);
+						plugin.openPathwayWithProgress(WikiPathwaysClientPlugin.loadClient(),model.getValueAt(row, 0).toString(), 0, tmpDir,xref);
 					}
 					catch (Exception ex) 
 					{

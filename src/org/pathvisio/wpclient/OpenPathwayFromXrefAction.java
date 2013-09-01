@@ -28,7 +28,7 @@ import org.wikipathways.client.WikiPathwaysClient;
 
 /**
 * This class handles the GUI for the pathway to load 
-* Load Pathway into PathVisio on choosing option of "Open Pathway from Wikipathways"
+* Load Pathway into PathVisio on choosing option of "Open Pathway from WikiPathways"
 * from right click menu of pathway element (consedering the Xref of the selected element)
 * 	@author Sravanthi Sinha
 * 	@version 1.0
@@ -42,7 +42,7 @@ class OpenPathwayFromXrefAction extends AbstractAction
 
 	public OpenPathwayFromXrefAction(WikiPathwaysClientPlugin plugin, PathwayElement elm)
 	{
-		putValue(NAME, "Open pathway from Wikipathways");
+		putValue(NAME, "Open pathway from WikiPathways");
 		this.plugin = plugin;
 		this.elm = elm;
 	}
