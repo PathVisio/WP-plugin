@@ -95,7 +95,8 @@ public class WikiPathwaysClientPlugin implements Plugin,ApplicationEventListener
 	File tmpDir = new File(GlobalPreference.getApplicationDir(),"wpclient-cache");
 	private JMenu uploadMenu, wikipathwaysMenu;
 	private PreferencesDlg preferencesDlg;
-	
+	public static String revisionno="";
+	public static String pathwayid=""; 
 	UpdateAction updateAction = new UpdateAction();
 	JMenuItem createMenu ;
 	JMenuItem updateMenu;
@@ -362,7 +363,8 @@ public class WikiPathwaysClientPlugin implements Plugin,ApplicationEventListener
 		Pathway p = WikiPathwaysClient.toPathway(wsp);
 		File tmp = new File(tmpDir, wsp.getId() + ".r" + wsp.getRevision()+ ".gpml");
 		p.writeToXml(tmp, true);
-
+revisionno= wsp.getRevision();
+pathwayid=wsp.getId();
 		Engine engine = desktop.getSwingEngine().getEngine();
 		engine.setWrapper(desktop.getSwingEngine().createWrapper());
 		engine.openPathway(tmp);
@@ -380,7 +382,8 @@ public class WikiPathwaysClientPlugin implements Plugin,ApplicationEventListener
 		Pathway p = WikiPathwaysClient.toPathway(wsp);
 		File tmp = new File(tmpDir, wsp.getId() + ".r" + wsp.getRevision()+ ".gpml");
 		p.writeToXml(tmp, true);
-
+		revisionno= wsp.getRevision();
+		pathwayid=wsp.getId();
 		Engine engine = desktop.getSwingEngine().getEngine();
 		engine.setWrapper(desktop.getSwingEngine().createWrapper());
 		engine.openPathway(tmp);
@@ -644,15 +647,7 @@ public class WikiPathwaysClientPlugin implements Plugin,ApplicationEventListener
 
 		public void actionPerformed(ActionEvent e) 
 		{
-			//LoginPanel p = new LoginPanel(desktop,WikiPathwaysClientPlugin.this,"update");
-			JDialog d = new JDialog(desktop.getFrame(), "WikiPathways Login",false);
-
-			//d.getContentPane().add(p);
-			d.pack();
-			d.setVisible(true);
-			d.setResizable(false);
-			d.setLocationRelativeTo(desktop.getSwingEngine().getFrame());
-			d.setVisible(true);
+			 new UpdatePathwayPanel(desktop,WikiPathwaysClientPlugin.this);
 		}
 	}
 	@Override
