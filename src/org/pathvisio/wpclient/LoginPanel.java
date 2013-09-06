@@ -111,7 +111,7 @@ static boolean loggedin ;
 		
 		}catch(Exception ex)
 		{
-			JOptionPane.showMessageDialog(null, "Please Enter a Valid User Credentials",
+			JOptionPane.showMessageDialog(null, "You do not have permissions",
 					"ERROR", JOptionPane.ERROR_MESSAGE);
 		}
 		return client;
