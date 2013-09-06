@@ -120,11 +120,12 @@ static boolean loggedin ;
 
 	
 
-	public void updatePathway() {
+/*	public void updatePathway() {
 		try {
 			login();
 			WSPathway wsp = client.getPathway("WP1");
 			Pathway p = WikiPathwaysClient.toPathway(wsp);
+		
 			p.getMappInfo().addComment(
 					"Soap test - " + System.currentTimeMillis(), "Soap test");
 
@@ -138,7 +139,7 @@ static boolean loggedin ;
 			e.printStackTrace();
 
 		}
-	}
+	}*/
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
