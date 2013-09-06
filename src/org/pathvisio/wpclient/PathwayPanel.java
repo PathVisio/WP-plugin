@@ -49,6 +49,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 /**
  * This class creates the Table Model List containing the pathways  
  * 	@author Sravanthi Sinha
+ * 	@author Martina Kutmon
  * 	@version 1.0
  */
 public class PathwayPanel extends JPanel 

@@ -66,6 +66,7 @@ import com.jgoodies.forms.layout.FormLayout;
  * element labels 2.Search by text but for specific species
  * 
  * @author Sravanthi Sinha
+ * @author Martina Kutmon
  * @version 1.0
  */
 public class SearchPanel extends JPanel {

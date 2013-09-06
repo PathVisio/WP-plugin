@@ -20,6 +20,7 @@ package org.pathvisio.wpclient;
  * Class: LoginPanel
  * Description: A simple class to get username and password.
  * @author Sravanthi Sinha
+ * @author Martina Kutmon
  * @version 1.0
  **/
 

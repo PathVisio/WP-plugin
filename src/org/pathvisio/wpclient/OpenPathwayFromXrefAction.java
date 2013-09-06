@@ -31,6 +31,7 @@ import org.wikipathways.client.WikiPathwaysClient;
 * Load Pathway into PathVisio on choosing option of "Open Pathway from WikiPathways"
 * from right click menu of pathway element (consedering the Xref of the selected element)
 * 	@author Sravanthi Sinha
+* 	@author Martina Kutmon
 * 	@version 1.0
 */
 class OpenPathwayFromXrefAction extends AbstractAction

@@ -24,7 +24,7 @@ import org.pathvisio.desktop.plugin.Plugin;
 /**
  * OSGi activator class for the WikiPathways Plugin
  * @author Sravanthi Sinha
- *
+ * @author Martina Kutmon
  */
 public class Activator implements BundleActivator{
 	

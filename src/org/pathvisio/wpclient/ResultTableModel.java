@@ -24,6 +24,7 @@ import org.pathvisio.wikipathways.webservice.WSSearchResult;
  * This class creates the ResultTableModel 
  * Based on the results
  * @author Sravanthi Sinha
+ * @author Martina Kutmon
  * @version 1.0 
  */
 	 class ResultTableModel extends AbstractTableModel

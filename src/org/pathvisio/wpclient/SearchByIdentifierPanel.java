@@ -68,6 +68,7 @@ import com.jgoodies.forms.layout.FormLayout;
  *	This class creates the content in the Dialog 
  *  of the SearchByIdentifier TabbedPane of Search
  *  @author Sravanthi Sinha
+ *  @author Martina Kutmon
  * 	@version 1.0  
  */
 public class SearchByIdentifierPanel extends JPanel 

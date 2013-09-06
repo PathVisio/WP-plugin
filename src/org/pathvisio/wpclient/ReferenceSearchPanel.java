@@ -62,7 +62,8 @@ import com.jgoodies.forms.layout.FormLayout;
 /**
  *	This class creates the content in the Dialog of the
  *	ReferenceSearch TabbedPane of Search
- * @author Sravanthi Sinha
+ * 	@author Sravanthi Sinha
+ * 	@author Martina Kutmon
  * @version 1.0 
  */
 public class ReferenceSearchPanel extends JPanel 

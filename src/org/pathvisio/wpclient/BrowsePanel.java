@@ -75,6 +75,7 @@ import com.jgoodies.forms.layout.FormLayout;
  *	Browse by Curation Tags
  *	Browse by Collections 
  * 	@author Sravanthi Sinha
+ * 	@author Martina Kutmon
  * 	@version 1.0
  */
 

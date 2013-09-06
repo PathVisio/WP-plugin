@@ -63,7 +63,8 @@ import com.jgoodies.forms.layout.FormLayout;
 /**
  *	This class creates the content in the Dialog of the
  *	PathwaySearchPanel TabbedPane of Search 
- * @author Sravanthi Sinha
+ * 	@author Sravanthi Sinha
+ * 	@author Martina Kutmon
  * @version 1.0
  */
 public class PathwaySearchPanel extends JPanel 
