@@ -21,19 +21,23 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.pathvisio.desktop.plugin.Plugin;
 
-public class Activator implements BundleActivator
-{
+/**
+ * OSGi activator class for the WikiPathways Plugin
+ * @author Sravanthi Sinha
+ *
+ */
+public class Activator implements BundleActivator{
+	
+	private WikiPathwaysClientPlugin plugin;
 
 	@Override
-	public void start(BundleContext context) throws Exception 
-	{
-		WikiPathwaysClientPlugin plugin = new WikiPathwaysClientPlugin();
+	public void start(BundleContext context) throws Exception {
+		plugin = new WikiPathwaysClientPlugin();
 		context.registerService(Plugin.class.getName(), plugin, null);
 	}
 
 	@Override
-	public void stop(BundleContext context) throws Exception 
-	{
-		
+	public void stop(BundleContext context) throws Exception {
+		plugin.done();
 	}
 }
