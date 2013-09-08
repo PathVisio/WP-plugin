@@ -199,7 +199,7 @@ public class SearchPanel extends JPanel {
 					JOptionPane.getFrameForComponent(this), "", pk, true, true);
 
 			SwingWorker<WSSearchResult[], Void> sw = new SwingWorker<WSSearchResult[], Void>() {
-				WSSearchResult[] results = null;
+				WSSearchResult[] results ;
 
 				protected WSSearchResult[] doInBackground() throws Exception {
 					pk.setTaskName("Starting Search");

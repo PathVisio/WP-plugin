@@ -203,7 +203,7 @@ public class PathwaySearchPanel extends JPanel
 		i = 0;
 		SwingWorker<WSSearchResult[], Void> sw = new SwingWorker<WSSearchResult[], Void>() 
 			{
-			WSSearchResult[] results = null;
+			WSSearchResult[] results ;
 			protected WSSearchResult[] doInBackground() throws Exception 
 			{
 				pk.setTaskName("Searching");
@@ -269,7 +269,7 @@ public class PathwaySearchPanel extends JPanel
 
 			SwingWorker<WSPathwayInfo[], Void> sw = new SwingWorker<WSPathwayInfo[], Void>()
 				{
-				WSPathwayInfo[] results3 = null;
+				WSPathwayInfo[] results3;
 				protected WSPathwayInfo[] doInBackground() throws Exception 
 				{
 					i = 0;

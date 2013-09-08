@@ -216,7 +216,7 @@ public class SearchByIdentifierPanel extends JPanel
 	
 		SwingWorker<WSSearchResult[], Void> sw = new SwingWorker<WSSearchResult[], Void>()
 		{
-			WSSearchResult[] results = null;
+			WSSearchResult[] results;
 			protected WSSearchResult[] doInBackground() throws Exception
 			{
 				pk.setTaskName("Starting Search");

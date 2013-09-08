@@ -196,7 +196,7 @@ public class ReferenceSearchPanel extends JPanel
 			final ArrayList<WSSearchResult> results2 = new ArrayList<WSSearchResult>();
 			SwingWorker<WSSearchResult[], Void> sw = new SwingWorker<WSSearchResult[], Void>() 
 			{
-				WSSearchResult[] results = null;
+				WSSearchResult[] results;
 				protected WSSearchResult[] doInBackground() throws Exception 
 				{
 					pk.setTaskName("Searching");
