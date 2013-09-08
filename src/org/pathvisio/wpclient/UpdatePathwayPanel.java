@@ -1,15 +1,13 @@
 package org.pathvisio.wpclient;
 
-import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.HeadlessException;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
-import java.util.Date;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -19,16 +17,10 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.xml.rpc.ServiceException;
 
-import org.pathvisio.core.model.ObjectType;
 import org.pathvisio.core.model.Pathway;
-import org.pathvisio.core.model.PathwayElement;
-import org.pathvisio.core.model.PathwayElement.Comment;
-import org.pathvisio.core.model.PropertyType;
 import org.pathvisio.desktop.PvDesktop;
 import org.pathvisio.wikipathways.webservice.WSPathwayInfo;
 import org.wikipathways.client.WikiPathwaysClient;
-
-import com.sun.org.apache.bcel.internal.generic.NEW;
 
 public class UpdatePathwayPanel extends JPanel implements ActionListener {
 	LoginPanel p;
@@ -138,14 +130,14 @@ public class UpdatePathwayPanel extends JPanel implements ActionListener {
 					.getSwingEngine().getEngine().getActivePathway();
 						
 				
-					WSPathwayInfo wsPathwayInfo=client.getPathwayInfo(plugin.revisionno);
+					WSPathwayInfo wsPathwayInfo=client.getPathwayInfo(WikiPathwaysClientPlugin.pathwayid);
 				
 				String newrevision=wsPathwayInfo.getRevision();
 				
-				if(plugin.revisionno.equals(newrevision))
+				if(WikiPathwaysClientPlugin.revisionno.equals(newrevision))
 				{
 					
-				client.updatePathway(plugin.pathwayid, pathway, description.getText() +"System.currentTimeMillis()",Integer.parseInt( plugin.revisionno));
+				client.updatePathway(WikiPathwaysClientPlugin.pathwayid, pathway, description.getText() +System.currentTimeMillis(),Integer.parseInt(WikiPathwaysClientPlugin.revisionno));
 					JOptionPane.showMessageDialog(null,
 							"The pathway is updated");
 				}
