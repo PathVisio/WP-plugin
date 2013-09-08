@@ -112,37 +112,15 @@ static boolean loggedin ;
 		
 		}catch(Exception ex)
 		{
-			JOptionPane.showMessageDialog(null, "You do not have permissions",
-					"ERROR", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "You do not have permissions. \n Please Send an email to:\n wikipathways-devel@googlegroups.com",
+					"WikiPathways Login ERROR", JOptionPane.ERROR_MESSAGE);
 		}
 		return client;
 	
 	}
 
 	
-
-/*	public void updatePathway() {
-		try {
-			login();
-			WSPathway wsp = client.getPathway("WP1");
-			Pathway p = WikiPathwaysClient.toPathway(wsp);
-		
-			p.getMappInfo().addComment(
-					"Soap test - " + System.currentTimeMillis(), "Soap test");
-
-			client.updatePathway("WP1", p,
-					"Soap test - " + System.currentTimeMillis(),
-					Integer.parseInt(wsp.getRevision()));
-
-			JOptionPane.showMessageDialog(null, "The pathway updated");
-
-		} catch (Exception e) {
-			e.printStackTrace();
-
-		}
-	}*/
-
-	@Override
+ @Override
 	public void actionPerformed(ActionEvent e) {
 		
 		
