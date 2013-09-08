@@ -137,7 +137,7 @@ public class UpdatePathwayPanel extends JPanel implements ActionListener {
 				if(WikiPathwaysClientPlugin.revisionno.equals(newrevision))
 				{
 					
-				client.updatePathway(WikiPathwaysClientPlugin.pathwayid, pathway, description.getText() +System.currentTimeMillis(),Integer.parseInt(WikiPathwaysClientPlugin.revisionno));
+				client.updatePathway(WikiPathwaysClientPlugin.pathwayid, pathway, description.getText(),Integer.parseInt(WikiPathwaysClientPlugin.revisionno));
 					JOptionPane.showMessageDialog(null,
 							"The pathway is updated");
 				}
