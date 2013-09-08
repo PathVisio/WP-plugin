@@ -90,15 +90,15 @@ public class BrowsePanel extends JPanel
 	private JComboBox collOpt;
 	private JComboBox curationOpt;
 
-	String collkey = null, curkey = null;
+	String collkey, curkey;
 	HashMap<String, String> curationtags = new HashMap<String, String>();
 	HashMap<String, String> coll = new HashMap<String, String>();
 	HashMap<String, String> tags = new HashMap<String, String>();
 	HashMap<String, WSCurationTag[]> imagetags = new HashMap<String, WSCurationTag[]>();
 	final ArrayList<String> results = new ArrayList<String>();
 	WikiPathwaysClient client;
-	WSCurationTag[] pcolltags = null;
-	WSCurationTag[] ptags = null;
+	WSCurationTag[] pcolltags;
+	WSCurationTag[] ptags ;
 	int i = 0;
 	ArrayList<WSCurationTag> results2 = new ArrayList<WSCurationTag>();
 	JLabel l;
@@ -151,7 +151,7 @@ public class BrowsePanel extends JPanel
 		coll.put("Curation:All", "All pathways");
 
 		// Curation Combobox
-		curationtags.put("No Curation", "No Curation");
+		curationtags.put("No Curation", "All tags");
 		curationtags.put("Curation:MissingXRef", "missing annotations");
 		curationtags.put("Curation:NoInteractions", "unconnected lines");
 		curationtags.put("Curation:UnderConstruction", "under construction");
@@ -234,7 +234,7 @@ public class BrowsePanel extends JPanel
 		{
 			curationOpt.addItem(curationtags.get(it.next()));
 		}
-		curationOpt.setSelectedItem("No Curation");
+		curationOpt.setSelectedItem("All tags");
 		DefaultFormBuilder curationOptBuilder = new DefaultFormBuilder(	new FormLayout("right:pref, 3dlu,right:pref"));
 		curationOptBuilder.append(curationOpt);
 
@@ -389,7 +389,8 @@ public class BrowsePanel extends JPanel
 					return pcolltags;
 				} else
 				{
-					WSCurationTag[] result = Arrays.copyOf(pcolltags,pcolltags.length + ptags.length);
+					WSCurationTag[] result = Arrays.copyOf(pcolltags,pcolltags.length + ptags.length);	
+					
 					System.arraycopy(ptags, 0, result, pcolltags.length,ptags.length);
 					return result;
 				}
@@ -624,7 +625,7 @@ public class BrowsePanel extends JPanel
 				JPanel p = new JPanel();
 				p.setLayout(new FlowLayout(FlowLayout.CENTER, 2, 1));
 
-				ImageIcon icon = null;
+				ImageIcon icon;
 
 				// storing images of the curated tags belonging to certain pathways in Panel
 				for (WSCurationTag tag : imagetags.get(r.getPathway().getId())) 
