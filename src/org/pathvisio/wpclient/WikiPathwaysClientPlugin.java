@@ -215,17 +215,26 @@ public class WikiPathwaysClientPlugin implements Plugin,ApplicationEventListener
 	}
 
 
+	private static WikiPathwaysClient client;
+	
 	public static WikiPathwaysClient loadClient() throws MalformedURLException, ServiceException 
-	{	
-		if(PreferenceManager.getCurrent().getBoolean(UrlPreference.TESTSITE_URL))
-		{
-			return new WikiPathwaysClient(new URL("http://test2.wikipathways.org/wpi/webservice/webservice.php"));
+		{	
+		if(client == null) {
+			// TODO: if preferences get changed - set client to null!!!!
+		   if(PreferenceManager.getCurrent().getBoolean(UrlPreference.TESTSITE_URL))
+				{
+					client = new WikiPathwaysClient(new URL("http://test2.wikipathways.org/wpi/webservice/webservice.php"));
+				}
+				else
+				{
+					client = new WikiPathwaysClient(new URL("http://www.wikipathways.org/wpi/webservice/webservice.php"));
+				}
+
+			}
+			return client;
 		}
-		else
-		{
-			return new WikiPathwaysClient(new URL("http://www.wikipathways.org/wpi/webservice/webservice.php"));
-		}
-	}
+
+
 
 	/**
 	 * Register actions to provide option to open a pathway From Xref on right click  
