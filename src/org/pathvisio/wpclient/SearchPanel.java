@@ -101,7 +101,7 @@ public class SearchPanel extends JPanel {
 		searchField = new JTextField();
 		searchField
 				.setToolTipText("Enter any search query (e.g. 'Apoptosis' or 'P53').");
-
+		searchField.addActionListener(searchAction);
 		tipLabel = new JLabel(
 				"Tip: use AND, OR, *, ?, parentheses or quotes (e.g.: 'Apoptosis or P53' , 'DNA*')");
 		tipLabel.setFont(new Font("SansSerif", Font.ITALIC, 11));
@@ -111,7 +111,7 @@ public class SearchPanel extends JPanel {
 		org.add("ALL SPECIES");
 		org.addAll(1, Organism.latinNames());
 		organismOpt = new JComboBox(org.toArray());
-
+		organismOpt.addActionListener(searchAction);
 		DefaultFormBuilder idOptBuilder = new DefaultFormBuilder(
 				new FormLayout("right:pref, 3dlu,right:pref"));
 		idOptBuilder.append("Species:", organismOpt);
@@ -136,8 +136,7 @@ public class SearchPanel extends JPanel {
 		searchOptBox.add(searchField, cc.xy(3, 1));
 		searchOptBox.add(opts, cc.xy(5, 1));
 
-		JButton searchButton = new JButton(searchAction);
-		searchOptBox.add(searchButton, cc.xy(7, 1));
+	
 		searchOptBox.add(tipLabel, cc.xyw(1, 2, 8));
 
 		add(searchOptBox, BorderLayout.NORTH);
