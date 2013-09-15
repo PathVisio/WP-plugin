@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 //
-package org.pathvisio.wpclient;
+package org.pathvisio.wpclient.models;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -27,11 +27,11 @@ import org.pathvisio.wikipathways.webservice.WSSearchResult;
  * @author Martina Kutmon
  * @version 1.0 
  */
-	 class ResultTableModel extends AbstractTableModel
+public class ResultTableModel extends AbstractTableModel
 	{
 		WSSearchResult[] results;
 		String[] columnNames = new String[] { "ID", "Name", "Species" };
-		String clientName;
+		public String clientName;
 
 		public ResultTableModel(WSSearchResult[] results, String clientName) 
 		{

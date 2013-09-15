@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 //
-package org.pathvisio.wpclient;
+package org.pathvisio.wpclient.actions;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -24,6 +24,7 @@ import javax.swing.JOptionPane;
 import org.bridgedb.Xref;
 import org.pathvisio.core.debug.Logger;
 import org.pathvisio.core.model.PathwayElement;
+import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.wikipathways.client.WikiPathwaysClient;
 
 /**
@@ -34,7 +35,7 @@ import org.wikipathways.client.WikiPathwaysClient;
 * 	@author Martina Kutmon
 * 	@version 1.0
 */
-class OpenPathwayFromXrefAction extends AbstractAction
+public class OpenPathwayFromXrefAction extends AbstractAction
 {
 	private PathwayElement elm;
 	private WikiPathwaysClient client;

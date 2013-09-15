@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 //
-package org.pathvisio.wpclient;
+package org.pathvisio.wpclient.panels;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -40,6 +40,8 @@ import javax.xml.rpc.ServiceException;
 import org.bridgedb.Xref;
 import org.pathvisio.core.debug.Logger;
 import org.pathvisio.wikipathways.webservice.WSSearchResult;
+import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
+import org.pathvisio.wpclient.models.ResultTableModel;
 import org.wikipathways.client.WikiPathwaysClient;
 
 

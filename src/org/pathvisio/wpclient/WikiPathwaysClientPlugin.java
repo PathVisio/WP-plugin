@@ -33,25 +33,17 @@ import java.util.regex.Pattern;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JDialog;
-import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JTabbedPane;
 import javax.swing.SwingWorker;
 import javax.swing.border.Border;
 import javax.xml.rpc.ServiceException;
 
 import org.bridgedb.DataSource;
 import org.bridgedb.Xref;
-
-import org.pathvisio.core.preferences.GlobalPreference;
-import org.pathvisio.core.preferences.Preference;
-import org.pathvisio.core.preferences.PreferenceManager;
 import org.pathvisio.core.ApplicationEvent;
 import org.pathvisio.core.Engine;
 import org.pathvisio.core.Engine.ApplicationEventListener;
@@ -59,6 +51,9 @@ import org.pathvisio.core.debug.Logger;
 import org.pathvisio.core.model.ConverterException;
 import org.pathvisio.core.model.Pathway;
 import org.pathvisio.core.model.PathwayElement;
+import org.pathvisio.core.preferences.GlobalPreference;
+import org.pathvisio.core.preferences.Preference;
+import org.pathvisio.core.preferences.PreferenceManager;
 import org.pathvisio.core.util.CommonsFileUtils;
 import org.pathvisio.core.util.ProgressKeeper;
 import org.pathvisio.core.view.GeneProduct;
@@ -74,6 +69,12 @@ import org.pathvisio.gui.PathwayElementMenuListener.PathwayElementMenuHook;
 import org.pathvisio.gui.ProgressDialog;
 import org.pathvisio.wikipathways.webservice.WSPathway;
 import org.pathvisio.wikipathways.webservice.WSSearchResult;
+import org.pathvisio.wpclient.actions.BrowseAction;
+import org.pathvisio.wpclient.actions.OpenPathwayFromXrefAction;
+import org.pathvisio.wpclient.actions.SearchAction;
+import org.pathvisio.wpclient.panels.CreatePathwayPanel;
+import org.pathvisio.wpclient.panels.PathwayPanel;
+import org.pathvisio.wpclient.panels.UpdatePathwayPanel;
 import org.wikipathways.client.WikiPathwaysClient;
 
 /**
@@ -81,109 +82,105 @@ import org.wikipathways.client.WikiPathwaysClient;
  * open pathways directly from DataNodes annotated to a pathway, using the
  * right-click menu.
  * 
- * This plugin also includes a dialog to search, advanced search browse and load pathways from
- * WikiPathways (like in the Cytoscape GPML plugin).
+ * This plugin also includes a dialog to search, advanced search browse and load
+ * pathways from WikiPathways (like in the Cytoscape GPML plugin).
  * 
  * @author Thomas Kelder, Sravanthi Sinha, Martina Kutmon
  * @version 1.0
  */
-public class WikiPathwaysClientPlugin implements Plugin,ApplicationEventListener,VPathwayListener
-{
+public class WikiPathwaysClientPlugin implements Plugin,
+		ApplicationEventListener, VPathwayListener {
 	public static Border etch = BorderFactory.createEtchedBorder();
 	Map<String, WikiPathwaysClient> clients = new HashMap<String, WikiPathwaysClient>();
 	PvDesktop desktop;
-	File tmpDir = new File(GlobalPreference.getApplicationDir(),"wpclient-cache");
+	File tmpDir = new File(GlobalPreference.getApplicationDir(),
+			"wpclient-cache");
 	private JMenu uploadMenu, wikipathwaysMenu;
 	private PreferencesDlg preferencesDlg;
-	public static String revisionno="";
-	public static String pathwayid=""; 
+	public static String revisionno = "";
+	public static String pathwayid = "";
 	UpdateAction updateAction = new UpdateAction();
-	JMenuItem createMenu ;
+	JMenuItem createMenu;
 	JMenuItem updateMenu;
+
 	@Override
-	public void init(PvDesktop desktop)
-	{
-		try
-		{
+	public void init(PvDesktop desktop) {
+		try {
 			this.desktop = desktop;
 			tmpDir.mkdirs();
-			Logger.log.info ("Initializing WikiPathways Client plugin");
-			
-			initPreferences();
-			
-			registerActions();
-			
-			new WikipathwaysPluginManagerAction(desktop);
-			
-			// register a listener to notify when a pathway is opened
-			desktop.getSwingEngine().getEngine().addApplicationEventListener(this);
+			Logger.log.info("Initializing WikiPathways Client plugin");
 
-			
-			
-		} 
-		catch (Exception e) 
-		{
+			initPreferences();
+
+			registerActions();
+
+			new WikipathwaysPluginManagerAction(desktop);
+
+			// register a listener to notify when a pathway is opened
+			desktop.getSwingEngine().getEngine()
+					.addApplicationEventListener(this);
+
+		} catch (Exception e) {
 			Logger.log.error("Error while initializing WikiPathways client", e);
-			JOptionPane.showMessageDialog(desktop.getSwingEngine().getApplicationPanel(), e.getMessage(), "Error",JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(desktop.getSwingEngine()
+					.getApplicationPanel(), e.getMessage(), "Error",
+					JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
-	  private void initPreferences() {
-		  PreferencesDlg dlg = desktop.getPreferencesDlg();
-		  
-	 dlg.addPanel("WikiPathways Plugin", dlg.builder().booleanField(UrlPreference.TESTSITE_URL, "Test Site (Search or Browse Pathways from Test Site)")
-                               .build()
-			                                       
-			                                );
-			
-			             
-		
+	private void initPreferences() {
+		PreferencesDlg dlg = desktop.getPreferencesDlg();
+
+		dlg.addPanel(
+				"WikiPathways Plugin",
+				dlg.builder()
+						.booleanField(UrlPreference.TESTSITE_URL,
+								"Test Site (Search or Browse Pathways from Test Site)")
+						.build()
+
+		);
+
 	}
 
-	enum UrlPreference implements Preference
-	                 {
-	                 
-	  	               
-	  	                TESTSITE_URL(Boolean.toString(false));
-	  	                UrlPreference (String defaultValue)
-	  	                {
-	  	                        this.defaultValue = defaultValue;
-	  	                }
-	  	
-	  	                private String defaultValue;
-	  	
-	  	                public String getDefault() {
-	  	                        return defaultValue;
-	  	                }
-	  	        }
-	
+	enum UrlPreference implements Preference {
 
-	public File getTmpDir()
-	{
+		TESTSITE_URL(Boolean.toString(false));
+		UrlPreference(String defaultValue) {
+			this.defaultValue = defaultValue;
+		}
+
+		private String defaultValue;
+
+		public String getDefault() {
+			return defaultValue;
+		}
+	}
+
+	public File getTmpDir() {
 		return tmpDir;
 	}
 
-	private class WikipathwaysPluginManagerAction
-	{
+	private class WikipathwaysPluginManagerAction {
 
-		public WikipathwaysPluginManagerAction(PvDesktop desktop)
-		{
-			//preparing menus and submenus 
+		public WikipathwaysPluginManagerAction(PvDesktop desktop) {
+			// preparing menus and submenus
 			wikipathwaysMenu = new JMenu("WikiPathways");
 			JMenuItem searchMenu = new JMenuItem("Search");
 			JMenuItem browseMenu = new JMenuItem("Browse");
 
-			//preparing actions for menus and submenus 
-			SearchAction searchAction = new SearchAction();
-			BrowseAction browseAction = new BrowseAction();
+			// preparing actions for menus and submenus
+			SearchAction searchAction = new SearchAction(desktop,
+					WikiPathwaysClientPlugin.this);
+			BrowseAction browseAction = new BrowseAction(desktop,
+					WikiPathwaysClientPlugin.this);
 
 			searchMenu.addActionListener(searchAction);
 			browseMenu.addActionListener(browseAction);
 
 			uploadMenu = new JMenu("Upload");
 
-			 createMenu = new JMenuItem("Create Pathway");
-			 updateMenu = new JMenuItem("Update Pathway");
+			createMenu = new JMenuItem("Create Pathway");
+			updateMenu = new JMenuItem("Update Pathway");
 
 			CreateAction createAction = new CreateAction();
 			UpdateAction updateAction = new UpdateAction();
@@ -203,84 +200,79 @@ public class WikiPathwaysClientPlugin implements Plugin,ApplicationEventListener
 		}
 
 	}
+
 	/**
 	 * Checks if a pathway is open or not. If there is no open pathway, the
 	 * create and update menus are disabled/enabled.
 	 */
-	public void updateState() 
-	{
-		boolean status=(desktop.getSwingEngine().getEngine().hasVPathway());		
+	public void updateState() {
+		boolean status = (desktop.getSwingEngine().getEngine().hasVPathway());
 		createMenu.setEnabled(status);
 		updateMenu.setEnabled(status);
 	}
 
-
 	private static WikiPathwaysClient client;
-	
-	public static WikiPathwaysClient loadClient() throws MalformedURLException, ServiceException 
-		{	
-		if(client == null) {
+
+	public static WikiPathwaysClient loadClient() throws MalformedURLException,
+			ServiceException {
+		if (client == null) {
 			// TODO: if preferences get changed - set client to null!!!!
-		   if(PreferenceManager.getCurrent().getBoolean(UrlPreference.TESTSITE_URL))
-				{
-					client = new WikiPathwaysClient(new URL("http://test2.wikipathways.org/wpi/webservice/webservice.php"));
-				}
-				else
-				{
-					client = new WikiPathwaysClient(new URL("http://www.wikipathways.org/wpi/webservice/webservice.php"));
-				}
-
+			if (PreferenceManager.getCurrent().getBoolean(
+					UrlPreference.TESTSITE_URL)) {
+				client = new WikiPathwaysClient(
+						new URL(
+								"http://test2.wikipathways.org/wpi/webservice/webservice.php"));
+			} else {
+				client = new WikiPathwaysClient(
+						new URL(
+								"http://www.wikipathways.org/wpi/webservice/webservice.php"));
 			}
-			return client;
+
 		}
-
-
+		return client;
+	}
 
 	/**
-	 * Register actions to provide option to open a pathway From Xref on right click  
+	 * Register actions to provide option to open a pathway From Xref on right
+	 * click
 	 */
-	private void registerActions() 
-	{
-		desktop.addPathwayElementMenuHook(new PathwayElementMenuHook()
-		{
-			public void pathwayElementMenuHook(VPathwayElement e,JPopupMenu menu) 
-			{
-				if (!(e instanceof Graphics)) 
-				{
+	private void registerActions() {
+		desktop.addPathwayElementMenuHook(new PathwayElementMenuHook() {
+			public void pathwayElementMenuHook(VPathwayElement e,
+					JPopupMenu menu) {
+				if (!(e instanceof Graphics)) {
 					return;
 				}
 
 				PathwayElement pe = ((Graphics) e).getPathwayElement();
 
-				if (pe.getXref() == null) 
-				{
+				if (pe.getXref() == null) {
 					return;
 				}
 
 				DataSource ds = pe.getXref().getDataSource();
 
-				if (ds == null) 
-				{
+				if (ds == null) {
 					return;
 				}
 
 				WikiPathwaysClient client;
 				try {
 					client = loadClient();
-				
-				if (client == null) 
-				{
-					return;
-				}
 
-				OpenPathwayFromXrefAction action = new OpenPathwayFromXrefAction(WikiPathwaysClientPlugin.this, pe);
-				action.setClient(client);
-				menu.add(action);
+					if (client == null) {
+						return;
+					}
+
+					OpenPathwayFromXrefAction action = new OpenPathwayFromXrefAction(
+							WikiPathwaysClientPlugin.this, pe);
+					action.setClient(client);
+					menu.add(action);
 				} catch (MalformedURLException e1) {
-					
+
 					e1.printStackTrace();
 				} catch (ServiceException e1) {
-					
+
 					e1.printStackTrace();
 				}
 
@@ -288,35 +280,32 @@ public class WikiPathwaysClientPlugin implements Plugin,ApplicationEventListener
 		});
 	}
 
-
-	
-	protected void openPathwayWithProgress(final WikiPathwaysClient client,final String id, final int rev, final File tmpDir)	throws InterruptedException, ExecutionException 
-	{
+	public void openPathwayWithProgress(final WikiPathwaysClient client,
+			final String id, final int rev, final File tmpDir)
+			throws InterruptedException, ExecutionException {
 		final ProgressKeeper pk = new ProgressKeeper();
-		final ProgressDialog d = new ProgressDialog(JOptionPane.getFrameForComponent(desktop.getSwingEngine().getApplicationPanel()), "", pk, false, true);
-		
-		SwingWorker<Boolean, Void> sw = new SwingWorker<Boolean, Void>() 
-			{
-			protected Boolean doInBackground() throws Exception
-			{
+		final ProgressDialog d = new ProgressDialog(
+				JOptionPane.getFrameForComponent(desktop.getSwingEngine()
+						.getApplicationPanel()), "", pk, false, true);
+
+		SwingWorker<Boolean, Void> sw = new SwingWorker<Boolean, Void>() {
+			protected Boolean doInBackground() throws Exception {
 				pk.setTaskName("Opening pathway");
-				try 
-				{
+				try {
 					openPathway(client, id, rev, tmpDir);
-				}
-				catch (Exception e) 
-				{
+				} catch (Exception e) {
 					Logger.log.error("The Pathway is not found", e);
-					JOptionPane.showMessageDialog(null,"The Pathway is not found", "ERROR",JOptionPane.ERROR_MESSAGE);
-				}
-				finally 
-				{
+					JOptionPane.showMessageDialog(null,
+							"The Pathway is not found", "ERROR",
+							JOptionPane.ERROR_MESSAGE);
+				} finally {
 					pk.finished();
 				}
 				return true;
 			}
+
 			protected void done() {
-				 if (pk.isCancelled()) {
+				if (pk.isCancelled()) {
 					pk.finished();
 				}
 			}
@@ -327,33 +316,32 @@ public class WikiPathwaysClientPlugin implements Plugin,ApplicationEventListener
 		sw.get();
 	}
 
-	protected void openPathwayWithProgress(final WikiPathwaysClient client,final String id, final int rev, final File tmpDir,final Xref[] xrefs)	throws InterruptedException, ExecutionException 
-	{
+	public void openPathwayWithProgress(final WikiPathwaysClient client,
+			final String id, final int rev, final File tmpDir,
+			final Xref[] xrefs) throws InterruptedException, ExecutionException {
 		final ProgressKeeper pk = new ProgressKeeper();
-		final ProgressDialog d = new ProgressDialog(JOptionPane.getFrameForComponent(desktop.getSwingEngine().getApplicationPanel()), "", pk, false, true);
-		
-		SwingWorker<Boolean, Void> sw = new SwingWorker<Boolean, Void>() 
-			{
-			protected Boolean doInBackground() throws Exception
-			{
+		final ProgressDialog d = new ProgressDialog(
+				JOptionPane.getFrameForComponent(desktop.getSwingEngine()
+						.getApplicationPanel()), "", pk, false, true);
+
+		SwingWorker<Boolean, Void> sw = new SwingWorker<Boolean, Void>() {
+			protected Boolean doInBackground() throws Exception {
 				pk.setTaskName("Opening pathway");
-				try 
-				{
-					openPathway(client, id, rev, tmpDir,xrefs);
-				}
-				catch (Exception e) 
-				{
+				try {
+					openPathway(client, id, rev, tmpDir, xrefs);
+				} catch (Exception e) {
 					Logger.log.error("The Pathway is not found", e);
-					JOptionPane.showMessageDialog(null,"The Pathway is not found", "ERROR",JOptionPane.ERROR_MESSAGE);
-				}
-				finally 
-				{
+					JOptionPane.showMessageDialog(null,
+							"The Pathway is not found", "ERROR",
+							JOptionPane.ERROR_MESSAGE);
+				} finally {
 					pk.finished();
 				}
 				return true;
 			}
+
 			protected void done() {
-				 if (pk.isCancelled()) {
+				if (pk.isCancelled()) {
 					pk.finished();
 				}
 			}
@@ -363,61 +351,60 @@ public class WikiPathwaysClientPlugin implements Plugin,ApplicationEventListener
 		d.setVisible(true);
 		sw.get();
 	}
+
 	/**
-	 *Load Pathway into PathVisio on selection of pathway from list provided by any Search/ Browse Dialog.
+	 * Load Pathway into PathVisio on selection of pathway from list provided by
+	 * any Search/ Browse Dialog.
 	 */
-	protected void openPathway(WikiPathwaysClient client, String id, int rev, File tmpDir)throws RemoteException, ConverterException 
-	{
+	protected void openPathway(WikiPathwaysClient client, String id, int rev,
+			File tmpDir) throws RemoteException, ConverterException {
 		WSPathway wsp = client.getPathway(id, rev);
 		Pathway p = WikiPathwaysClient.toPathway(wsp);
-		File tmp = new File(tmpDir, wsp.getId() + ".r" + wsp.getRevision()+ ".gpml");
+		File tmp = new File(tmpDir, wsp.getId() + ".r" + wsp.getRevision()
+				+ ".gpml");
 		p.writeToXml(tmp, true);
-revisionno= wsp.getRevision();
-pathwayid=wsp.getId();
+		revisionno = wsp.getRevision();
+		pathwayid = wsp.getId();
 		Engine engine = desktop.getSwingEngine().getEngine();
 		engine.setWrapper(desktop.getSwingEngine().createWrapper());
 		engine.openPathway(tmp);
-		
-	
-		
-		
+
 	}
+
 	/**
-	 *Load Pathway into PathVisio on selection of pathway from list provided by any Search/ Browse Dialog.
+	 * Load Pathway into PathVisio on selection of pathway from list provided by
+	 * any Search/ Browse Dialog.
 	 */
-	protected void openPathway(WikiPathwaysClient client, String id, int rev, File tmpDir,Xref[] xrefs)throws RemoteException, ConverterException 
-	{
+	protected void openPathway(WikiPathwaysClient client, String id, int rev,
+			File tmpDir, Xref[] xrefs) throws RemoteException,
+			ConverterException {
 		WSPathway wsp = client.getPathway(id, rev);
 		Pathway p = WikiPathwaysClient.toPathway(wsp);
-		File tmp = new File(tmpDir, wsp.getId() + ".r" + wsp.getRevision()+ ".gpml");
+		File tmp = new File(tmpDir, wsp.getId() + ".r" + wsp.getRevision()
+				+ ".gpml");
 		p.writeToXml(tmp, true);
-		revisionno= wsp.getRevision();
-		pathwayid=wsp.getId();
+		revisionno = wsp.getRevision();
+		pathwayid = wsp.getId();
 		Engine engine = desktop.getSwingEngine().getEngine();
 		engine.setWrapper(desktop.getSwingEngine().createWrapper());
 		engine.openPathway(tmp);
-		
-	
+
 		highlightResults(xrefs);
-		
+
 	}
+
 	private void highlightResults(Xref[] xrefs) {
 		Rectangle2D interestingRect = null;
 		Engine engine = desktop.getSwingEngine().getEngine();
 		VPathway vpy = engine.getActiveVPathway();
-		for (VPathwayElement velt : vpy.getDrawingObjects())
-		{
-			if (velt instanceof GeneProduct)
-			{
-				GeneProduct gp = (GeneProduct)velt;
-				for (Xref xref: xrefs)
-				{
-				
-					if (xref.equals(gp.getPathwayElement().getXref()))
-					{
+		for (VPathwayElement velt : vpy.getDrawingObjects()) {
+			if (velt instanceof GeneProduct) {
+				GeneProduct gp = (GeneProduct) velt;
+				for (Xref xref : xrefs) {
+
+					if (xref.equals(gp.getPathwayElement().getXref())) {
 						gp.highlight(Color.YELLOW);
-						if (interestingRect == null)
-						{
+						if (interestingRect == null) {
 							interestingRect = gp.getVBounds();
 						}
 						break;
@@ -426,88 +413,85 @@ pathwayid=wsp.getId();
 			}
 		}
 		if (interestingRect != null)
-			vpy.getWrapper().scrollTo (interestingRect.getBounds());
+			vpy.getWrapper().scrollTo(interestingRect.getBounds());
 	}
-	public static String shortClientName(String clientName) 
-	{
+
+	public static String shortClientName(String clientName) {
 		Pattern pattern = Pattern.compile("http://(.*?)/");
 		Matcher matcher = pattern.matcher(clientName);
-		
-		if (matcher.find())
-		{
+
+		if (matcher.find()) {
 			clientName = matcher.group(1);
 		}
-		
+
 		return clientName;
 	}
 
-	static boolean isSameServer(String clientStr, String url) 
-	{
-		return url.toLowerCase().startsWith(clientStr.toLowerCase().replace("wpi/webservice/webservice.php?wsdl", ""));
+	static boolean isSameServer(String clientStr, String url) {
+		return url.toLowerCase().startsWith(
+				clientStr.toLowerCase().replace(
+						"wpi/webservice/webservice.php?wsdl", ""));
 	}
 
 	@Override
-	public void done() 
-	{
+	public void done() {
 		desktop.unregisterSubMenu("Plugins", wikipathwaysMenu);
 		try {
 			CommonsFileUtils.deleteDirectory(tmpDir);
 			if (tmpDir.exists()) {
-                throw new IOException("Failed to delete  directory '" + tmpDir);
-            }
+				throw new IOException("Failed to delete  directory '" + tmpDir);
+			}
 		} catch (IOException e) {
-			
+
 			e.printStackTrace();
 		}
 	}
 
-	protected void openPathwayXrefWithProgress(final WikiPathwaysClient client,final Xref x, final int rev, final File tmpDir) throws InterruptedException, ExecutionException
-	{
+	public void openPathwayXrefWithProgress(final WikiPathwaysClient client,
+			final Xref x, final int rev, final File tmpDir)
+			throws InterruptedException, ExecutionException {
 
 		final ProgressKeeper pk = new ProgressKeeper();
-		final ProgressDialog d = new ProgressDialog(JOptionPane.getFrameForComponent(desktop.getSwingEngine().getApplicationPanel()), "", pk, false, true);
-		
-		SwingWorker<Boolean, Void> sw = new SwingWorker<Boolean, Void>() 
-			{
-			protected Boolean doInBackground() throws Exception
-			{
+		final ProgressDialog d = new ProgressDialog(
+				JOptionPane.getFrameForComponent(desktop.getSwingEngine()
+						.getApplicationPanel()), "", pk, false, true);
+
+		SwingWorker<Boolean, Void> sw = new SwingWorker<Boolean, Void>() {
+			protected Boolean doInBackground() throws Exception {
 				pk.setTaskName("Opening pathway");
-				try 
-				{
+				try {
 					openPathwayXref(client, x, rev, tmpDir);
-				}
-				catch (Exception e) 
-				{
+				} catch (Exception e) {
 					Logger.log.error("The Pathway is not found", e);
-					JOptionPane.showMessageDialog(null,"The Pathway is not found", "ERROR",JOptionPane.ERROR_MESSAGE);
-				}
-				finally 
-				{
+					JOptionPane.showMessageDialog(null,
+							"The Pathway is not found", "ERROR",
+							JOptionPane.ERROR_MESSAGE);
+				} finally {
 					pk.finished();
 				}
 				return true;
 			}
 
-			
 		};
 
 		sw.execute();
 		d.setVisible(true);
 		sw.get();
-		
+
 	}
-	
-	protected void openPathwayXref(WikiPathwaysClient client, Xref x,int rev, File tmpDir) throws MalformedURLException, ServiceException
-	{
-		
+
+	protected void openPathwayXref(WikiPathwaysClient client, Xref x, int rev,
+			File tmpDir) throws MalformedURLException, ServiceException {
+
 		WSSearchResult[] wsp;
-		try
-		{
+		try {
 			wsp = client.findPathwaysByXref(x);
-		
-			Xref[] xref= {x};
-			PathwayPanel p = new PathwayPanel(WikiPathwaysClientPlugin.this,wsp,tmpDir,xref);
-			JDialog d = new JDialog(desktop.getFrame(), "Related Pathways from WikiPathways",false);
+
+			Xref[] xref = { x };
+			PathwayPanel p = new PathwayPanel(WikiPathwaysClientPlugin.this,
+					wsp, tmpDir, xref);
+			JDialog d = new JDialog(desktop.getFrame(),
+					"Related Pathways from WikiPathways", false);
 
 			d.getContentPane().add(p);
 			d.pack();
@@ -515,160 +499,46 @@ pathwayid=wsp.getId();
 			d.setResizable(false);
 			d.setLocationRelativeTo(desktop.getSwingEngine().getFrame());
 			d.setVisible(true);
-		
+
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
-	}
-	
-	/**
-	 *Load Search Dialog with Search and AdvancedSearch in the TabbedPane
-	 */
-	private class Search extends JPanel
-	{
-		JTabbedPane searchTabbedPane;
-
-		public Search(final WikiPathwaysClientPlugin plugin)
-		{
-			SearchPanel p = new SearchPanel(plugin);
-			PathwaySearchPanel a = new PathwaySearchPanel(plugin);
-			ReferenceSearchPanel r = new ReferenceSearchPanel(plugin);
-			SearchByIdentifierPanel sp = new SearchByIdentifierPanel(plugin);
-			searchTabbedPane = new JTabbedPane();
-			searchTabbedPane.addTab("KeyWord Search", p);
-			searchTabbedPane.addTab("Pathway Search", a);
-			searchTabbedPane.addTab("Search By Identifier", sp);
-			searchTabbedPane.addTab("References", r);
-			
-			add(searchTabbedPane);
-		}
 
 	}
-	
-	/**
-	 *Load Search Dialog with Search and AdvancedSearch in the TabbedPane
-	 */
-	private class Browse extends JPanel
-	{
-		JTabbedPane searchTabbedPane;
 
-		public Browse(final WikiPathwaysClientPlugin plugin)
-		{
-			BrowsePanel p = new BrowsePanel(plugin);
-			
-			//OntologyBrowsePanel a = new OntologyBrowsePanel(plugin);
-			//searchTabbedPane = new JTabbedPane();
-			//searchTabbedPane.addTab("Browse", p);
-			//searchTabbedPane.addTab("Ontology Search", a);
-			//add(searchTabbedPane);
-			add(p);
-		}
+	private class UploadAction extends AbstractAction {
 
-	}
-	
-	
-	/**
-	 * Search menu action in the WikiPathways menu
-	 */
-	private class SearchAction extends AbstractAction
-	{
-		private String IMG_SEARCH = "resources/search.gif";
-		URL url = WikiPathwaysClientPlugin.class.getClassLoader().getResource(IMG_SEARCH);
+		public void actionPerformed(ActionEvent e) {
 
-		public SearchAction() 
-		{
-			putValue(NAME, "Search");
-			putValue(SMALL_ICON, new ImageIcon(url));
-			putValue(SHORT_DESCRIPTION, "Search pathways in Wikipathways");
-		}
-
-		public void actionPerformed(ActionEvent e) 
-		{
-
-			Search p = new Search(WikiPathwaysClientPlugin.this);
-		
-			JDialog d = new JDialog(desktop.getFrame(), "Search WikiPathways",false);
-
-			d.getContentPane().add(p);
-			d.pack();
-			d.setVisible(true);
-			d.setResizable(false);
-			
-			//loading dialog at the centre of the frame
-			d.setLocationRelativeTo(desktop.getSwingEngine().getFrame());
-			d.setVisible(true);
-			
-			
 		}
 	}
 
+	private class CreateAction extends AbstractAction {
 
-	/**
-	 * Browse menu action in the WikiPathways menu
-	 */
-	private class BrowseAction extends AbstractAction
-	{
+		public void actionPerformed(ActionEvent e) {
+			new CreatePathwayPanel(desktop, WikiPathwaysClientPlugin.this);
 
-		public BrowseAction() 
-		{
-			putValue(NAME, "Browse");
-			putValue(SHORT_DESCRIPTION, "Browse pathways in Wikipathways");
-		}
-
-		public void actionPerformed(ActionEvent e) 
-		{
-			Browse p = new Browse(WikiPathwaysClientPlugin.this);
-			JDialog d = new JDialog(desktop.getFrame(), "Browse WikiPathways",false);
-
-			d.getContentPane().add(p);
-			d.pack();
-			d.setVisible(true);
-			
-			d.setLocationRelativeTo(desktop.getSwingEngine().getFrame());
-			d.setVisible(true);
 		}
 	}
 
-	private class UploadAction extends AbstractAction
-	{
+	private class UpdateAction extends AbstractAction {
 
-		public void actionPerformed(ActionEvent e)
-		{
-			
+		public void actionPerformed(ActionEvent e) {
+			new UpdatePathwayPanel(desktop, WikiPathwaysClientPlugin.this);
 		}
 	}
 
-	private class CreateAction extends AbstractAction 
-	{
-
-		public void actionPerformed(ActionEvent e) 
-		{
-			 new CreatePathwayPanel(desktop,WikiPathwaysClientPlugin.this);
-			
-		}
-	}
-
-	private class UpdateAction extends AbstractAction 
-	{
-
-		public void actionPerformed(ActionEvent e) 
-		{
-			 new UpdatePathwayPanel(desktop,WikiPathwaysClientPlugin.this);
-		}
-	}
 	@Override
 	public void applicationEvent(ApplicationEvent arg0) {
-		
-			updateState();
-		}
+
+		updateState();
+	}
 
 	@Override
 	public void vPathwayEvent(VPathwayEvent arg0) {
 		updateState();
-		
-	}		
-		
+
+	}
+
 }

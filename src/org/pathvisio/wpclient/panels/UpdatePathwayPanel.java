@@ -1,10 +1,8 @@
-package org.pathvisio.wpclient;
+package org.pathvisio.wpclient.panels;
 
-import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
@@ -18,18 +16,13 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.xml.rpc.ServiceException;
 
-import org.pathvisio.core.model.ObjectType;
 import org.pathvisio.core.model.Pathway;
-import org.pathvisio.core.model.PathwayElement;
-import org.pathvisio.core.model.PathwayElement.Comment;
-import org.pathvisio.core.model.PropertyType;
 import org.pathvisio.desktop.PvDesktop;
 import org.pathvisio.wikipathways.webservice.WSPathwayInfo;
+import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.wikipathways.client.WikiPathwaysClient;
 
-import com.sun.org.apache.bcel.internal.generic.NEW;
-
-public class CreatePathwayPanel extends JPanel implements ActionListener {
+public class UpdatePathwayPanel extends JPanel implements ActionListener {
 	LoginPanel p;
 	JDialog d,d2;
 	static WikiPathwaysClient client;
@@ -38,7 +31,7 @@ public class CreatePathwayPanel extends JPanel implements ActionListener {
 	private WikiPathwaysClientPlugin plugin;
 	private String Description="";
 
-	public CreatePathwayPanel(PvDesktop desktop, WikiPathwaysClientPlugin plugin) {
+	public UpdatePathwayPanel(PvDesktop desktop, WikiPathwaysClientPlugin plugin) {
 		this.desktop = desktop;
 		this.plugin = plugin;
 		if (LoginPanel.Username.equals("") || LoginPanel.Password.equals("")) {
@@ -52,10 +45,10 @@ public class CreatePathwayPanel extends JPanel implements ActionListener {
 
 	private void showDescriptionPanel() {
 		descriptionPanel dp = new descriptionPanel();
-		d2 = new JDialog(desktop.getFrame(), "WikiPathways", false);
-		JButton submit = new JButton("create");
+		d2 = new JDialog(desktop.getFrame(), "wikipathways", false);
+		JButton submit = new JButton("Update");
 
-		submit.setActionCommand("Create");
+		submit.setActionCommand("Update");
 		submit.addActionListener(this);
 		d2.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
@@ -87,7 +80,7 @@ public class CreatePathwayPanel extends JPanel implements ActionListener {
 		public descriptionPanel() {
 			super();
 			setLayout(new GridLayout(2, 2));
-			add(new JLabel("Description"));
+			add(new JLabel("Description for Pathway"));
 			add(description);
 
 		}
@@ -127,7 +120,7 @@ public class CreatePathwayPanel extends JPanel implements ActionListener {
 
 	}
 
-	public void createPathway() {
+	public void UpdatePathway() {
 
 	
 			
@@ -136,14 +129,18 @@ public class CreatePathwayPanel extends JPanel implements ActionListener {
 					Pathway pathway = desktop
 					.getSwingEngine().getEngine().getActivePathway();
 						
-					pathway.getMappInfo().addComment(Description, "WP-Client");
+				
+					WSPathwayInfo wsPathwayInfo=client.getPathwayInfo(WikiPathwaysClientPlugin.pathwayid);
+				
+				String newrevision=wsPathwayInfo.getRevision();
+				
+				if(WikiPathwaysClientPlugin.revisionno.equals(newrevision))
+				{
 					
-				
-				
-								WSPathwayInfo l = client.createPathway(pathway);
-								client.saveCurationTag(l.getId(), "Curation:UnderConstruction", "curation tag UnderConstruction added by WikiPathways Client Plugin",Integer.parseInt(l.getRevision()));
-									JOptionPane.showMessageDialog(null,
-							"The Pathway " + l.getId() + " has been Uploaded. \n With Curation Tag : Under Construction. \n Please Update the Curation Tag.");
+				client.updatePathway(WikiPathwaysClientPlugin.pathwayid, pathway, description.getText(),Integer.parseInt(WikiPathwaysClientPlugin.revisionno));
+					JOptionPane.showMessageDialog(null,
+							"The pathway is updated");
+				}
 
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(null,
@@ -177,9 +174,9 @@ public class CreatePathwayPanel extends JPanel implements ActionListener {
 			showDescriptionPanel();
 
 		}
-		if ("Create".equals(e.getActionCommand())) {
+		if ("Update".equals(e.getActionCommand())) {
 			Description= description.getText();
-			createPathway();
+			UpdatePathway();
 			d2.dispose();
 			
 

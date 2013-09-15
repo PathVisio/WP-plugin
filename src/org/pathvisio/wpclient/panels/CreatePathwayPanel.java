@@ -1,9 +1,8 @@
-package org.pathvisio.wpclient;
+package org.pathvisio.wpclient.panels;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
@@ -14,24 +13,26 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.xml.rpc.ServiceException;
 
 import org.pathvisio.core.model.Pathway;
 import org.pathvisio.desktop.PvDesktop;
 import org.pathvisio.wikipathways.webservice.WSPathwayInfo;
+import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.wikipathways.client.WikiPathwaysClient;
 
-public class UpdatePathwayPanel extends JPanel implements ActionListener {
+public class CreatePathwayPanel extends JPanel implements ActionListener {
 	LoginPanel p;
 	JDialog d,d2;
 	static WikiPathwaysClient client;
-	private JTextField description = new JTextField(30);
+	private JTextArea description = new JTextArea(2, 2);
 	private PvDesktop desktop;
 	private WikiPathwaysClientPlugin plugin;
 	private String Description="";
 
-	public UpdatePathwayPanel(PvDesktop desktop, WikiPathwaysClientPlugin plugin) {
+	public CreatePathwayPanel(PvDesktop desktop, WikiPathwaysClientPlugin plugin) {
 		this.desktop = desktop;
 		this.plugin = plugin;
 		if (LoginPanel.Username.equals("") || LoginPanel.Password.equals("")) {
@@ -45,10 +46,10 @@ public class UpdatePathwayPanel extends JPanel implements ActionListener {
 
 	private void showDescriptionPanel() {
 		descriptionPanel dp = new descriptionPanel();
-		d2 = new JDialog(desktop.getFrame(), "wikipathways", false);
-		JButton submit = new JButton("Update");
+		d2 = new JDialog(desktop.getFrame(), "WikiPathways", false);
+		JButton submit = new JButton("create");
 
-		submit.setActionCommand("Update");
+		submit.setActionCommand("Create");
 		submit.addActionListener(this);
 		d2.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
@@ -80,8 +81,8 @@ public class UpdatePathwayPanel extends JPanel implements ActionListener {
 		public descriptionPanel() {
 			super();
 			setLayout(new GridLayout(2, 2));
-			add(new JLabel("Description"));
-			add(description);
+			add(new JLabel("Description for Pathway"));
+			add(new JScrollPane(description));
 
 		}
 	}
@@ -114,13 +115,14 @@ public class UpdatePathwayPanel extends JPanel implements ActionListener {
 
 		d.pack();
 		d.setVisible(true);
+	
 		d.setResizable(false);
 		d.setLocationRelativeTo(desktop.getSwingEngine().getFrame());
 		d.setVisible(true);
 
 	}
 
-	public void UpdatePathway() {
+	public void createPathway() {
 
 	
 			
@@ -129,18 +131,13 @@ public class UpdatePathwayPanel extends JPanel implements ActionListener {
 					Pathway pathway = desktop
 					.getSwingEngine().getEngine().getActivePathway();
 						
+					pathway.getMappInfo().addComment(Description, "WP-Client");				
 				
-					WSPathwayInfo wsPathwayInfo=client.getPathwayInfo(WikiPathwaysClientPlugin.pathwayid);
 				
-				String newrevision=wsPathwayInfo.getRevision();
-				
-				if(WikiPathwaysClientPlugin.revisionno.equals(newrevision))
-				{
-					
-				client.updatePathway(WikiPathwaysClientPlugin.pathwayid, pathway, description.getText(),Integer.parseInt(WikiPathwaysClientPlugin.revisionno));
-					JOptionPane.showMessageDialog(null,
-							"The pathway is updated");
-				}
+								WSPathwayInfo l = client.createPathway(pathway);
+								client.saveCurationTag(l.getId(), "Curation:UnderConstruction", "curation tag UnderConstruction added by WikiPathways Client Plugin",Integer.parseInt(l.getRevision()));
+									JOptionPane.showMessageDialog(null,
+							"The Pathway " + l.getId() + " has been Uploaded. \n With Curation Tag : Under Construction. \n Please Update the Curation Tag.");
 
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(null,
@@ -174,9 +171,10 @@ public class UpdatePathwayPanel extends JPanel implements ActionListener {
 			showDescriptionPanel();
 
 		}
-		if ("Update".equals(e.getActionCommand())) {
+		if ("Create".equals(e.getActionCommand())) {
 			Description= description.getText();
-			UpdatePathway();
+		
+			createPathway();
 			d2.dispose();
 			
 
