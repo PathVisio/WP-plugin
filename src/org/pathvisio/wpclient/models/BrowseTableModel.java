@@ -25,38 +25,43 @@ import org.wikipathways.client.WikiPathwaysClient;
 	 * This class creates the BrowseTableModel Based on the Browse Criteria
 	 */
 	public class BrowseTableModel extends AbstractTableModel {
-		Set<WSPathwayInfo> results;
+		WSPathwayInfo[] results ;
 		String[] columnNames = new String[] { "ID", "Name", "Species",
 				"Curation Tag" };
 		HashMap<String, WSCurationTag[]> imagetags = new HashMap<String, WSCurationTag[]>();
 		final WikiPathwaysClient client;
 		public String clientName;
 
-		public BrowseTableModel(Set<WSPathwayInfo> wsCurationTags,
+		public BrowseTableModel(Set<WSPathwayInfo> wsPathwayInfos,
 				String clientName2) throws MalformedURLException,
 				ServiceException {
 			client = WikiPathwaysClientPlugin.loadClient();
 			clientName = client.toString();
 			this.clientName = clientName2;
-			this.results = wsCurationTags;
-			getCurationTags(wsCurationTags);
+			results = new WSPathwayInfo[wsPathwayInfos.size()];
+			wsPathwayInfos.toArray(results);
+			getCurationTags(wsPathwayInfos);
 			
 		}
 
-		public int getColumnCount() {
+		public int getColumnCount() 
+		{
 			return 4;
 		}
 
-		public Class getColumnClass(int column) {
+		public Class getColumnClass(int column)
+		{
 			return getValueAt(3, column).getClass();
 		}
 
-		public int getRowCount() {
-			return results.size();
-		}
+		public int getRowCount() 
+		{
+			return results.length;
 
-		public Object getValueAt(int rowIndex, int columnIndex) {
-			WSPathwayInfo r = (WSPathwayInfo) results.toArray()[rowIndex];
+		}
+		public Object getValueAt(int rowIndex, int columnIndex)
+		{
+			WSPathwayInfo r =   results[rowIndex];
 
 			switch (columnIndex) {
 			case 0:
@@ -79,15 +84,15 @@ import org.wikipathways.client.WikiPathwaysClient;
 
 					if (BrowsePanel.tags.containsKey(tag.getName())) 
 					{
-						IMG_SEARCH = "resources/" + BrowsePanel.tags.get(tag.getName())+ ".png";
+						IMG_SEARCH = "resources/" +BrowsePanel.tags.get(tag.getName())+ ".png";
 						URL url = this.getClass().getClassLoader().getResource(IMG_SEARCH);
 						icon = new ImageIcon(url);
-
+						
 						Image img = icon.getImage();
 						Image newimg = img.getScaledInstance(15, 10,java.awt.Image.SCALE_SMOOTH);//SCALING THE IMAGE
 						ImageIcon newIcon = new ImageIcon(newimg);
 
-						JLabel l = new JLabel(newIcon);
+					JLabel	l = new JLabel(newIcon);
 
 						p.setBackground(Color.white);
 						p.add(l);
@@ -98,15 +103,12 @@ import org.wikipathways.client.WikiPathwaysClient;
 
 			}
 			}
-			
 			return "";
 		}
 
 		public String getColumnName(int column) {
 			return columnNames[column];
 		}
-
-	
 	public void getCurationTags(Set<WSPathwayInfo> tags)
 	{
 		Iterator<WSPathwayInfo> itr = tags.iterator();
