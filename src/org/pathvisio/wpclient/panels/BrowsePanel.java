@@ -324,7 +324,7 @@ this.desktop=desktop;
 			Set<WSPathwayInfo> pathways= new HashSet<WSPathwayInfo>();
 			protected WSPathwayInfo[] doInBackground() throws Exception 
 			{
-				pk.setTaskName("Starting Browse");
+				pk.setTaskName("Browsing WikiPathways");
 
 				try {
 
