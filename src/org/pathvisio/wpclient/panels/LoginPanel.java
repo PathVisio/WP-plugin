@@ -24,37 +24,24 @@ package org.pathvisio.wpclient.panels;
  * @version 1.0
  **/
 
-import java.awt.Component;
 import java.awt.GridLayout;
-import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
-import java.util.Collections;
-import java.util.Vector;
 
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.xml.rpc.ServiceException;
 
-import org.pathvisio.core.debug.Logger;
-import org.pathvisio.core.model.Pathway;
 import org.pathvisio.desktop.PvDesktop;
-import org.pathvisio.wikipathways.webservice.WSPathway;
-import org.pathvisio.wikipathways.webservice.WSPathwayInfo;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.wikipathways.client.WikiPathwaysClient;
-
-import com.sun.net.httpserver.Authenticator.Success;
 
 public class LoginPanel extends JPanel implements ActionListener {
 	static String Username="";
@@ -115,6 +102,8 @@ static boolean loggedin ;
 		{
 			JOptionPane.showMessageDialog(null, "You do not have permissions. \n Please Send an email to:\n wikipathways-devel@googlegroups.com",
 					"WikiPathways Login ERROR", JOptionPane.ERROR_MESSAGE);
+			Username="";
+			Password="";
 		}
 		return client;
 	

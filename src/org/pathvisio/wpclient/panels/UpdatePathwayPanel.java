@@ -37,7 +37,7 @@ public class UpdatePathwayPanel extends JPanel implements ActionListener {
 		if (LoginPanel.Username.equals("") || LoginPanel.Password.equals("")) {
 			showLoginPanel();
 		}
-		if (!(LoginPanel.Username.equals("") && LoginPanel.Password.equals("")) ){
+		if (!(LoginPanel.Username.equals("") && LoginPanel.Password.equals(""))){
 			showDescriptionPanel();
 		}
 
@@ -120,9 +120,9 @@ public class UpdatePathwayPanel extends JPanel implements ActionListener {
 
 	}
 
-	public void UpdatePathway() {
-
-	
+	public void UpdatePathway() throws RemoteException, MalformedURLException, ServiceException {
+		client = WikiPathwaysClientPlugin.loadClient();
+		client.login(LoginPanel.Username,LoginPanel.Password);
 			
 			if (client != null) {
 				try {
@@ -176,7 +176,18 @@ public class UpdatePathwayPanel extends JPanel implements ActionListener {
 		}
 		if ("Update".equals(e.getActionCommand())) {
 			Description= description.getText();
-			UpdatePathway();
+			try {
+				UpdatePathway();
+			} catch (RemoteException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (MalformedURLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (ServiceException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			d2.dispose();
 			
 
