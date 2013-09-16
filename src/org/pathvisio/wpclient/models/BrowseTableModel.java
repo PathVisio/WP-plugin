@@ -33,18 +33,18 @@ import org.wikipathways.client.WikiPathwaysClient;
 		final WikiPathwaysClient client;
 		public String clientName;
 		
-		public BrowseTableModel(WSPathwayInfo[] wsCurationTags,String clientName) throws MalformedURLException, ServiceException, RemoteException 
+		public BrowseTableModel(WSPathwayInfo[] results,String clientName) throws MalformedURLException, ServiceException, RemoteException 
 		{
 			client = WikiPathwaysClientPlugin.loadClient();
 			clientName = client.toString();
 			this.clientName = clientName;
-			putImagetags(wsCurationTags);
-			this.results = wsCurationTags;
+			putImagetags(results);
+			this.results = results;
 		}
 
-		private void putImagetags(WSPathwayInfo[] wsCurationTags) throws RemoteException {
-		for (int i = 0; i < wsCurationTags.length; i++) {
-			String sid = wsCurationTags[i].getId();
+		private void putImagetags(WSPathwayInfo[] results) throws RemoteException {
+		for (int i = 0; i < results.length; i++) {
+			String sid = results[i].getId();
 			WSCurationTag[] ptags = client.getCurationTags(sid);
 			imagetags.put(sid, ptags);
 		}
@@ -58,10 +58,19 @@ import org.wikipathways.client.WikiPathwaysClient;
 		}
 
 		public Class getColumnClass(int column)
-		{
-			return getValueAt(3, column).getClass();
-		}
+        {
+            for (int row = 0; row < getRowCount(); row++)
+            {
+                Object o = getValueAt(row, column);
 
+                if (o != null)
+                {
+                    return o.getClass();
+                }
+            }
+
+            return Object.class;
+        }
 		public int getRowCount() 
 		{
 			return results.length;
@@ -100,7 +109,7 @@ import org.wikipathways.client.WikiPathwaysClient;
 						Image newimg = img.getScaledInstance(15, 10,java.awt.Image.SCALE_SMOOTH);//SCALING THE IMAGE
 						ImageIcon newIcon = new ImageIcon(newimg);
 
-					JLabel	l = new JLabel(newIcon);
+						JLabel	l = new JLabel(newIcon);
 
 						p.setBackground(Color.white);
 						p.add(l);

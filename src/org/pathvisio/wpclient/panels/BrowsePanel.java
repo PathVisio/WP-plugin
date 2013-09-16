@@ -97,7 +97,6 @@ public class BrowsePanel extends JPanel
 	WikiPathwaysClient client;
 	WSCurationTag[] pcolltags;
 	WSCurationTag[] ptags ;
-	int i = 0;
 
 	JLabel l;
 
@@ -320,12 +319,12 @@ this.desktop=desktop;
 
 		SwingWorker<WSPathwayInfo[], Void> sw = new SwingWorker<WSPathwayInfo[], Void>() 
 		{
-		
-			Set<WSPathwayInfo> pathways= new HashSet<WSPathwayInfo>();
+			WSPathwayInfo[] wsPathwayInfos;
+
 			protected WSPathwayInfo[] doInBackground() throws Exception 
 			{
 				pk.setTaskName("Browsing WikiPathways");
-
+				Set<WSPathwayInfo> pathways= new HashSet<WSPathwayInfo>();
 				try {
 
 					// obtaining the selected cutaion tag
@@ -380,8 +379,9 @@ this.desktop=desktop;
 					
 					else if ((!organism.equalsIgnoreCase("ALL SPECIES"))&& (!(collkey.equalsIgnoreCase("Curation:All")) && (!(curkey.equalsIgnoreCase("No Curation")))))
 						pathways= b.browseByOrganismAndCollectionAndCurationTag(client, Organism.fromLatinName(organism), collkey,curkey);
-
 					
+					wsPathwayInfos= new WSPathwayInfo[pathways.size()];
+					return pathways.toArray(wsPathwayInfos);
 				
 				}
 				catch (Exception ex)
@@ -393,9 +393,7 @@ this.desktop=desktop;
 				{
 					pk.finished();
 				}
-				WSPathwayInfo[] wsPathwayInfos;
-				wsPathwayInfos= new WSPathwayInfo[pathways.size()];
-				return pathways.toArray(wsPathwayInfos);
+			return wsPathwayInfos;
 			}
 			protected void done() {
 				if (!pk.isCancelled()) {
