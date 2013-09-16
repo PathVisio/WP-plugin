@@ -39,7 +39,7 @@ public class BrowseAction extends AbstractAction {
 			WSPathwayInfo[] result = client.listPathways();
 			set.addAll(Arrays.asList(result));
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		return set;

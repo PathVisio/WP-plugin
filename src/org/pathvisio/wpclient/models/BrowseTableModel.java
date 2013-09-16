@@ -1,4 +1,5 @@
 package org.pathvisio.wpclient.models;
+
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Image;
@@ -6,8 +7,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -21,26 +20,35 @@ import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.pathvisio.wpclient.panels.BrowsePanel;
 import org.wikipathways.client.WikiPathwaysClient;
 
-/**
-	 * This class creates the BrowseTableModel Based on the Browse Criteria
+	/**
+	 * This class creates the BrowseTableModel 
+	 * Based on the Browse Criteria
 	 */
-	public class BrowseTableModel extends AbstractTableModel {
-		WSPathwayInfo[] results ;
-		String[] columnNames = new String[] { "ID", "Name", "Species",
-				"Curation Tag" };
+	public class BrowseTableModel extends AbstractTableModel 
+	{
+		WSPathwayInfo[] results;
+		String[] columnNames = new String[] { "ID", "Name", "Species","Curation Tag" };
 		HashMap<String, WSCurationTag[]> imagetags = new HashMap<String, WSCurationTag[]>();
+		
 		final WikiPathwaysClient client;
 		public String clientName;
-
-		public BrowseTableModel(Set<WSPathwayInfo> wsPathwayInfos,
-				String clientName2) throws MalformedURLException,
-				ServiceException {
+		
+		public BrowseTableModel(WSPathwayInfo[] wsCurationTags,String clientName) throws MalformedURLException, ServiceException, RemoteException 
+		{
 			client = WikiPathwaysClientPlugin.loadClient();
 			clientName = client.toString();
-			this.clientName = clientName2;
-			results = new WSPathwayInfo[wsPathwayInfos.size()];
-			wsPathwayInfos.toArray(results);
-			getCurationTags(wsPathwayInfos);
+			this.clientName = clientName;
+			putImagetags(wsCurationTags);
+			this.results = wsCurationTags;
+		}
+
+		private void putImagetags(WSPathwayInfo[] wsCurationTags) throws RemoteException {
+		for (int i = 0; i < wsCurationTags.length; i++) {
+			String sid = wsCurationTags[i].getId();
+			WSCurationTag[] ptags = client.getCurationTags(sid);
+			imagetags.put(sid, ptags);
+		}
+		
 			
 		}
 
@@ -57,11 +65,11 @@ import org.wikipathways.client.WikiPathwaysClient;
 		public int getRowCount() 
 		{
 			return results.length;
-
 		}
+
 		public Object getValueAt(int rowIndex, int columnIndex)
 		{
-			WSPathwayInfo r =   results[rowIndex];
+			WSPathwayInfo r = results[rowIndex];
 
 			switch (columnIndex) {
 			case 0:
@@ -84,7 +92,7 @@ import org.wikipathways.client.WikiPathwaysClient;
 
 					if (BrowsePanel.tags.containsKey(tag.getName())) 
 					{
-						IMG_SEARCH = "resources/" +BrowsePanel.tags.get(tag.getName())+ ".png";
+						IMG_SEARCH = "resources/" + BrowsePanel.tags.get(tag.getName())+ ".png";
 						URL url = this.getClass().getClassLoader().getResource(IMG_SEARCH);
 						icon = new ImageIcon(url);
 						
@@ -109,23 +117,5 @@ import org.wikipathways.client.WikiPathwaysClient;
 		public String getColumnName(int column) {
 			return columnNames[column];
 		}
-	public void getCurationTags(Set<WSPathwayInfo> tags)
-	{
-		Iterator<WSPathwayInfo> itr = tags.iterator();
-		while (itr.hasNext())
-	{
-		String sid = itr.next().getId();
-		try 
-		{
-			WSCurationTag[] ptags = client.getCurationTags(sid);
-			imagetags.put(sid, ptags);
-		}
-		catch (RemoteException e)
-		{
-			
-		}
-		
-	}
-	
-	}}
 
+	}
