@@ -9,6 +9,7 @@ import java.util.Set;
 import javax.swing.AbstractAction;
 
 import org.bridgedb.bio.Organism;
+import org.pathvisio.core.util.ProgressKeeper;
 import org.pathvisio.desktop.PvDesktop;
 import org.pathvisio.wikipathways.webservice.WSCurationTag;
 import org.pathvisio.wikipathways.webservice.WSPathwayInfo;
@@ -32,10 +33,11 @@ public class BrowseAction extends AbstractAction {
 		new BrowseDialog(desktop, plugin);
 	}
 
-	public Set<WSPathwayInfo> browseAll(WikiPathwaysClient client) {
+	public Set<WSPathwayInfo> browseAll(WikiPathwaysClient client, ProgressKeeper pk) {
 		Set<WSPathwayInfo> set = new HashSet<WSPathwayInfo>();
 
 		try {
+			pk.setTaskName("Browsing WikiPathways");
 			WSPathwayInfo[] result = client.listPathways();
 			set.addAll(Arrays.asList(result));
 		} catch (RemoteException e) {
@@ -46,9 +48,10 @@ public class BrowseAction extends AbstractAction {
 	}
 
 	public Set<WSPathwayInfo> browseByOrganism(WikiPathwaysClient client,
-			Organism organism) {
+			Organism organism , ProgressKeeper pk) {
 		Set<WSPathwayInfo> set = new HashSet<WSPathwayInfo>();
 		try {
+			pk.setTaskName("Browsing through Organisms");
 			WSPathwayInfo[] result = client.listPathways(organism);
 			set.addAll(Arrays.asList(result));
 		} catch (RemoteException e) {
@@ -59,10 +62,11 @@ public class BrowseAction extends AbstractAction {
 	}
 
 	public Set<WSPathwayInfo> browseByCurationTag(WikiPathwaysClient client,
-			String curationTag) {
+			String curationTag , ProgressKeeper pk) {
 		Set<WSPathwayInfo> set = new HashSet<WSPathwayInfo>();
 
 		try {
+			
 			WSCurationTag[] result = client.getCurationTagsByName(curationTag);
 			for (WSCurationTag tag : result) {
 				set.add(tag.getPathway());
@@ -75,15 +79,17 @@ public class BrowseAction extends AbstractAction {
 	}
 
 	public Set<WSPathwayInfo> browseByCollection(WikiPathwaysClient client,
-			String collection) {
-		return browseByCurationTag(client, collection);
+			String collection, ProgressKeeper pk) {
+		pk.setTaskName("Browsing through Collections");
+		return browseByCurationTag(client, collection,pk);
 	}
 
 	public Set<WSPathwayInfo> browseByOrganismAndCurationTag(
-			WikiPathwaysClient client, Organism organism, String curationTag) {
+			WikiPathwaysClient client, Organism organism, String curationTag , ProgressKeeper pk) {
 		Set<WSPathwayInfo> set = new HashSet<WSPathwayInfo>();
-
-		Set<WSPathwayInfo> pwyCurTag = browseByCurationTag(client, curationTag);
+		pk.setTaskName("Browsing through CurationTags");
+		Set<WSPathwayInfo> pwyCurTag = browseByCurationTag(client, curationTag,pk);
+		pk.setTaskName("Filtering ");
 		for (WSPathwayInfo info : pwyCurTag) {
 			if (info.getSpecies().equals(organism.latinName())) {
 				set.add(info);
@@ -93,12 +99,14 @@ public class BrowseAction extends AbstractAction {
 	}
 
 	public Set<WSPathwayInfo> browseByCollectionAndCurationTag(
-			WikiPathwaysClient client, String collection, String curationTag) {
+			WikiPathwaysClient client, String collection, String curationTag, ProgressKeeper pk) {
 		Set<WSPathwayInfo> set = new HashSet<WSPathwayInfo>();
-
-		Set<WSPathwayInfo> pwyCurTag = browseByCurationTag(client, curationTag);
+		pk.setTaskName("Browsing through Curation Tags");
+		Set<WSPathwayInfo> pwyCurTag = browseByCurationTag(client, curationTag,pk);
+		pk.setTaskName("Browsing through Collections");
 		Set<WSPathwayInfo> pwyCollection = browseByCollection(client,
-				collection);
+				collection,pk);
+		pk.setTaskName("Filtering ");
 		for (WSPathwayInfo info : pwyCurTag) {
 			if (pwyCollection.contains(info)) {
 				set.add(info);
@@ -108,10 +116,11 @@ public class BrowseAction extends AbstractAction {
 	}
 
 	public Set<WSPathwayInfo> browseByOrganismAndCollection(
-			WikiPathwaysClient client, Organism organism, String collection) {
+			WikiPathwaysClient client, Organism organism, String collection, ProgressKeeper pk) {
 		Set<WSPathwayInfo> set = new HashSet<WSPathwayInfo>();
-
-		Set<WSPathwayInfo> pwyCurTag = browseByCollection(client, collection);
+		pk.setTaskName("Browsing through Collections");
+		Set<WSPathwayInfo> pwyCurTag = browseByCollection(client, collection,pk);
+		pk.setTaskName("Filtering ");
 		for (WSPathwayInfo info : pwyCurTag) {
 			if (info.getSpecies().equals(organism.latinName())) {
 				set.add(info);
@@ -122,12 +131,14 @@ public class BrowseAction extends AbstractAction {
 
 	public Set<WSPathwayInfo> browseByOrganismAndCollectionAndCurationTag(
 			WikiPathwaysClient client, Organism organism, String collection,
-			String curationTag) {
+			String curationTag, ProgressKeeper pk) {
 		Set<WSPathwayInfo> set = new HashSet<WSPathwayInfo>();
-
-		Set<WSPathwayInfo> pwyCurTag = browseByCurationTag(client, curationTag);
+		pk.setTaskName("Browsing through Curation Tags");
+		Set<WSPathwayInfo> pwyCurTag = browseByCurationTag(client, curationTag,  pk);
+		pk.setTaskName("Browsing through Collections");
 		Set<WSPathwayInfo> pwyCollection = browseByCollection(client,
-				collection);
+				collection,pk);
+		pk.setTaskName("Filtering ");
 		for (WSPathwayInfo info : pwyCurTag) {
 			if (pwyCollection.contains(info)) {
 				if (info.getSpecies().equals(organism.latinName())) {

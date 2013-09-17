@@ -315,7 +315,7 @@ this.desktop=desktop;
 		
 		client = WikiPathwaysClientPlugin.loadClient();
 		final ProgressKeeper pk = new ProgressKeeper();
-		final ProgressDialog d = new ProgressDialog(JOptionPane.getFrameForComponent(this), "", pk, true, true);
+		final ProgressDialog d = new ProgressDialog(JOptionPane.getFrameForComponent(this), "Browse", pk, true, true);
 
 		SwingWorker<WSPathwayInfo[], Void> sw = new SwingWorker<WSPathwayInfo[], Void>() 
 		{
@@ -354,31 +354,34 @@ this.desktop=desktop;
 					
 					if ((organism.equalsIgnoreCase("ALL SPECIES"))&& ((collkey.equalsIgnoreCase("Curation:All")) && ((curkey.equalsIgnoreCase("No Curation")))))
 					
-						pathways= b.browseAll(client);
+						pathways= b.browseAll(client,pk);
 						
 					
 					else if (!organism.equalsIgnoreCase("ALL SPECIES")&& ((collkey.equalsIgnoreCase("Curation:All")) && ((curkey.equalsIgnoreCase("No Curation")))))
 					
-						pathways=  b.browseByOrganism(client, Organism.fromLatinName(organism));
+						pathways=  b.browseByOrganism(client, Organism.fromLatinName(organism),pk);
 					
 					else if ((organism.equalsIgnoreCase("ALL SPECIES"))&& (!(collkey.equalsIgnoreCase("Curation:All")) && ((curkey.equalsIgnoreCase("No Curation")))))
-						
-						pathways=  b.browseByCollection(client, collkey);
-					
+					{
+						pk.setTaskName("Browsing through Collections");
+						pathways=  b.browseByCollection(client, collkey,pk);
+					}					
 					else if ((organism.equalsIgnoreCase("ALL SPECIES"))	&& ((collkey.equalsIgnoreCase("Curation:All")) && (!(curkey.equalsIgnoreCase("No Curation")))))
-						pathways=  b.browseByCurationTag(client, curkey);
-					
+					{
+						pk.setTaskName("Browsing through CurationTags");
+						pathways=  b.browseByCurationTag(client, curkey,pk);
+					}
 					else if (!(organism.equalsIgnoreCase("ALL SPECIES"))&& (!(collkey.equalsIgnoreCase("Curation:All")) && ((curkey.equalsIgnoreCase("No Curation")))))
-						pathways=  b.browseByOrganismAndCollection(client, Organism	.fromLatinName(organism), collkey);
+						pathways=  b.browseByOrganismAndCollection(client, Organism	.fromLatinName(organism), collkey,pk);
 					
 					else if (!(organism.equalsIgnoreCase("ALL SPECIES"))&& ((collkey.equalsIgnoreCase("Curation:All")) && (!(curkey.equalsIgnoreCase("No Curation")))))
-						pathways=  b.browseByOrganismAndCurationTag(client, Organism.fromLatinName(organism), curkey);
+						pathways=  b.browseByOrganismAndCurationTag(client, Organism.fromLatinName(organism), curkey,pk);
 					
 					else if ((organism.equalsIgnoreCase("ALL SPECIES"))	&& (!(collkey.equalsIgnoreCase("Curation:All")) && (!(curkey.equalsIgnoreCase("No Curation")))))
-						pathways=  b.browseByCollectionAndCurationTag(client, collkey,curkey);
+						pathways=  b.browseByCollectionAndCurationTag(client, collkey,curkey,pk);
 					
 					else if ((!organism.equalsIgnoreCase("ALL SPECIES"))&& (!(collkey.equalsIgnoreCase("Curation:All")) && (!(curkey.equalsIgnoreCase("No Curation")))))
-						pathways= b.browseByOrganismAndCollectionAndCurationTag(client, Organism.fromLatinName(organism), collkey,curkey);
+						pathways= b.browseByOrganismAndCollectionAndCurationTag(client, Organism.fromLatinName(organism), collkey,curkey,pk);
 					
 					wsPathwayInfos= new WSPathwayInfo[pathways.size()];
 					return pathways.toArray(wsPathwayInfos);
