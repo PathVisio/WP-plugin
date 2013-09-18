@@ -63,63 +63,61 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 /**
- *	This class creates the content in the Dialog 
- *  of the SearchByIdentifier TabbedPane of Search
- *  @author Sravanthi Sinha
- *  @author Martina Kutmon
- * 	@version 1.0  
+ * This class creates the content in the Dialog of the SearchByIdentifier
+ * TabbedPane of Search
+ * 
+ * @author Sravanthi Sinha
+ * @author Martina Kutmon
+ * @version 1.0
  */
-public class XrefSearchPanel extends JPanel 
-{
+public class XrefSearchPanel extends JPanel {
 	WikiPathwaysClientPlugin plugin;
 	public static Xref[] xrefs;
-	List< Xref> pxXref = new ArrayList<Xref>();
+	List<Xref> pxXref = new ArrayList<Xref>();
 	java.util.HashMap<String, String> curationtags = new HashMap<String, String>();
 	JTable resultTable;
-	int i=0;
+	int i = 0;
 	private JTextArea txtId;
 	private JComboBox cbSyscode;
 	private JComboBox cbSearchBy;
 	private Component symbolOpt;
 	private JScrollPane resultspane;
-	
+
 	public int flag = 0;
 	private JLabel tipLabel;
 
-
-	public XrefSearchPanel(final WikiPathwaysClientPlugin plugin) 
-	{
+	public XrefSearchPanel(final WikiPathwaysClientPlugin plugin) {
 
 		this.plugin = plugin;
 
 		setLayout(new BorderLayout());
-		
-		Action searchXrefAction = new AbstractAction("Search") 
-		{
-			public void actionPerformed(ActionEvent e)
-			{
-				try
-				{
-					resultspane.setBorder(BorderFactory.createTitledBorder(WikiPathwaysClientPlugin.etch, "Pathways"));
+
+		Action searchXrefAction = new AbstractAction("Search") {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					resultspane.setBorder(BorderFactory.createTitledBorder(
+							WikiPathwaysClientPlugin.etch, "Pathways"));
 					searchByXref();
-				}
-				catch (Exception ex) 
-				{
-					JOptionPane.showMessageDialog(XrefSearchPanel.this,	ex.getMessage(), "Error",JOptionPane.ERROR_MESSAGE);
+				} catch (Exception ex) {
+					JOptionPane
+							.showMessageDialog(XrefSearchPanel.this,
+									ex.getMessage(), "Error",
+									JOptionPane.ERROR_MESSAGE);
 					Logger.log.error("Error searching WikiPathways", ex);
 				}
 			}
 
 		};
-		
-	
+
 		JPanel searchBox = new JPanel();
-		FormLayout layoutf = new FormLayout("p,3dlu,120px,2dlu,30px,fill:pref:grow,3dlu",
+		FormLayout layoutf = new FormLayout(
+				"p,3dlu,120px,2dlu,30px,fill:pref:grow,3dlu",
 				"pref, pref, 4dlu, pref, 4dlu, pref");
 		CellConstraints ccf = new CellConstraints();
 
 		searchBox.setLayout(layoutf);
-		searchBox.setBorder(BorderFactory.createTitledBorder(WikiPathwaysClientPlugin.etch));
+		searchBox.setBorder(BorderFactory
+				.createTitledBorder(WikiPathwaysClientPlugin.etch));
 
 		JPanel searchOptBox = new JPanel();
 		FormLayout layout = new FormLayout(
@@ -128,43 +126,40 @@ public class XrefSearchPanel extends JPanel
 		CellConstraints cc = new CellConstraints();
 
 		searchOptBox.setLayout(layout);
-		searchOptBox.setBorder(BorderFactory.createTitledBorder(WikiPathwaysClientPlugin.etch,
-				"Search options"));
-	
+		searchOptBox.setBorder(BorderFactory.createTitledBorder(
+				WikiPathwaysClientPlugin.etch, "Search options"));
 
-	
-		txtId = new JTextArea(2,2);
-		
-	
+		txtId = new JTextArea(2, 2);
+
 		cbSyscode = new JComboBox(new DataSourceModel());
 		cbSyscode.setSelectedIndex(0);
-		
+
 		JPanel searchReferenceBox = new JPanel();
-		FormLayout layout2 = new FormLayout(
-				"p,3dlu,fill:pref:grow,1dlu,pref",
+		FormLayout layout2 = new FormLayout("p,3dlu,fill:pref:grow,1dlu,pref",
 				"pref,3dlu,pref,pref,pref");
 		CellConstraints cc2 = new CellConstraints();
 
 		searchReferenceBox.setLayout(layout2);
-	
-		searchReferenceBox.setBorder(BorderFactory.createTitledBorder(WikiPathwaysClientPlugin.etch,
-				"Search By Reference"));
+
+		searchReferenceBox.setBorder(BorderFactory.createTitledBorder(
+				WikiPathwaysClientPlugin.etch, "Search By Reference"));
 
 		searchReferenceBox.add(new JLabel("ID"), cc2.xy(1, 1));
-		searchReferenceBox.add(new JScrollPane(txtId), cc2.xyw(3, 1,2));
-	//	searchReferenceBox.add(new JLabel("System Code"), cc2.xy(1,3));
-	//	searchReferenceBox.add(cbSyscode, cc2.xy(3,3));
+		searchReferenceBox.add(new JScrollPane(txtId), cc2.xyw(3, 1, 2));
+		// searchReferenceBox.add(new JLabel("System Code"), cc2.xy(1,3));
+		// searchReferenceBox.add(cbSyscode, cc2.xy(3,3));
 
 		JButton searchButton = new JButton(searchXrefAction);
 		searchReferenceBox.add(searchButton, cc2.xy(5, 1));
-		
-		tipLabel = new JLabel("Enter Gene List (each in a new line)  eg- L:1234");
-		tipLabel.setFont(new Font("SansSerif", Font.ITALIC, 11));		
-	
-		searchReferenceBox.add(tipLabel,cc2.xyw(1, 4,5));
+
+		tipLabel = new JLabel(
+				"Enter Gene List (each in a new line)  eg- L:1234");
+		tipLabel.setFont(new Font("SansSerif", Font.ITALIC, 11));
+
+		searchReferenceBox.add(tipLabel, cc2.xyw(1, 4, 5));
 
 		searchBox.add(searchReferenceBox, ccf.xyw(1, 4, 6));
-		
+
 		add(searchBox, BorderLayout.NORTH);
 
 		// Center contains table model for results
@@ -172,30 +167,30 @@ public class XrefSearchPanel extends JPanel
 		resultspane = new JScrollPane(resultTable);
 
 		add(resultspane, BorderLayout.CENTER);
-	
 
 		resultTable.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
 					JTable target = (JTable) e.getSource();
 					int row = target.getSelectedRow();
-					
-					try
-					{
-					
-						ResultTableModel	model = (ResultTableModel) target.getModel();
-						File tmpDir = new File(plugin.getTmpDir(), WikiPathwaysClientPlugin.shortClientName(model.clientName));
+
+					try {
+
+						ResultTableModel model = (ResultTableModel) target
+								.getModel();
+						File tmpDir = new File(plugin.getTmpDir(),
+								WikiPathwaysClientPlugin
+										.shortClientName(model.clientName));
 						tmpDir.mkdirs();
 
-						plugin.openPathwayWithProgress(WikiPathwaysClientPlugin.loadClient(),model.getValueAt(row, 0).toString(), 0, tmpDir,xrefs);
-					
-					
-							
-					
-					}
-					catch (Exception ex) 
-					{
-						JOptionPane.showMessageDialog(XrefSearchPanel.this,ex.getMessage(), "Error",JOptionPane.ERROR_MESSAGE);
+						plugin.openPathwayWithProgress(WikiPathwaysClientPlugin
+								.loadClient(), model.getValueAt(row, 0)
+								.toString(), 0, tmpDir, xrefs);
+
+					} catch (Exception ex) {
+						JOptionPane.showMessageDialog(XrefSearchPanel.this,
+								ex.getMessage(), "Error",
+								JOptionPane.ERROR_MESSAGE);
 						Logger.log.error("Error", ex);
 					}
 				}
@@ -203,157 +198,154 @@ public class XrefSearchPanel extends JPanel
 		});
 	}
 
-	private void searchByXref() throws RemoteException, InterruptedException,ExecutionException, MalformedURLException, ServiceException 
-	{
-		if(!txtId.getText().isEmpty())
-		{
+	private void searchByXref() throws RemoteException, InterruptedException,
+			ExecutionException, MalformedURLException, ServiceException {
+		if (!txtId.getText().isEmpty()) {
 
-		final WikiPathwaysClient client = WikiPathwaysClientPlugin.loadClient();
+			final WikiPathwaysClient client = WikiPathwaysClientPlugin
+					.loadClient();
 
-		final ProgressKeeper pk = new ProgressKeeper();
-		final ProgressDialog d = new ProgressDialog(JOptionPane.getFrameForComponent(this), "", pk, true, true);
-	
-		SwingWorker<WSSearchResult[], Void> sw = new SwingWorker<WSSearchResult[], Void>()
-		{
-			WSSearchResult[] results;
-			protected WSSearchResult[] doInBackground() throws Exception
-			{
-				pk.setTaskName("Starting Search");
-				
-				try
-				{
-					 String[] xrefids = txtId.getText().split("\n");
-						
-						if(xrefids.length<6){
-						// DataSource ds = DataSource.getByFullName(""	+ cbSyscode.getSelectedItem());
-						int i = 0;
-						for (; i < xrefids.length; i++) {
-							String p[]=xrefids[i].split(":");
-							
-							if(p.length==2)
-							{
-							 DataSource ds = DataSource.getByFullName(p[0]);
-						 pxXref.add( new Xref(p[1],ds	));	
-						
-							
-							}
-							else{
-								JOptionPane.showMessageDialog(XrefSearchPanel.this,"Enter Valid Xrefs ", "Error",JOptionPane.ERROR_MESSAGE);
-								pk.finished();
-								return results;
+			final ProgressKeeper pk = new ProgressKeeper();
+			final ProgressDialog d = new ProgressDialog(
+					JOptionPane.getFrameForComponent(this), "", pk, true, true);
+
+			SwingWorker<WSSearchResult[], Void> sw = new SwingWorker<WSSearchResult[], Void>() {
+				WSSearchResult[] results;
+
+				protected WSSearchResult[] doInBackground() throws Exception {
+					pk.setTaskName("Starting Search");
+
+					try {
+						String[] xrefids = txtId.getText().split("\n");
+
+						if (xrefids.length < 6) {
+							// DataSource ds = DataSource.getByFullName("" +
+							// cbSyscode.getSelectedItem());
+							int i = 0;
+							for (; i < xrefids.length; i++) {
+								String p[] = xrefids[i].split(":");
+
+								if (p.length == 2) {
+									DataSource ds = DataSource
+											.getByFullName(p[0]);
+									pxXref.add(new Xref(p[1], ds));
+
+								} else {
+									JOptionPane.showMessageDialog(
+											XrefSearchPanel.this,
+											"Enter Valid Xrefs ", "Error",
+											JOptionPane.ERROR_MESSAGE);
+									pk.finished();
+									return results;
 								}
-						}
-								
-					xrefs = new Xref[i];
-					pxXref.toArray(xrefs);
-					
-					pk.setTaskName("Searching ");
-					results = client.findPathwaysByXref(xrefs);
-					pk.setTaskName("Sorting");
-					results=sort(CreateIndexList(results));
-					
-						}
-						else
-						{
-							JOptionPane.showMessageDialog(XrefSearchPanel.this," Can have maximum 5 Xrefs ", "Error",JOptionPane.ERROR_MESSAGE);
+							}
+
+							xrefs = new Xref[i];
+							pxXref.toArray(xrefs);
+
+							pk.setTaskName("Searching ");
+							results = client.findPathwaysByXref(xrefs);
+							pk.setTaskName("Sorting");
+							results = sort(CreateIndexList(results));
+
+						} else {
+							JOptionPane.showMessageDialog(XrefSearchPanel.this,
+									" Can have maximum 5 Xrefs ", "Error",
+									JOptionPane.ERROR_MESSAGE);
 							pk.finished();
 							return results;
-							
+
 						}
+					} catch (Exception e) {
+						throw e;
+					} finally {
+						pk.finished();
+					}
+					return results;
 				}
-				catch (Exception e) 
-				{
-					throw e;
-				}
-				finally 
-				{
-					pk.finished();
-				}
-				return results;
-			}
-			private WSSearchResult[] sort(Map<WSSearchResult, Integer> map) {
-				WSSearchResult[] finalresults;
-				
-				List<WSSearchResult> re= new ArrayList<WSSearchResult>();
-				int max=pxXref.size();
-				//for (int i = 0; i < result.size(); i++) {
-					for (int j = max; j>0; j--) {
-						for (Entry<WSSearchResult, Integer> entry : map.entrySet())
-						{
-							if(entry.getValue()==j)
+
+				private WSSearchResult[] sort(Map<WSSearchResult, Integer> map) {
+					WSSearchResult[] finalresults;
+
+					List<WSSearchResult> re = new ArrayList<WSSearchResult>();
+					int max = pxXref.size();
+					// for (int i = 0; i < result.size(); i++) {
+					for (int j = max; j > 0; j--) {
+						for (Entry<WSSearchResult, Integer> entry : map
+								.entrySet()) {
+							if (entry.getValue() == j)
 								re.add(entry.getKey());
-								
+
 						}
-					//}
+						// }
+					}
+
+					finalresults = new WSSearchResult[map.size()];
+					re.toArray(finalresults);
+					return finalresults;
+
 				}
-		
-			
-			finalresults= new WSSearchResult[map.size()];
-			re.toArray(finalresults);
-			return finalresults;
-			
-			}
-			private Map<WSSearchResult, Integer> 	CreateIndexList(WSSearchResult[] results) throws RemoteException {
-				Map<String,WSSearchResult> result= new HashMap<String,WSSearchResult>();
-				Map<WSSearchResult, Integer> r= new HashMap<WSSearchResult,Integer>();
-				int count=0;
-			for (int i = 0; i < results.length; i++) {
-				result.put(results[i].getId(),results[i]);
-				
-				
-			}
-			for (Entry<String, WSSearchResult> entry : result.entrySet())
-			{
-			String string = (String)entry.getKey();
-			for(int k=0;k<pxXref.size();k++)
-			{
-				Xref temp = pxXref.get(k);
-			//	 DataSource ds = DataSource.getByFullName(temp.getDataSource().getFullName());
-	String[] li = client.getXrefList(string,BioDataSource.ENSEMBL);
-	for (int i = 0; i < li.length; i++) {
-		if(li[i].equalsIgnoreCase(temp.getId()))
-		{
-			count++;break;
-		}
-	}
-			}
-			r.put(entry.getValue(), count);
-			count=0;
-			
-			
-		}
-		return r;
-				
-			}
-			protected void done() {
-				if(!pk.isCancelled())
-				{
-					if(results.length==0)
-					{
-						 JOptionPane.showMessageDialog(null,"0 results found");
+
+				private Map<WSSearchResult, Integer> CreateIndexList(
+						WSSearchResult[] results) throws RemoteException {
+					Map<String, WSSearchResult> result = new HashMap<String, WSSearchResult>();
+					Map<WSSearchResult, Integer> r = new HashMap<WSSearchResult, Integer>();
+					int count = 0;
+					for (int i = 0; i < results.length; i++) {
+						result.put(results[i].getId(), results[i]);
+
+					}
+					for (Entry<String, WSSearchResult> entry : result
+							.entrySet()) {
+						String string = (String) entry.getKey();
+						for (int k = 0; k < pxXref.size(); k++) {
+							Xref temp = pxXref.get(k);
+							// DataSource ds =
+							// DataSource.getByFullName(temp.getDataSource().getFullName());
+							String[] li = client.getXrefList(string,
+									BioDataSource.ENSEMBL);
+							for (int i = 0; i < li.length; i++) {
+								if (li[i].equalsIgnoreCase(temp.getId())) {
+									count++;
+									break;
+								}
+							}
+						}
+						r.put(entry.getValue(), count);
+						count = 0;
+
+					}
+					return r;
+
+				}
+
+				protected void done() {
+					if (!pk.isCancelled()) {
+						if (results.length == 0) {
+							JOptionPane.showMessageDialog(null,
+									"0 results found");
+						}
+					} else if (pk.isCancelled()) {
+						pk.finished();
 					}
 				}
-				else if(pk.isCancelled())
-				{
-					pk.finished();
-				}
-			}
-		};
+			};
 
-		sw.execute();
-		d.setVisible(true);
+			sw.execute();
+			d.setVisible(true);
 
-		resultTable.setModel(new ResultTableModel(sw.get(), client.toString()));
-		resultTable.setRowSorter(new TableRowSorter(resultTable.getModel()));
-	}
+			resultTable.setModel(new ResultTableModel(sw.get(), client
+					.toString()));
+			resultTable
+					.setRowSorter(new TableRowSorter(resultTable.getModel()));
+		}
 
-	
-	else
-	{
-		
-		JOptionPane.showMessageDialog(XrefSearchPanel.this,"Please Enter ID", "Error",JOptionPane.ERROR_MESSAGE);
+		else {
+
+			JOptionPane.showMessageDialog(XrefSearchPanel.this,
+					"Please Enter ID", "Error", JOptionPane.ERROR_MESSAGE);
+
+		}
 
 	}
-	
-}
 }
