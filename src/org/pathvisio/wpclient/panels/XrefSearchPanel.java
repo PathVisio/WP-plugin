@@ -234,19 +234,25 @@ public class XrefSearchPanel extends JPanel
 						
 							
 							}
+							else{
+								JOptionPane.showMessageDialog(XrefSearchPanel.this,"Enter Valid Xrefs ", "Error",JOptionPane.ERROR_MESSAGE);
+								pk.finished();
+								return results;
+								}
 						}
-					//String[] xrefids= txtId.getText().split(";");
-					// DataSource ds = DataSource.getByFullName(""	+ cbSyscode.getSelectedItem());
-				
-					//for (; i < xrefids.length; i++) {
-					// pxXref.add( new Xref(xrefids[i],ds	));	
-					// System.out.println(pxXref.get(i));
-					//}					
+								
 					xrefs = new Xref[i];
 					pxXref.toArray(xrefs);
 					
 					pk.setTaskName("Searching ");
 					results = client.findPathwaysByXref(xrefs);
+						}
+						else
+						{
+							JOptionPane.showMessageDialog(XrefSearchPanel.this," Can have maximum 5 Xrefs ", "Error",JOptionPane.ERROR_MESSAGE);
+							pk.finished();
+							return results;
+							
 						}
 				}
 				catch (Exception e) 
