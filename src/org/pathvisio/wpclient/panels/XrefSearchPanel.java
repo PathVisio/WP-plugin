@@ -28,6 +28,8 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.AbstractAction;
@@ -47,6 +49,7 @@ import javax.xml.rpc.ServiceException;
 
 import org.bridgedb.DataSource;
 import org.bridgedb.Xref;
+import org.bridgedb.bio.BioDataSource;
 import org.pathvisio.core.debug.Logger;
 import org.pathvisio.core.util.ProgressKeeper;
 import org.pathvisio.gui.DataSourceModel;
@@ -70,7 +73,7 @@ public class XrefSearchPanel extends JPanel
 {
 	WikiPathwaysClientPlugin plugin;
 	public static Xref[] xrefs;
-
+	List< Xref> pxXref = new ArrayList<Xref>();
 	java.util.HashMap<String, String> curationtags = new HashMap<String, String>();
 	JTable resultTable;
 	int i=0;
@@ -218,10 +221,10 @@ public class XrefSearchPanel extends JPanel
 				pk.setTaskName("Starting Search");
 				
 				try
-				{List< Xref> pxXref = new ArrayList<Xref>();
+				{
 					 String[] xrefids = txtId.getText().split("\n");
 						
-						if(xrefids.length<5){
+						if(xrefids.length<6){
 						// DataSource ds = DataSource.getByFullName(""	+ cbSyscode.getSelectedItem());
 						int i = 0;
 						for (; i < xrefids.length; i++) {
@@ -246,6 +249,9 @@ public class XrefSearchPanel extends JPanel
 					
 					pk.setTaskName("Searching ");
 					results = client.findPathwaysByXref(xrefs);
+					pk.setTaskName("Sorting");
+					results=sort(CreateIndexList(results));
+					
 						}
 						else
 						{
@@ -264,6 +270,60 @@ public class XrefSearchPanel extends JPanel
 					pk.finished();
 				}
 				return results;
+			}
+			private WSSearchResult[] sort(Map<WSSearchResult, Integer> map) {
+				WSSearchResult[] finalresults;
+				
+				List<WSSearchResult> re= new ArrayList<WSSearchResult>();
+				int max=pxXref.size();
+				//for (int i = 0; i < result.size(); i++) {
+					for (int j = max; j>0; j--) {
+						for (Entry<WSSearchResult, Integer> entry : map.entrySet())
+						{
+							if(entry.getValue()==j)
+								re.add(entry.getKey());
+								
+						}
+					//}
+				}
+		
+			
+			finalresults= new WSSearchResult[map.size()];
+			re.toArray(finalresults);
+			return finalresults;
+			
+			}
+			private Map<WSSearchResult, Integer> 	CreateIndexList(WSSearchResult[] results) throws RemoteException {
+				Map<String,WSSearchResult> result= new HashMap<String,WSSearchResult>();
+				Map<WSSearchResult, Integer> r= new HashMap<WSSearchResult,Integer>();
+				int count=0;
+			for (int i = 0; i < results.length; i++) {
+				result.put(results[i].getId(),results[i]);
+				
+				
+			}
+			for (Entry<String, WSSearchResult> entry : result.entrySet())
+			{
+			String string = (String)entry.getKey();
+			for(int k=0;k<pxXref.size();k++)
+			{
+				Xref temp = pxXref.get(k);
+			//	 DataSource ds = DataSource.getByFullName(temp.getDataSource().getFullName());
+	String[] li = client.getXrefList(string,BioDataSource.ENSEMBL);
+	for (int i = 0; i < li.length; i++) {
+		if(li[i].equalsIgnoreCase(temp.getId()))
+		{
+			count++;break;
+		}
+	}
+			}
+			r.put(entry.getValue(), count);
+			count=0;
+			
+			
+		}
+		return r;
+				
 			}
 			protected void done() {
 				if(!pk.isCancelled())
