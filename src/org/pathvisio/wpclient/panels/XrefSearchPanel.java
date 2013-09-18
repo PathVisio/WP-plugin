@@ -138,7 +138,7 @@ public class XrefSearchPanel extends JPanel
 		
 		JPanel searchReferenceBox = new JPanel();
 		FormLayout layout2 = new FormLayout(
-				"p,3dlu,fill:pref,1dlu,pref",
+				"p,3dlu,fill:pref:grow,1dlu,pref",
 				"pref,3dlu,pref,pref,pref");
 		CellConstraints cc2 = new CellConstraints();
 
@@ -148,9 +148,9 @@ public class XrefSearchPanel extends JPanel
 				"Search By Reference"));
 
 		searchReferenceBox.add(new JLabel("ID"), cc2.xy(1, 1));
-		searchReferenceBox.add(new JScrollPane(txtId), cc2.xy(3, 1));
-		searchReferenceBox.add(new JLabel("System Code"), cc2.xy(1,3));
-		searchReferenceBox.add(cbSyscode, cc2.xy(3,3));
+		searchReferenceBox.add(new JScrollPane(txtId), cc2.xyw(3, 1,2));
+	//	searchReferenceBox.add(new JLabel("System Code"), cc2.xy(1,3));
+	//	searchReferenceBox.add(cbSyscode, cc2.xy(3,3));
 
 		JButton searchButton = new JButton(searchXrefAction);
 		searchReferenceBox.add(searchButton, cc2.xy(5, 1));
@@ -218,19 +218,36 @@ public class XrefSearchPanel extends JPanel
 				pk.setTaskName("Starting Search");
 				
 				try
-				{
-					String[] xrefids= txtId.getText().split(";");
-					 DataSource ds = DataSource.getByFullName(""	+ cbSyscode.getSelectedItem());
-					List< Xref> pxXref = new ArrayList<Xref>();int i = 0;
-					for (; i < xrefids.length; i++) {
-					 pxXref.add( new Xref(xrefids[i],ds	));	
-					 System.out.println(pxXref.get(i));
-					}					
+				{List< Xref> pxXref = new ArrayList<Xref>();
+					 String[] xrefids = txtId.getText().split("\n");
+						
+						if(xrefids.length<5){
+						// DataSource ds = DataSource.getByFullName(""	+ cbSyscode.getSelectedItem());
+						int i = 0;
+						for (; i < xrefids.length; i++) {
+							String p[]=xrefids[i].split(":");
+							
+							if(p.length==2)
+							{
+							 DataSource ds = DataSource.getByFullName(p[0]);
+						 pxXref.add( new Xref(p[1],ds	));	
+						
+							
+							}
+						}
+					//String[] xrefids= txtId.getText().split(";");
+					// DataSource ds = DataSource.getByFullName(""	+ cbSyscode.getSelectedItem());
+				
+					//for (; i < xrefids.length; i++) {
+					// pxXref.add( new Xref(xrefids[i],ds	));	
+					// System.out.println(pxXref.get(i));
+					//}					
 					xrefs = new Xref[i];
 					pxXref.toArray(xrefs);
 					
 					pk.setTaskName("Searching ");
 					results = client.findPathwaysByXref(xrefs);
+						}
 				}
 				catch (Exception e) 
 				{
