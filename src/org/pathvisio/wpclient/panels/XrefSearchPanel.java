@@ -155,7 +155,7 @@ public class XrefSearchPanel extends JPanel
 		JButton searchButton = new JButton(searchXrefAction);
 		searchReferenceBox.add(searchButton, cc2.xy(5, 1));
 		
-		tipLabel = new JLabel("Enter DataNode identifiers (semicolon seperated - e.g.: '1234;3949')");
+		tipLabel = new JLabel("Enter Gene List (each in a new line)  eg- L:1234");
 		tipLabel.setFont(new Font("SansSerif", Font.ITALIC, 11));		
 	
 		searchReferenceBox.add(tipLabel,cc2.xyw(1, 4,5));
