@@ -97,6 +97,7 @@ public class XrefSearchPanel extends JPanel {
 				try {
 					resultspane.setBorder(BorderFactory.createTitledBorder(
 							WikiPathwaysClientPlugin.etch, "Pathways"));
+					
 					searchByXref();
 				} catch (Exception ex) {
 					JOptionPane
@@ -200,6 +201,7 @@ public class XrefSearchPanel extends JPanel {
 
 	private void searchByXref() throws RemoteException, InterruptedException,
 			ExecutionException, MalformedURLException, ServiceException {
+		pxXref.clear();
 		if (!txtId.getText().isEmpty()) {
 
 			final WikiPathwaysClient client = WikiPathwaysClientPlugin
