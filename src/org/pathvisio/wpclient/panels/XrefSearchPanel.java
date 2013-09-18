@@ -49,7 +49,6 @@ import javax.xml.rpc.ServiceException;
 
 import org.bridgedb.DataSource;
 import org.bridgedb.Xref;
-import org.bridgedb.bio.BioDataSource;
 import org.pathvisio.core.debug.Logger;
 import org.pathvisio.core.util.ProgressKeeper;
 import org.pathvisio.gui.DataSourceModel;
@@ -302,10 +301,9 @@ public class XrefSearchPanel extends JPanel {
 						String string = (String) entry.getKey();
 						for (int k = 0; k < pxXref.size(); k++) {
 							Xref temp = pxXref.get(k);
-							// DataSource ds =
-							// DataSource.getByFullName(temp.getDataSource().getFullName());
-							String[] li = client.getXrefList(string,
-									BioDataSource.ENSEMBL);
+							DataSource.getBySystemCode(temp.getDataSource().getFullName());
+							
+							String[] li = client.getXrefList(string,DataSource.getBySystemCode(temp.getDataSource().getFullName()));
 							for (int i = 0; i < li.length; i++) {
 								if (li[i].equalsIgnoreCase(temp.getId())) {
 									count++;
