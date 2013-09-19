@@ -3,16 +3,11 @@ pathvisio-wikipathways-client
 
 Plugin that provides a WikiPathways client for PathVisio.
 
-Currently the development of the plugin is in progress.Right now, the plugin does the following:
-
-
 
 
 Search Pathways :
 -----------------
 
-
-Search by query as on http://www.wikipathways.org itself.
 
 1.Search by text but for specific species (KeyWord Search)
 
