@@ -33,6 +33,22 @@ import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.pathvisio.wpclient.dialogs.BrowseDialog;
 import org.wikipathways.client.WikiPathwaysClient;
 
+
+/**
+ *	This class has the different methods for the Browse Action
+ *	Browse include-
+ *  	Browse ALL
+ *	Browse by Organism
+ *	Browse by Curation Tags
+ *	Browse by Collections 
+ *      Browse by Organism and Collections 
+ *  	Browse by Organism and Curtaion Tags
+ *  	Browse by Collections  and CUrtaion Tags
+ *	Browse by Organism and Collections  and CUrtaion Tags
+ * 	@author Sravanthi Sinha
+ * 	@author Martina Kutmon
+ * 	@version 1.0
+ */
 public class BrowseAction extends AbstractAction {
 
 	PvDesktop desktop;
