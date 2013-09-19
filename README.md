@@ -38,6 +38,14 @@ Basic Browse
 
 3.Browse by Collections
 
+Upload Pathways:
+----------------
+
+1.Create Pathways and upload directly to WikiPathways
+
+2.Update Pathways to WikiPathways (Provided there are no new revision exists).
+
+
 
 Features: 
 ---------
