@@ -11,21 +11,16 @@ Currently the development of the plugin is in progress.Right now, the plugin doe
 Search Pathways :
 -----------------
 
-Basic Search
 
 Search by query as on http://www.wikipathways.org itself.
 
-1.Search for pathways by name, pathway element labels
+1.Search by text but for specific species (KeyWord Search)
 
-2.Search by text but for specific species
+2.Search for pathways by identifier/Title (Pathway Search)
 
-Advanced Search
+3.Search for pathways by pathway element identifier (Identifier Search)
 
-1.Search for pathways by identifier/Title
-
-2.Search for pathways by pathway element identifier
-
-3.Search for pathways by publication reference
+4.Search for pathways by publication/Literature reference (Literature Search)
 
 
 Browse Pathways:
