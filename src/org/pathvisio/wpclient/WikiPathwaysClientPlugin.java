@@ -18,28 +18,22 @@
 package org.pathvisio.wpclient;
 
 import java.awt.Color;
-import java.awt.event.ActionEvent;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
 import javax.swing.JDialog;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingWorker;
-import javax.swing.border.Border;
 import javax.xml.rpc.ServiceException;
 
 import org.bridgedb.DataSource;
@@ -72,9 +66,9 @@ import org.pathvisio.wikipathways.webservice.WSSearchResult;
 import org.pathvisio.wpclient.actions.BrowseAction;
 import org.pathvisio.wpclient.actions.OpenPathwayFromXrefAction;
 import org.pathvisio.wpclient.actions.SearchAction;
-import org.pathvisio.wpclient.panels.CreatePathwayPanel;
+import org.pathvisio.wpclient.actions.UpdateAction;
+import org.pathvisio.wpclient.actions.UploadAction;
 import org.pathvisio.wpclient.panels.PathwayPanel;
-import org.pathvisio.wpclient.panels.UpdatePathwayPanel;
 import org.wikipathways.client.WikiPathwaysClient;
 
 /**
@@ -88,20 +82,18 @@ import org.wikipathways.client.WikiPathwaysClient;
  * @author Thomas Kelder, Sravanthi Sinha, Martina Kutmon
  * @version 1.0
  */
-public class WikiPathwaysClientPlugin implements Plugin,
-		ApplicationEventListener, VPathwayListener {
-	public static Border etch = BorderFactory.createEtchedBorder();
-	Map<String, WikiPathwaysClient> clients = new HashMap<String, WikiPathwaysClient>();
-	PvDesktop desktop;
-	File tmpDir = new File(GlobalPreference.getApplicationDir(),
-			"wpclient-cache");
+public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListener, VPathwayListener {
+	
+	private PvDesktop desktop;
+	private File tmpDir = new File(GlobalPreference.getApplicationDir(), "wpclient-cache");
 	private JMenu uploadMenu, wikipathwaysMenu;
-	private PreferencesDlg preferencesDlg;
+	
 	public static String revisionno = "";
 	public static String pathwayid = "";
-	UpdateAction updateAction = new UpdateAction();
-	JMenuItem createMenu;
-	JMenuItem updateMenu;
+	
+	// menu items will only be enabled when pathway is opened
+	private JMenuItem createMenu;
+	private JMenuItem updateMenu;
 
 	@Override
 	public void init(PvDesktop desktop) {
@@ -188,8 +180,8 @@ public class WikiPathwaysClientPlugin implements Plugin,
 			createMenu = new JMenuItem("Create Pathway");
 			updateMenu = new JMenuItem("Update Pathway");
 
-			CreateAction createAction = new CreateAction();
-			UpdateAction updateAction = new UpdateAction();
+			UploadAction createAction = new UploadAction(desktop);
+			UpdateAction updateAction = new UpdateAction(desktop);
 
 			createMenu.addActionListener(createAction);
 			updateMenu.addActionListener(updateAction);
@@ -485,7 +477,6 @@ public class WikiPathwaysClientPlugin implements Plugin,
 		sw.execute();
 		d.setVisible(true);
 		sw.get();
-
 	}
 
 	protected void openPathwayXref(WikiPathwaysClient client, Xref x, int rev,
@@ -512,41 +503,15 @@ public class WikiPathwaysClientPlugin implements Plugin,
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-	}
-
-	private class UploadAction extends AbstractAction {
-
-		public void actionPerformed(ActionEvent e) {
-
-		}
-	}
-
-	private class CreateAction extends AbstractAction {
-
-		public void actionPerformed(ActionEvent e) {
-			new CreatePathwayPanel(desktop, WikiPathwaysClientPlugin.this);
-
-		}
-	}
-
-	private class UpdateAction extends AbstractAction {
-
-		public void actionPerformed(ActionEvent e) {
-			new UpdatePathwayPanel(desktop, WikiPathwaysClientPlugin.this);
-		}
 	}
 
 	@Override
 	public void applicationEvent(ApplicationEvent arg0) {
-
 		updateState();
 	}
 
 	@Override
 	public void vPathwayEvent(VPathwayEvent arg0) {
 		updateState();
-
 	}
-
 }

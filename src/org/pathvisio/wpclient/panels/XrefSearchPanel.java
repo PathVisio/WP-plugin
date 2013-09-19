@@ -95,7 +95,7 @@ public class XrefSearchPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					resultspane.setBorder(BorderFactory.createTitledBorder(
-							WikiPathwaysClientPlugin.etch, "Pathways"));
+							BorderFactory.createEtchedBorder(), "Pathways"));
 					
 					searchByXref();
 				} catch (Exception ex) {
@@ -117,7 +117,7 @@ public class XrefSearchPanel extends JPanel {
 
 		searchBox.setLayout(layoutf);
 		searchBox.setBorder(BorderFactory
-				.createTitledBorder(WikiPathwaysClientPlugin.etch));
+				.createTitledBorder(BorderFactory.createEtchedBorder()));
 
 		JPanel searchOptBox = new JPanel();
 		FormLayout layout = new FormLayout(
@@ -127,7 +127,7 @@ public class XrefSearchPanel extends JPanel {
 
 		searchOptBox.setLayout(layout);
 		searchOptBox.setBorder(BorderFactory.createTitledBorder(
-				WikiPathwaysClientPlugin.etch, "Search options"));
+				BorderFactory.createEtchedBorder(), "Search options"));
 
 		txtId = new JTextArea(2, 2);
 
@@ -142,7 +142,7 @@ public class XrefSearchPanel extends JPanel {
 		searchReferenceBox.setLayout(layout2);
 
 		searchReferenceBox.setBorder(BorderFactory.createTitledBorder(
-				WikiPathwaysClientPlugin.etch, "Search By Reference"));
+				BorderFactory.createEtchedBorder(), "Search By Reference"));
 
 		searchReferenceBox.add(new JLabel("ID"), cc2.xy(1, 1));
 		searchReferenceBox.add(new JScrollPane(txtId), cc2.xyw(3, 1, 2));

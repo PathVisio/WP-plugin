@@ -52,7 +52,6 @@ public class LoginPanel extends JPanel implements ActionListener {
 	JPasswordField PassField = new JPasswordField(15);
 	JCheckBox itsKeepBox = new JCheckBox("Save details:", false);
 	boolean itsInit = false;
-	private WikiPathwaysClientPlugin plugin;
 	private PvDesktop desktop;
 	String clientName;
 	private JComboBox clientDropdown;
@@ -61,9 +60,8 @@ public class LoginPanel extends JPanel implements ActionListener {
 static boolean loggedin ;
 
 
-	public LoginPanel(PvDesktop desktop, WikiPathwaysClientPlugin plugin) {
+	public LoginPanel(PvDesktop desktop) {
 		super();
-		this.plugin = plugin;
 		this.desktop = desktop;		
 		setLayout(new GridLayout(3, 2));
 		add(new JLabel("Username:"));

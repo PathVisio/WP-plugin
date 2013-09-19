@@ -58,7 +58,7 @@ public class OpenPathwayFromXrefAction extends AbstractAction
 	{
 		try
 		{
-			int flag=0,flag2=0;
+			int flag=0;
 			Xref x = elm.getXref();
 			try
 			{
@@ -69,10 +69,6 @@ public class OpenPathwayFromXrefAction extends AbstractAction
 				if((x.getId().matches(".*\\d.*")) && (x.getId().startsWith("WP")))
 				{
 				flag++;
-				}
-				else
-				{
-				flag2++;
 				}
 				
 			}

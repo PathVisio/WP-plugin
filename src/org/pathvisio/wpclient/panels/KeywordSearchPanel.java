@@ -83,7 +83,7 @@ public class KeywordSearchPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					resultspane.setBorder(BorderFactory.createTitledBorder(
-							WikiPathwaysClientPlugin.etch, "Pathways"));
+							BorderFactory.createEtchedBorder(), "Pathways"));
 					search();
 				} catch (Exception ex) {
 					JOptionPane
@@ -128,7 +128,7 @@ public class KeywordSearchPanel extends JPanel {
 
 		searchOptBox.setLayout(layout);
 		searchOptBox.setBorder(BorderFactory.createTitledBorder(
-				WikiPathwaysClientPlugin.etch, "Search options"));
+				BorderFactory.createEtchedBorder(), "Search options"));
 		searchOptBox.add(new JLabel("Search For:"), cc.xy(1, 1));
 		searchOptBox.add(searchField, cc.xy(3, 1));
 		searchOptBox.add(opts, cc.xy(5, 1));

@@ -98,7 +98,7 @@ public class LiteratureSearchPanel extends JPanel
 			{
 				try 
 				{
-					resultspane.setBorder(BorderFactory.createTitledBorder(WikiPathwaysClientPlugin.etch, "Pathways"));
+					resultspane.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Pathways"));
 					searchByLiterature();
 				} 
 				catch (Exception ex)
@@ -119,7 +119,7 @@ public class LiteratureSearchPanel extends JPanel
 		CellConstraints ccf = new CellConstraints();
 
 		searchBox.setLayout(layoutf);
-		searchBox.setBorder(BorderFactory.createTitledBorder(WikiPathwaysClientPlugin.etch));
+		searchBox.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder()));
 
 		JPanel searchOptBox = new JPanel();
 		FormLayout layout = new FormLayout(
@@ -128,7 +128,7 @@ public class LiteratureSearchPanel extends JPanel
 		CellConstraints cc = new CellConstraints();
 
 		searchOptBox.setLayout(layout);
-		searchOptBox.setBorder(BorderFactory.createTitledBorder(WikiPathwaysClientPlugin.etch,
+		searchOptBox.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
 				"Search options"));
 		
 

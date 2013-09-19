@@ -44,12 +44,11 @@ public class UpdatePathwayPanel extends JPanel implements ActionListener {
 	static WikiPathwaysClient client;
 	private JTextField description = new JTextField(30);
 	private PvDesktop desktop;
-	private WikiPathwaysClientPlugin plugin;
 	private String Description="";
 
-	public UpdatePathwayPanel(PvDesktop desktop, WikiPathwaysClientPlugin plugin) {
+	public UpdatePathwayPanel(PvDesktop desktop) {
 		this.desktop = desktop;
-		this.plugin = plugin;
+//		this.plugin = plugin;
 		if (LoginPanel.Username.equals("") || LoginPanel.Password.equals("")) {
 			showLoginPanel();
 		}
@@ -104,7 +103,7 @@ public class UpdatePathwayPanel extends JPanel implements ActionListener {
 
 	private void showLoginPanel() {
 
-		p = new LoginPanel(desktop, plugin);
+		p = new LoginPanel(desktop);
 		d = new JDialog(desktop.getFrame(), "WikiPathways Login", false);
 		JButton submit = new JButton("Login");
 

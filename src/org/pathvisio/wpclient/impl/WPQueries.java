@@ -13,6 +13,14 @@ import org.pathvisio.wikipathways.webservice.WSSearchResult;
 import org.pathvisio.wpclient.IWPQueries;
 import org.wikipathways.client.WikiPathwaysClient;
 
+/**
+ * WP Queries implementation
+ * These functions can be used by other plugins by using the
+ * OSGi service IWPQueries
+ * 
+ * @author Martina Kutmon
+ *
+ */
 public class WPQueries implements IWPQueries {
 
 	@Override
@@ -62,7 +70,6 @@ public class WPQueries implements IWPQueries {
 		pk.report("Get pathways with curation tag " + curationTag);
 		Set<WSPathwayInfo> pwyCurTag = browseByCurationTag(client, curationTag,pk);
 		
-//		pk.setTaskName("Filtering ");
 		pk.report("Filter pathways for species " + organism.latinName());
 		
 		for (WSPathwayInfo info : pwyCurTag) {

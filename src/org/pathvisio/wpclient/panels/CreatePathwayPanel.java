@@ -36,7 +36,6 @@ import javax.xml.rpc.ServiceException;
 import org.pathvisio.core.model.Pathway;
 import org.pathvisio.desktop.PvDesktop;
 import org.pathvisio.wikipathways.webservice.WSPathwayInfo;
-import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.wikipathways.client.WikiPathwaysClient;
 
 public class CreatePathwayPanel extends JPanel implements ActionListener {
@@ -45,12 +44,10 @@ public class CreatePathwayPanel extends JPanel implements ActionListener {
 	static WikiPathwaysClient client;
 	private JTextArea description = new JTextArea(2, 2);
 	private PvDesktop desktop;
-	private WikiPathwaysClientPlugin plugin;
 	private String Description="";
 
-	public CreatePathwayPanel(PvDesktop desktop, WikiPathwaysClientPlugin plugin) {
+	public CreatePathwayPanel(PvDesktop desktop) {
 		this.desktop = desktop;
-		this.plugin = plugin;
 		if (LoginPanel.Username.equals("") || LoginPanel.Password.equals("")) {
 			showLoginPanel();
 		}
@@ -105,7 +102,7 @@ public class CreatePathwayPanel extends JPanel implements ActionListener {
 
 	private void showLoginPanel() {
 
-		p = new LoginPanel(desktop, plugin);
+		p = new LoginPanel(desktop);
 		d = new JDialog(desktop.getFrame(), "WikiPathways Login", false);
 		JButton submit = new JButton("Login");
 

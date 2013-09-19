@@ -170,7 +170,7 @@ this.desktop=desktop;
 			{
 				try 
 				{
-					resultspane.setBorder(BorderFactory.createTitledBorder(WikiPathwaysClientPlugin.etch, "Pathways"));
+					resultspane.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Pathways"));
 					browse();
 				}
 				catch (Exception ex) 
@@ -247,7 +247,7 @@ this.desktop=desktop;
 		CellConstraints cc = new CellConstraints();
 
 		browseOptBox.setLayout(layout);
-		browseOptBox.setBorder(BorderFactory.createTitledBorder(WikiPathwaysClientPlugin.etch,"Browse options"));
+		browseOptBox.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),"Browse options"));
 		browseOptBox.add(speciesLabel, cc.xy(1, 1));
 		browseOptBox.add(opts, cc.xy(1, 2));
 		browseOptBox.add(CollecLabel, cc.xy(3, 1));

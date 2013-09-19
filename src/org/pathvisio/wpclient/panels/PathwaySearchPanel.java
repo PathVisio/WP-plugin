@@ -89,7 +89,7 @@ public class PathwaySearchPanel extends JPanel
 		{
 			public void actionPerformed(ActionEvent e) {
 				try {
-					resultspane.setBorder(BorderFactory.createTitledBorder(WikiPathwaysClientPlugin.etch, "Pathways"));
+					resultspane.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Pathways"));
 					if (pTitleOrId.getText().startsWith("WP"))
 					{
 						searchByID();
@@ -119,7 +119,7 @@ public class PathwaySearchPanel extends JPanel
 		CellConstraints ccf = new CellConstraints();
 
 		searchBox.setLayout(layoutf);
-		searchBox.setBorder(BorderFactory.createTitledBorder(WikiPathwaysClientPlugin.etch));
+		searchBox.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder()));
 
 		JPanel searchOptBox = new JPanel();
 		FormLayout layout = new FormLayout(
@@ -128,7 +128,7 @@ public class PathwaySearchPanel extends JPanel
 		CellConstraints cc = new CellConstraints();
 
 		searchOptBox.setLayout(layout);
-		searchOptBox.setBorder(BorderFactory.createTitledBorder(WikiPathwaysClientPlugin.etch,
+		searchOptBox.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
 				"Search options"));
 		searchOptBox.add(new JLabel("Pathway Title/ID"), cc.xy(2, 1));
 		searchOptBox.add(pTitleOrId, cc.xyw(4, 1, 3));	
