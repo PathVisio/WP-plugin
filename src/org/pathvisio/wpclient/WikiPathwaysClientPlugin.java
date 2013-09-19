@@ -128,6 +128,9 @@ public class WikiPathwaysClientPlugin implements Plugin,
 		}
 	}
 
+	/**
+	 * Initializing Preferences.
+	 */
 	private void initPreferences() {
 		PreferencesDlg dlg = desktop.getPreferencesDlg();
 
@@ -159,6 +162,9 @@ public class WikiPathwaysClientPlugin implements Plugin,
 	public File getTmpDir() {
 		return tmpDir;
 	}
+	/**
+	 * Preparing the Submenu For WikiPathways Menu
+	 */
 
 	private class WikipathwaysPluginManagerAction {
 
@@ -392,7 +398,9 @@ public class WikiPathwaysClientPlugin implements Plugin,
 		highlightResults(xrefs);
 
 	}
-
+	/**
+	 * HighLight the DataNodes With particular Xref	 
+	 */
 	private void highlightResults(Xref[] xrefs) {
 		Rectangle2D interestingRect = null;
 		Engine engine = desktop.getSwingEngine().getEngine();
