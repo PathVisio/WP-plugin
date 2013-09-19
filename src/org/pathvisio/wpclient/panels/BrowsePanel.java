@@ -184,8 +184,8 @@ this.desktop=desktop;
 		// Browse Option Labels
 		speciesLabel = new JLabel("Species:");
 		// catLabel = new JLabel("Categories:");
-		CollecLabel = new JLabel("Collections:");
-		CuraLabel = new JLabel("Curation Tags:");
+		CollecLabel = new JLabel("Collection:");
+		CuraLabel = new JLabel("Curation Tag:");
 
 		// species combo box,Right now combo box is hardcoded , we should get
 		// the list of organisms from the webservices
