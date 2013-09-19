@@ -1,4 +1,4 @@
-pathvisio-wikipathways-client
+Pathvisio-WikiPathways-Client
 =============================
 
 Plugin that provides a WikiPathways client for PathVisio.
@@ -36,6 +36,7 @@ Browse Pathways:
 7.Browse by Organism and Collection and Curation
 
 8.Browse by  ALL Organisms and Collections and Curations
+
 
 Upload Pathways:
 ----------------
