@@ -36,10 +36,14 @@ import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.pathvisio.wpclient.panels.BrowsePanel;
 import org.wikipathways.client.WikiPathwaysClient;
 
+		
 	/**
 	 * This class creates the BrowseTableModel 
-	 * Based on the Browse Criteria
-	 */
+	 * Based on the results
+	 * @author Sravanthi Sinha
+	 * @author Martina Kutmon
+ 	* @version 1.0 
+ 	*/
 	public class BrowseTableModel extends AbstractTableModel 
 	{
 		WSPathwayInfo[] results;
