@@ -27,16 +27,25 @@ Advanced Search
 
 3.Search for pathways by publication reference
 
+
 Browse Pathways:
 ----------------
 
-Basic Browse
+1.Browse by Specific Organism
 
-1.Browse by organism
+2.Browse by Specific Curation tags
 
-2.Browse by curation tags
+3.Browse by Specific Collection
 
-3.Browse by Collections
+4.Browse by Organism and Collection 
+
+5.Browse by Organism and Curation
+
+6.Browse by Collection and Curation
+
+7.Browse by Organism and Collection and Curation
+
+8.Browse by  ALL Organisms and Collections and Curations
 
 Upload Pathways:
 ----------------
