@@ -20,6 +20,7 @@ package org.pathvisio.wpclient;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.pathvisio.desktop.plugin.Plugin;
+import org.pathvisio.wpclient.impl.WPQueries;
 
 /**
  * OSGi activator class for the WikiPathways Plugin
@@ -34,6 +35,12 @@ public class Activator implements BundleActivator{
 	public void start(BundleContext context) throws Exception {
 		plugin = new WikiPathwaysClientPlugin();
 		context.registerService(Plugin.class.getName(), plugin, null);
+		
+		// provide API for wikipathways queries
+		// other plugins that depend on this plugin can use this API to
+		// query data on wikipathways
+		IWPQueries wpQueries = new WPQueries();
+		context.registerService(IWPQueries.class.getName(), wpQueries, null);
 	}
 
 	@Override
