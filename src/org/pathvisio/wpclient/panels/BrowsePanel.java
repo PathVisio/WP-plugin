@@ -67,11 +67,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 /**
- *	This class creates the content in the Browse Panel
- *	Basic Browse include-
- *	Browse by Organism
- *	Browse by Curation Tags
- *	Browse by Collections 
+ *	This class creates the content in the Browse Panel *
  * 	@author Sravanthi Sinha
  * 	@author Martina Kutmon
  * 	@version 1.0
