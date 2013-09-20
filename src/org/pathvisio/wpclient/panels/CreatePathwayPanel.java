@@ -45,6 +45,7 @@ import com.jgoodies.forms.layout.FormLayout;
 public class CreatePathwayPanel extends JPanel implements ActionListener {
 	LoginPanel p;
 	JDialog d,d2;
+	
 	static WikiPathwaysClient client;
 	private JTextArea description = new JTextArea(2, 2);
 	private PvDesktop desktop;
