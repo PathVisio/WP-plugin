@@ -29,7 +29,8 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.xml.rpc.ServiceException;
 
 import org.pathvisio.core.model.Pathway;
@@ -38,11 +39,14 @@ import org.pathvisio.wikipathways.webservice.WSPathwayInfo;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.wikipathways.client.WikiPathwaysClient;
 
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+
 public class UpdatePathwayPanel extends JPanel implements ActionListener {
 	LoginPanel p;
 	JDialog d,d2;
 	static WikiPathwaysClient client;
-	private JTextField description = new JTextField(30);
+	private JTextArea description = new JTextArea(2, 2);
 	private PvDesktop desktop;
 	private String Description="";
 
@@ -59,29 +63,33 @@ public class UpdatePathwayPanel extends JPanel implements ActionListener {
 	}
 
 	private void showDescriptionPanel() {
+		FormLayout layout = new FormLayout(
+				"7dlu,150px,fill:pref,150px",
+				"pref, 2dlu, pref");
+		CellConstraints cc = new CellConstraints();
 		descriptionPanel dp = new descriptionPanel();
 		d2 = new JDialog(desktop.getFrame(), "wikipathways", false);
 		JButton submit = new JButton("Update");
 
 		submit.setActionCommand("Update");
 		submit.addActionListener(this);
-		d2.setLayout(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
+		d2.setLayout(layout);
+		//GridBagConstraints c = new GridBagConstraints();
 
-		c.gridwidth = GridBagConstraints.REMAINDER;
-		c.fill = GridBagConstraints.BOTH;
-		c.weightx = 1.0;
-		c.weighty = 1.0;
-		d2.add(dp, c);
+		//c.gridwidth = GridBagConstraints.REMAINDER;
+		//c.fill = GridBagConstraints.BOTH;
+		//c.weightx = 1.0;
+		//c.weighty = 1.0;
+		d2.add(dp, cc.xyw(2, 1,3));
 
-		c.weighty = 0.0;
-		c.weightx = 0.5;
-		c.fill = GridBagConstraints.NONE;
-		c.gridwidth = GridBagConstraints.HORIZONTAL;
+	//	c.weighty = 0.0;
+	//	c.weightx = 0.5;
+	//	c.fill = GridBagConstraints.NONE;
+	//	c.gridwidth = GridBagConstraints.HORIZONTAL;
 		JPanel p = new JPanel();
 
 		p.add(submit);
-		d2.add(p, c);
+		d2.add(p, cc.xy(3,3));
 
 		d2.pack();
 		d2.setVisible(true);
@@ -96,7 +104,7 @@ public class UpdatePathwayPanel extends JPanel implements ActionListener {
 			super();
 			setLayout(new GridLayout(2, 2));
 			add(new JLabel("Description for Pathway"));
-			add(description);
+			add(new JScrollPane(description));
 
 		}
 	}
