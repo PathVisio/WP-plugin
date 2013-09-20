@@ -68,7 +68,7 @@ public class UpdatePathwayPanel extends JPanel implements ActionListener {
 				"pref, 2dlu, pref");
 		CellConstraints cc = new CellConstraints();
 		descriptionPanel dp = new descriptionPanel();
-		d2 = new JDialog(desktop.getFrame(), "wikipathways", false);
+		d2 = new JDialog(desktop.getFrame(), "WikiPathways", false);
 		JButton submit = new JButton("Update");
 
 		submit.setActionCommand("Update");

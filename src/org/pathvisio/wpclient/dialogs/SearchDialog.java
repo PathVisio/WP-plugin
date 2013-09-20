@@ -18,6 +18,8 @@ package org.pathvisio.wpclient.dialogs;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.net.MalformedURLException;
+import java.rmi.RemoteException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JDialog;
@@ -25,6 +27,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.border.Border;
+import javax.xml.rpc.ServiceException;
 
 import org.pathvisio.desktop.PvDesktop;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
@@ -34,7 +37,7 @@ import org.pathvisio.wpclient.panels.PathwaySearchPanel;
 import org.pathvisio.wpclient.panels.XrefSearchPanel;
 
 public class SearchDialog extends JDialog {
-	public SearchDialog(PvDesktop desktop,WikiPathwaysClientPlugin plugin)
+	public SearchDialog(PvDesktop desktop,WikiPathwaysClientPlugin plugin) throws MalformedURLException, RemoteException, ServiceException
 	{
 	Search p = new Search(plugin);
 	final CardLayout cards = new CardLayout();
@@ -59,7 +62,7 @@ class Search extends JPanel
 {
 	JTabbedPane searchTabbedPane;
 	 
-	public Search(final WikiPathwaysClientPlugin plugin)
+	public Search(final WikiPathwaysClientPlugin plugin) throws MalformedURLException, RemoteException, ServiceException
 	{
 		KeywordSearchPanel p = new KeywordSearchPanel(plugin);
 		PathwaySearchPanel a = new PathwaySearchPanel(plugin);

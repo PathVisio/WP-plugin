@@ -27,6 +27,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -90,7 +91,7 @@ public class BrowsePanel extends JPanel
 	public static HashMap<String, String> tags = new HashMap<String, String>();
 	
 	final ArrayList<String> results = new ArrayList<String>();
-	WikiPathwaysClient client;
+
 	WSCurationTag[] pcolltags;
 	WSCurationTag[] ptags ;
 
@@ -98,14 +99,19 @@ public class BrowsePanel extends JPanel
 
 	private PvDesktop desktop;
 
-	public BrowsePanel(final PvDesktop desktop,final WikiPathwaysClientPlugin plugin) {
+	public BrowsePanel(final PvDesktop desktop,final WikiPathwaysClientPlugin plugin) throws RemoteException, MalformedURLException, ServiceException {
 		this.plugin = plugin;
-this.desktop=desktop;
+		
+		this.desktop=desktop;
+		WikiPathwaysClient client = WikiPathwaysClientPlugin.loadClient();
 		List<String> org = new ArrayList<String>();
 
 		// preparing organism list for combobox
 		org.add("ALL SPECIES");
-		org.add("Anopheles gambiae");
+		String[] organisms = client.listOrganisms();
+		List<String> organismslist= new ArrayList<String>(Arrays.asList(organisms));
+		org.addAll(1, organismslist);
+		/*org.add("Anopheles gambiae");
 		org.add("Arabidopsis thaliana");
 		org.add("Bos taurus");
 		org.add("Bacillus subtilis");
@@ -133,7 +139,7 @@ this.desktop=desktop;
 		org.add("Vitis vinifera");
 		org.add("Xenopus tropicalis");
 		org.add("Zea mays");
-
+*/
 		// collections combo box
 		coll.put("Curation:AnalysisCollection", "Curated pathways");
 		coll.put("Curation:FeaturedPathway", "Featured pathways");
@@ -309,7 +315,7 @@ this.desktop=desktop;
 	{
 		
 		
-		client = WikiPathwaysClientPlugin.loadClient();
+		final WikiPathwaysClient client = WikiPathwaysClientPlugin.loadClient();
 		final ProgressKeeper pk = new ProgressKeeper();
 		final ProgressDialog d = new ProgressDialog(JOptionPane.getFrameForComponent(this), "Browse", pk, true, true);
 
