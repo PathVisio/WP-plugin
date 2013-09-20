@@ -103,7 +103,7 @@ public class UpdatePathwayPanel extends JPanel implements ActionListener {
 		public descriptionPanel() {
 			super();
 			setLayout(new GridLayout(2, 2));
-			add(new JLabel("Description for Pathway"));
+			add(new JLabel("Give a description of your changes"));
 			add(new JScrollPane(description));
 
 		}
