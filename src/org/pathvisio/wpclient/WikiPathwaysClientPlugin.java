@@ -130,10 +130,10 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 				"WikiPathways Plugin",
 				dlg.builder()
 						.booleanField(UrlPreference.TESTSITE_URL,
-								"Test Site (Search or Browse Pathways from Test Site)")
+								"Use WikiPathways Test Site to Search, Browse, Upload Pathways")
 						.build()
 
-		);
+		); 
 
 	}
 
