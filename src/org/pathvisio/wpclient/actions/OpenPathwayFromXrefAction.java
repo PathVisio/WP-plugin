@@ -18,6 +18,7 @@ package org.pathvisio.wpclient.actions;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
+
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 
@@ -44,7 +45,11 @@ public class OpenPathwayFromXrefAction extends AbstractAction
 
 	public OpenPathwayFromXrefAction(WikiPathwaysClientPlugin plugin, PathwayElement elm)
 	{
+		if(elm.getDataNodeType().equalsIgnoreCase("Pathway"))
 		putValue(NAME, "Open pathway from WikiPathways");
+		else  {
+			putValue(NAME, "Find pathways containing "+elm.getXref());
+		}
 		this.plugin = plugin;
 		this.elm = elm;
 	}

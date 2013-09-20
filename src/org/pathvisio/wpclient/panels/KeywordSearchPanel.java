@@ -26,6 +26,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -74,9 +75,10 @@ public class KeywordSearchPanel extends JPanel {
 	private JScrollPane resultspane;
 	private JLabel tipLabel;
 
-	public KeywordSearchPanel(final WikiPathwaysClientPlugin plugin) {
+	public KeywordSearchPanel(final WikiPathwaysClientPlugin plugin) throws MalformedURLException, ServiceException, RemoteException {
 		this.plugin = plugin;
-
+		final WikiPathwaysClient client = WikiPathwaysClientPlugin
+				.loadClient();
 		setLayout(new BorderLayout());
 
 		Action searchAction = new AbstractAction("Search") {
@@ -105,8 +107,13 @@ public class KeywordSearchPanel extends JPanel {
 
 		// preparing List Of Organisms to load in species combobox
 		List<String> org = new ArrayList<String>();
+
+		// preparing organism list for combobox
 		org.add("ALL SPECIES");
-		org.addAll(1, Organism.latinNames());
+		String[] organisms = client.listOrganisms();
+		List<String> organismslist= new ArrayList<String>(Arrays.asList(organisms));
+		org.addAll(1, organismslist);
+
 		organismOpt = new JComboBox(org.toArray());
 		organismOpt.addActionListener(searchAction);
 		DefaultFormBuilder idOptBuilder = new DefaultFormBuilder(

@@ -458,7 +458,7 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 
 		SwingWorker<Boolean, Void> sw = new SwingWorker<Boolean, Void>() {
 			protected Boolean doInBackground() throws Exception {
-				pk.setTaskName("Opening pathway");
+				pk.setTaskName("Finding Related Pathways");
 				try {
 					openPathwayXref(client, x, rev, tmpDir);
 				} catch (Exception e) {

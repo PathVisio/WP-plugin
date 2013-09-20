@@ -17,12 +17,14 @@
 package org.pathvisio.wpclient.actions;
 
 import java.awt.event.ActionEvent;
+import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.swing.AbstractAction;
+import javax.xml.rpc.ServiceException;
 
 import org.bridgedb.bio.Organism;
 import org.pathvisio.core.util.ProgressKeeper;
@@ -62,7 +64,18 @@ public class BrowseAction extends AbstractAction {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		new BrowseDialog(desktop, plugin);
+		try {
+			new BrowseDialog(desktop, plugin);
+		} catch (RemoteException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (MalformedURLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (ServiceException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	}
 
 	public Set<WSPathwayInfo> browseAll(WikiPathwaysClient client, ProgressKeeper pk) {
