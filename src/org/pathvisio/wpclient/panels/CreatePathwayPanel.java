@@ -36,6 +36,7 @@ import javax.xml.rpc.ServiceException;
 import org.pathvisio.core.model.Pathway;
 import org.pathvisio.desktop.PvDesktop;
 import org.pathvisio.wikipathways.webservice.WSPathwayInfo;
+import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.wikipathways.client.WikiPathwaysClient;
 
 import com.jgoodies.forms.layout.CellConstraints;
@@ -72,18 +73,9 @@ public class CreatePathwayPanel extends JPanel implements ActionListener {
 		submit.setActionCommand("Create");
 		submit.addActionListener(this);
 		d2.setLayout(layout);
-		//GridBagConstraints c = new GridBagConstraints();
-
-		//c.gridwidth = GridBagConstraints.REMAINDER;
-		//c.fill = GridBagConstraints.BOTH;
-		//c.weightx = 1.0;
-		//c.weighty = 1.0;
+	
 		d2.add(dp, cc.xyw(2, 1,3));
 
-	//	c.weighty = 0.0;
-	//	c.weightx = 0.5;
-	//	c.fill = GridBagConstraints.NONE;
-	//	c.gridwidth = GridBagConstraints.HORIZONTAL;
 		JPanel p = new JPanel();
 
 		p.add(submit);
@@ -158,6 +150,8 @@ public class CreatePathwayPanel extends JPanel implements ActionListener {
 								client.saveCurationTag(l.getId(), "Curation:UnderConstruction", "curation tag UnderConstruction added by WikiPathways Client Plugin",Integer.parseInt(l.getRevision()));
 									JOptionPane.showMessageDialog(null,
 							"The Pathway " + l.getId() + " has been Uploaded. \n With Curation Tag : Under Construction. \n Please Update the Curation Tag.");
+								WikiPathwaysClientPlugin.revisionno =l.getRevision();
+								WikiPathwaysClientPlugin.pathwayid = l.getId();
 
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(null,
