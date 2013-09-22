@@ -125,7 +125,7 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 	 */
 	private void initPreferences() {
 		PreferencesDlg dlg = desktop.getPreferencesDlg();
-
+		
 		dlg.addPanel(
 				"WikiPathways Plugin",
 				dlg.builder()
@@ -213,7 +213,7 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 
 	public static WikiPathwaysClient loadClient() throws MalformedURLException,
 			ServiceException {
-		if (client == null) {
+		
 			// TODO: if preferences get changed - set client to null!!!!
 			if (PreferenceManager.getCurrent().getBoolean(
 					UrlPreference.TESTSITE_URL)) {
@@ -226,7 +226,7 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 								"http://www.wikipathways.org/wpi/webservice/webservice.php"));
 			}
 
-		}
+		
 		return client;
 	}
 
@@ -507,11 +507,13 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 
 	@Override
 	public void applicationEvent(ApplicationEvent arg0) {
+	
 		updateState();
 	}
 
 	@Override
 	public void vPathwayEvent(VPathwayEvent arg0) {
+		PreferenceManager.getCurrent().set(UrlPreference.TESTSITE_URL, UrlPreference.TESTSITE_URL.getDefault());
 		updateState();
 	}
 }
