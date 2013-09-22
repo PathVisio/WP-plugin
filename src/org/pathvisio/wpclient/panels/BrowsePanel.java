@@ -418,9 +418,9 @@ public class BrowsePanel extends JPanel
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-				} else if (pk.isCancelled()) {
+				} 
 					pk.finished();
-				}
+				
 			}
 		};
 
