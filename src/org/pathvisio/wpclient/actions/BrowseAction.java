@@ -67,13 +67,13 @@ public class BrowseAction extends AbstractAction {
 		try {
 			new BrowseDialog(desktop, plugin);
 		} catch (RemoteException e1) {
-			// TODO Auto-generated catch block
+			
 			e1.printStackTrace();
 		} catch (MalformedURLException e1) {
-			// TODO Auto-generated catch block
+			
 			e1.printStackTrace();
 		} catch (ServiceException e1) {
-			// TODO Auto-generated catch block
+			
 			e1.printStackTrace();
 		}
 	}
@@ -100,7 +100,7 @@ public class BrowseAction extends AbstractAction {
 			WSPathwayInfo[] result = client.listPathways(organism);
 			set.addAll(Arrays.asList(result));
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		return set;
@@ -117,7 +117,7 @@ public class BrowseAction extends AbstractAction {
 				set.add(tag.getPathway());
 			}
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		return set;

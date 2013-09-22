@@ -56,13 +56,13 @@ public class SearchAction extends AbstractAction
 		try {
 			new SearchDialog(desktop, plugin);
 		} catch (MalformedURLException e1) {
-			// TODO Auto-generated catch block
+			
 			e1.printStackTrace();
 		} catch (RemoteException e1) {
-			// TODO Auto-generated catch block
+			
 			e1.printStackTrace();
 		} catch (ServiceException e1) {
-			// TODO Auto-generated catch block
+			
 			e1.printStackTrace();
 		}
 		

@@ -500,7 +500,7 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 			d.setVisible(true);
 
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 	}

@@ -184,13 +184,13 @@ public class UpdatePathwayPanel extends JPanel implements ActionListener {
 			try {
 				client = p.login();
 			} catch (RemoteException e1) {
-				// TODO Auto-generated catch block
+				
 				e1.printStackTrace();
 			} catch (MalformedURLException e1) {
-				// TODO Auto-generated catch block
+				
 				e1.printStackTrace();
 			} catch (ServiceException e1) {
-				// TODO Auto-generated catch block
+				
 				e1.printStackTrace();
 			}
 			if(LoginPanel.loggedin)
@@ -202,13 +202,13 @@ public class UpdatePathwayPanel extends JPanel implements ActionListener {
 			try {
 				UpdatePathway();
 			} catch (RemoteException e1) {
-				// TODO Auto-generated catch block
+				
 				e1.printStackTrace();
 			} catch (MalformedURLException e1) {
-				// TODO Auto-generated catch block
+				
 				e1.printStackTrace();
 			} catch (ServiceException e1) {
-				// TODO Auto-generated catch block
+				
 				e1.printStackTrace();
 			}
 			d2.dispose();
