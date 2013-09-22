@@ -207,6 +207,8 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 		boolean status = (desktop.getSwingEngine().getEngine().hasVPathway());
 		createMenu.setEnabled(status);
 		updateMenu.setEnabled(status);
+		if(revisionno.equalsIgnoreCase(""))
+			updateMenu.setEnabled(false);
 	}
 
 	private static WikiPathwaysClient client;
@@ -506,14 +508,13 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 	}
 
 	@Override
-	public void applicationEvent(ApplicationEvent arg0) {
+	public void applicationEvent(ApplicationEvent e) {
 	
 		updateState();
 	}
 
 	@Override
 	public void vPathwayEvent(VPathwayEvent arg0) {
-		PreferenceManager.getCurrent().set(UrlPreference.TESTSITE_URL, UrlPreference.TESTSITE_URL.getDefault());
 		updateState();
 	}
 }
