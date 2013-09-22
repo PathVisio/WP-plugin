@@ -110,7 +110,7 @@ public class PathwaySearchPanel extends JPanel
 		
 		
 		pTitleOrId.addActionListener(searchAction);
-		tipLabel = new JLabel("Tip: use Pathway Title or Id (e.g.:'Sandbox Pathway','WP4')");
+		tipLabel = new JLabel("Tip: use Pathway Title or Id (e.g.:'Selenium Pathway','WP15')");
 		tipLabel.setFont(new Font("SansSerif", Font.ITALIC, 11));
 		
 		JPanel searchBox = new JPanel();
