@@ -56,6 +56,7 @@ import org.pathvisio.gui.ProgressDialog;
 import org.pathvisio.wikipathways.webservice.WSSearchResult;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.pathvisio.wpclient.models.ResultTableModel;
+import org.pathvisio.wpclient.models.XrefResultTableModel;
 import org.wikipathways.client.WikiPathwaysClient;
 
 import com.jgoodies.forms.layout.CellConstraints;
@@ -210,10 +211,10 @@ public class XrefSearchPanel extends JPanel {
 			final ProgressDialog d = new ProgressDialog(
 					JOptionPane.getFrameForComponent(this), "", pk, true, true);
 
-			SwingWorker<WSSearchResult[], Void> sw = new SwingWorker<WSSearchResult[], Void>() {
-				WSSearchResult[] results;
+			SwingWorker<WSResult[], Void> sw = new SwingWorker<WSResult[], Void>() {
+				WSResult[] results;
 
-				protected WSSearchResult[] doInBackground() throws Exception {
+				protected WSResult[] doInBackground() throws Exception {
 					pk.setTaskName("Starting Search");
 
 					try {
@@ -245,9 +246,9 @@ public class XrefSearchPanel extends JPanel {
 							pxXref.toArray(xrefs);
 
 							pk.setTaskName("Searching ");
-							results = client.findPathwaysByXref(xrefs);
+						//	results = client.findPathwaysByXref(xrefs);
 							pk.setTaskName("Sorting");
-							results = sort(CreateIndexList(results));
+							results = sort(CreateIndexList(client.findPathwaysByXref(xrefs)));
 
 						} else {
 							JOptionPane.showMessageDialog(XrefSearchPanel.this,
@@ -265,23 +266,28 @@ public class XrefSearchPanel extends JPanel {
 					return results;
 				}
 
-				private WSSearchResult[] sort(Map<WSSearchResult, Integer> map) {
-					WSSearchResult[] finalresults;
+				private 	WSResult[] sort(Map<WSSearchResult, Integer> map) {
+					WSResult[] finalresults;
+				
 
-					List<WSSearchResult> re = new ArrayList<WSSearchResult>();
+					List<WSResult> re = new ArrayList<WSResult>();
 					int max = pxXref.size();
 					// for (int i = 0; i < result.size(); i++) {
 					for (int j = max; j > 0; j--) {
 						for (Entry<WSSearchResult, Integer> entry : map
 								.entrySet()) {
 							if (entry.getValue() == j)
-								re.add(entry.getKey());
+							{ WSResult wsresult= new WSResult();
+							wsresult.setCount(entry.getValue());
+							wsresult.setWsSearchResult(entry.getKey());
+								re.add(wsresult);
+							}
 
 						}
-						// }
+						
 					}
 
-					finalresults = new WSSearchResult[map.size()];
+					finalresults = new WSResult[map.size()];
 					re.toArray(finalresults);
 					return finalresults;
 
@@ -334,7 +340,7 @@ public class XrefSearchPanel extends JPanel {
 			sw.execute();
 			d.setVisible(true);
 
-			resultTable.setModel(new ResultTableModel(sw.get(), client
+			resultTable.setModel(new XrefResultTableModel(sw.get(), client
 					.toString()));
 			resultTable
 					.setRowSorter(new TableRowSorter(resultTable.getModel()));
