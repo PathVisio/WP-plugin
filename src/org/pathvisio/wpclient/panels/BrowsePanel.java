@@ -90,7 +90,7 @@ public class BrowsePanel extends JPanel
 	HashMap<String, String> coll = new HashMap<String, String>();
 	public static HashMap<String, String> tags = new HashMap<String, String>();
 	
-	final ArrayList<String> results = new ArrayList<String>();
+
 
 	WSCurationTag[] pcolltags;
 	WSCurationTag[] ptags ;
@@ -111,35 +111,7 @@ public class BrowsePanel extends JPanel
 		String[] organisms = client.listOrganisms();
 		List<String> organismslist= new ArrayList<String>(Arrays.asList(organisms));
 		org.addAll(1, organismslist);
-		/*org.add("Anopheles gambiae");
-		org.add("Arabidopsis thaliana");
-		org.add("Bos taurus");
-		org.add("Bacillus subtilis");
-		org.add("Caenorhabditis elegans");
-		org.add("Canis familiaris");
-		org.add("Clostridium thermocellum");
-		org.add("Danio rerio");
-		org.add("Drosophila melanogaster");
-		org.add("Escherichia coli");
-		org.add("Equus caballus");
-		org.add("Escherichia coli");
-		org.add("Gallus gallus");
-		org.add("Glycine max");
-		org.add("Gibberella zeae");
-		org.add("Homo sapiens");
-		org.add("Mus musculus");
-		org.add("Mycobacterium tuberculosis");
-		org.add("Oryza sativa");
-		org.add("Pan troglodytes");
-		org.add("Populus trichocarpa");
-		org.add("Rattus norvegicus");
-		org.add("Saccharomyces cerevisiae");
-		org.add("Solanum lycopersicum");
-		org.add("Sus scrofa");
-		org.add("Vitis vinifera");
-		org.add("Xenopus tropicalis");
-		org.add("Zea mays");
-*/
+		
 		// collections combo box
 		coll.put("Curation:AnalysisCollection", "Curated pathways");
 		coll.put("Curation:FeaturedPathway", "Featured pathways");
@@ -318,7 +290,7 @@ public class BrowsePanel extends JPanel
 		final WikiPathwaysClient client = WikiPathwaysClientPlugin.loadClient();
 		final ProgressKeeper pk = new ProgressKeeper();
 		final ProgressDialog d = new ProgressDialog(JOptionPane.getFrameForComponent(this), "Browse", pk, true, true);
-
+		try{
 		SwingWorker<WSPathwayInfo[], Void> sw = new SwingWorker<WSPathwayInfo[], Void>() 
 		{
 			WSPathwayInfo[] wsPathwayInfos;
@@ -395,10 +367,7 @@ public class BrowsePanel extends JPanel
 					JOptionPane.showMessageDialog(BrowsePanel.this,ex.getMessage(), "Error",JOptionPane.ERROR_MESSAGE);
 					Logger.log.error("Error", ex);
 				}
-				finally 
-				{
-					pk.finished();
-				}
+				
 			return wsPathwayInfos;
 			}
 			protected void done() {
@@ -426,7 +395,7 @@ public class BrowsePanel extends JPanel
 
 		sw.execute();
 		d.setVisible(true);
-
+		pk.setTaskName("Preparing Result Set");
 		resultTable.setModel(new BrowseTableModel(sw.get(), client.toString()));
 		resultTable.setDefaultRenderer(JPanel.class, new TableCellRenderer() 
 		{
@@ -440,6 +409,11 @@ public class BrowsePanel extends JPanel
 			}
 		});
 		resultTable.setRowSorter(new TableRowSorter(resultTable.getModel()));
+		}
+		finally 
+		{
+			pk.finished();
+		}
 	}
 				
 
