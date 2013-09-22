@@ -386,6 +386,7 @@ public class BrowsePanel extends JPanel
 						pathways= b.browseByOrganismAndCollectionAndCurationTag(client, Organism.fromLatinName(organism), collkey,curkey,pk);
 					
 					wsPathwayInfos= new WSPathwayInfo[pathways.size()];
+					pk.setTaskName("Preparing Result Set");
 					return pathways.toArray(wsPathwayInfos);
 				
 				}
