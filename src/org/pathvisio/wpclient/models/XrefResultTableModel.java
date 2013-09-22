@@ -18,7 +18,7 @@ package org.pathvisio.wpclient.models;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.pathvisio.wpclient.panels.WSResult;
+import org.pathvisio.wpclient.WSResult;
 
 /**
  * This class creates the ResultTableModel 

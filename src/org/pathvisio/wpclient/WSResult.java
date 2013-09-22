@@ -1,4 +1,4 @@
-package org.pathvisio.wpclient.panels;
+package org.pathvisio.wpclient;
 
 import org.pathvisio.wikipathways.webservice.WSSearchResult;
 

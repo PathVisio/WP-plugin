@@ -54,6 +54,7 @@ import org.pathvisio.core.util.ProgressKeeper;
 import org.pathvisio.gui.DataSourceModel;
 import org.pathvisio.gui.ProgressDialog;
 import org.pathvisio.wikipathways.webservice.WSSearchResult;
+import org.pathvisio.wpclient.WSResult;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.pathvisio.wpclient.models.ResultTableModel;
 import org.pathvisio.wpclient.models.XrefResultTableModel;
