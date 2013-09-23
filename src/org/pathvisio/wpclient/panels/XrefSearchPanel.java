@@ -56,7 +56,6 @@ import org.pathvisio.gui.ProgressDialog;
 import org.pathvisio.wikipathways.webservice.WSSearchResult;
 import org.pathvisio.wpclient.WSResult;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
-import org.pathvisio.wpclient.models.ResultTableModel;
 import org.pathvisio.wpclient.models.XrefResultTableModel;
 import org.wikipathways.client.WikiPathwaysClient;
 
@@ -178,7 +177,7 @@ public class XrefSearchPanel extends JPanel {
 
 					try {
 
-						ResultTableModel model = (ResultTableModel) target
+						XrefResultTableModel model = (XrefResultTableModel ) target
 								.getModel();
 						File tmpDir = new File(plugin.getTmpDir(),
 								WikiPathwaysClientPlugin
@@ -229,9 +228,9 @@ public class XrefSearchPanel extends JPanel {
 								String p[] = xrefids[i].split(":");
 
 								if (p.length == 2) {
-									DataSource ds = DataSource
-											.getByFullName(p[0]);
+									DataSource ds =DataSource.getBySystemCode(p[0]);
 									pxXref.add(new Xref(p[1], ds));
+									
 
 								} else {
 									JOptionPane.showMessageDialog(
@@ -308,9 +307,9 @@ public class XrefSearchPanel extends JPanel {
 						String string = (String) entry.getKey();
 						for (int k = 0; k < pxXref.size(); k++) {
 							Xref temp = pxXref.get(k);
-							DataSource.getBySystemCode(temp.getDataSource().getFullName());
 							
-							String[] li = client.getXrefList(string,DataSource.getBySystemCode(temp.getDataSource().getFullName()));
+							
+							String[] li = client.getXrefList(string,DataSource.getBySystemCode(temp.getDataSource().getSystemCode()));
 							for (int i = 0; i < li.length; i++) {
 								if (li[i].equalsIgnoreCase(temp.getId())) {
 									count++;
