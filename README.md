@@ -1,4 +1,4 @@
-Pathvisio-WikiPathways-Client
+PathVisio-WikiPathways-Client
 =============================
 
 Plugin that provides a WikiPathways client for PathVisio.
