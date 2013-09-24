@@ -207,8 +207,7 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 		boolean status = (desktop.getSwingEngine().getEngine().hasVPathway());
 		createMenu.setEnabled(status);
 		updateMenu.setEnabled(status);
-		if(revisionno.equalsIgnoreCase(""))
-			updateMenu.setEnabled(false);
+	
 	}
 
 	private static WikiPathwaysClient client;
