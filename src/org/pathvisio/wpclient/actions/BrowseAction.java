@@ -35,21 +35,16 @@ import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.pathvisio.wpclient.dialogs.BrowseDialog;
 import org.wikipathways.client.WikiPathwaysClient;
 
-
 /**
- *	This class has the different methods for the Browse Action
- *	Browse include-
- *  	Browse ALL
- *	Browse by Organism
- *	Browse by Curation Tags
- *	Browse by Collections 
- *      Browse by Organism and Collections 
- *  	Browse by Organism and Curtaion Tags
- *  	Browse by Collections  and CUrtaion Tags
- *	Browse by Organism and Collections  and CUrtaion Tags
- * 	@author Sravanthi Sinha
- * 	@author Martina Kutmon
- * 	@version 1.0
+ * This class has the different methods for the Browse Action Browse include-
+ * Browse ALL Browse by Organism, Browse by Curation Tags, Browse by Collections,
+ * Browse by Organism and Collections, Browse by Organism and Curtaion Tags
+ * Browse by Collections and CUrtaion Tags, Browse by Organism and Collections
+ * and CUrtaion Tags
+ * 
+ * @author Sravanthi Sinha
+ * @author Martina Kutmon
+ * @version 1.0
  */
 public class BrowseAction extends AbstractAction {
 
@@ -67,18 +62,19 @@ public class BrowseAction extends AbstractAction {
 		try {
 			new BrowseDialog(desktop, plugin);
 		} catch (RemoteException e1) {
-			
+
 			e1.printStackTrace();
 		} catch (MalformedURLException e1) {
-			
+
 			e1.printStackTrace();
 		} catch (ServiceException e1) {
-			
+
 			e1.printStackTrace();
 		}
 	}
 
-	public Set<WSPathwayInfo> browseAll(WikiPathwaysClient client, ProgressKeeper pk) {
+	public Set<WSPathwayInfo> browseAll(WikiPathwaysClient client,
+			ProgressKeeper pk) {
 		Set<WSPathwayInfo> set = new HashSet<WSPathwayInfo>();
 
 		try {
@@ -86,38 +82,38 @@ public class BrowseAction extends AbstractAction {
 			WSPathwayInfo[] result = client.listPathways();
 			set.addAll(Arrays.asList(result));
 		} catch (RemoteException e) {
-			
+
 			e.printStackTrace();
 		}
 		return set;
 	}
 
 	public Set<WSPathwayInfo> browseByOrganism(WikiPathwaysClient client,
-			Organism organism , ProgressKeeper pk) {
+			Organism organism, ProgressKeeper pk) {
 		Set<WSPathwayInfo> set = new HashSet<WSPathwayInfo>();
 		try {
 			pk.setTaskName("Browsing through Organisms");
 			WSPathwayInfo[] result = client.listPathways(organism);
 			set.addAll(Arrays.asList(result));
 		} catch (RemoteException e) {
-			
+
 			e.printStackTrace();
 		}
 		return set;
 	}
 
 	public Set<WSPathwayInfo> browseByCurationTag(WikiPathwaysClient client,
-			String curationTag , ProgressKeeper pk) {
+			String curationTag, ProgressKeeper pk) {
 		Set<WSPathwayInfo> set = new HashSet<WSPathwayInfo>();
 
 		try {
-			
+
 			WSCurationTag[] result = client.getCurationTagsByName(curationTag);
 			for (WSCurationTag tag : result) {
 				set.add(tag.getPathway());
 			}
 		} catch (RemoteException e) {
-			
+
 			e.printStackTrace();
 		}
 		return set;
@@ -126,14 +122,16 @@ public class BrowseAction extends AbstractAction {
 	public Set<WSPathwayInfo> browseByCollection(WikiPathwaysClient client,
 			String collection, ProgressKeeper pk) {
 		pk.setTaskName("Browsing through Collections");
-		return browseByCurationTag(client, collection,pk);
+		return browseByCurationTag(client, collection, pk);
 	}
 
 	public Set<WSPathwayInfo> browseByOrganismAndCurationTag(
-			WikiPathwaysClient client, Organism organism, String curationTag , ProgressKeeper pk) {
+			WikiPathwaysClient client, Organism organism, String curationTag,
+			ProgressKeeper pk) {
 		Set<WSPathwayInfo> set = new HashSet<WSPathwayInfo>();
 		pk.setTaskName("Browsing through CurationTags");
-		Set<WSPathwayInfo> pwyCurTag = browseByCurationTag(client, curationTag,pk);
+		Set<WSPathwayInfo> pwyCurTag = browseByCurationTag(client, curationTag,
+				pk);
 		pk.setTaskName("Filtering ");
 		for (WSPathwayInfo info : pwyCurTag) {
 			if (info.getSpecies().equals(organism.latinName())) {
@@ -144,13 +142,15 @@ public class BrowseAction extends AbstractAction {
 	}
 
 	public Set<WSPathwayInfo> browseByCollectionAndCurationTag(
-			WikiPathwaysClient client, String collection, String curationTag, ProgressKeeper pk) {
+			WikiPathwaysClient client, String collection, String curationTag,
+			ProgressKeeper pk) {
 		Set<WSPathwayInfo> set = new HashSet<WSPathwayInfo>();
 		pk.setTaskName("Browsing through Curation Tags");
-		Set<WSPathwayInfo> pwyCurTag = browseByCurationTag(client, curationTag,pk);
+		Set<WSPathwayInfo> pwyCurTag = browseByCurationTag(client, curationTag,
+				pk);
 		pk.setTaskName("Browsing through Collections");
 		Set<WSPathwayInfo> pwyCollection = browseByCollection(client,
-				collection,pk);
+				collection, pk);
 		pk.setTaskName("Filtering ");
 		for (WSPathwayInfo info : pwyCurTag) {
 			if (pwyCollection.contains(info)) {
@@ -161,10 +161,12 @@ public class BrowseAction extends AbstractAction {
 	}
 
 	public Set<WSPathwayInfo> browseByOrganismAndCollection(
-			WikiPathwaysClient client, Organism organism, String collection, ProgressKeeper pk) {
+			WikiPathwaysClient client, Organism organism, String collection,
+			ProgressKeeper pk) {
 		Set<WSPathwayInfo> set = new HashSet<WSPathwayInfo>();
 		pk.setTaskName("Browsing through Collections");
-		Set<WSPathwayInfo> pwyCurTag = browseByCollection(client, collection,pk);
+		Set<WSPathwayInfo> pwyCurTag = browseByCollection(client, collection,
+				pk);
 		pk.setTaskName("Filtering ");
 		for (WSPathwayInfo info : pwyCurTag) {
 			if (info.getSpecies().equals(organism.latinName())) {
@@ -179,10 +181,11 @@ public class BrowseAction extends AbstractAction {
 			String curationTag, ProgressKeeper pk) {
 		Set<WSPathwayInfo> set = new HashSet<WSPathwayInfo>();
 		pk.setTaskName("Browsing through Curation Tags");
-		Set<WSPathwayInfo> pwyCurTag = browseByCurationTag(client, curationTag,  pk);
+		Set<WSPathwayInfo> pwyCurTag = browseByCurationTag(client, curationTag,
+				pk);
 		pk.setTaskName("Browsing through Collections");
 		Set<WSPathwayInfo> pwyCollection = browseByCollection(client,
-				collection,pk);
+				collection, pk);
 		pk.setTaskName("Filtering ");
 		for (WSPathwayInfo info : pwyCurTag) {
 			if (pwyCollection.contains(info)) {
