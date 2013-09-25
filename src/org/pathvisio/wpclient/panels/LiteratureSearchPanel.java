@@ -48,6 +48,7 @@ import org.pathvisio.gui.ProgressDialog;
 import org.pathvisio.wikipathways.webservice.WSIndexField;
 import org.pathvisio.wikipathways.webservice.WSSearchResult;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
+import org.pathvisio.wpclient.validators.Validator;
 import org.wikipathways.client.WikiPathwaysClient;
 
 import com.jgoodies.forms.layout.CellConstraints;
@@ -184,6 +185,8 @@ public class LiteratureSearchPanel extends JPanel
 
 		if (!query.isEmpty()) 
 		{
+			if(Validator.CheckNonAlpha(query))
+			{
 
 			final WikiPathwaysClient client = WikiPathwaysClientPlugin.loadClient();
 			
@@ -210,27 +213,7 @@ public class LiteratureSearchPanel extends JPanel
 					{
 						pk.finished();
 					}
-					/* CODE TO CHECK EXACT PUBLICATION TITLE
-					 i=0;
-					if(!Pattern.matches("-?[0-9]+", query))
-					{
-					for (WSSearchResult wsSearchResult : results) {
-					WSIndexField[] fields = wsSearchResult.getFields();
-					for (int j = 0; j < fields.length; j++)
-					{
-						
-						if(fields[j].getName().toString().equals("literature.title"))
-						{
-						 if( fields[j].getValues(0).toString().contains(query)){
-							 results2.add(wsSearchResult);
-						i++;
-						 }
-						}
-					}
-					}
-					results = new WSSearchResult[i];
-					results2.toArray(results);
-					}*/
+					
 					return results;
 				}
 				protected void done() {
@@ -253,6 +236,11 @@ public class LiteratureSearchPanel extends JPanel
 
 			resultTable.setModel(new LiteratureResultTableModel(sw.get(), client.toString()));
 			resultTable.setRowSorter(new TableRowSorter(resultTable.getModel()));
+			}
+			else
+			{
+				JOptionPane.showMessageDialog(null, "Please Enter a Valid Query","ERROR", JOptionPane.ERROR_MESSAGE);
+			}
 		} 
 		else
 		{

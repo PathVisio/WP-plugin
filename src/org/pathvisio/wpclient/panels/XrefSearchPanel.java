@@ -57,6 +57,7 @@ import org.pathvisio.wikipathways.webservice.WSSearchResult;
 import org.pathvisio.wpclient.WSResult;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.pathvisio.wpclient.models.XrefResultTableModel;
+import org.pathvisio.wpclient.validators.Validator;
 import org.wikipathways.client.WikiPathwaysClient;
 
 import com.jgoodies.forms.layout.CellConstraints;
@@ -203,6 +204,8 @@ public class XrefSearchPanel extends JPanel {
 			ExecutionException, MalformedURLException, ServiceException {
 		pxXref.clear();
 		if (!txtId.getText().isEmpty()) {
+			if(Validator.CheckNonAlphaAllowColon(txtId.getText()))
+			{
 
 			final WikiPathwaysClient client = WikiPathwaysClientPlugin
 					.loadClient();
@@ -246,9 +249,9 @@ public class XrefSearchPanel extends JPanel {
 							pxXref.toArray(xrefs);
 
 							pk.setTaskName("Searching ");
-						//	results = client.findPathwaysByXref(xrefs);
+						WSSearchResult[] p = client.findPathwaysByXref(xrefs);
 							pk.setTaskName("Sorting");
-							results = sort(CreateIndexList(client.findPathwaysByXref(xrefs)));
+							results = sort(CreateIndexList(p));
 
 						} else {
 							JOptionPane.showMessageDialog(XrefSearchPanel.this,
@@ -344,6 +347,12 @@ public class XrefSearchPanel extends JPanel {
 					.toString()));
 			resultTable
 					.setRowSorter(new TableRowSorter(resultTable.getModel()));
+			}else {
+
+				JOptionPane.showMessageDialog(XrefSearchPanel.this,
+						"Please Enter valid ID", "Error", JOptionPane.ERROR_MESSAGE);
+
+			}
 		}
 
 		else {

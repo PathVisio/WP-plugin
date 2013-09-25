@@ -41,11 +41,12 @@ import javax.xml.rpc.ServiceException;
 
 import org.pathvisio.desktop.PvDesktop;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
+import org.pathvisio.wpclient.validators.Validator;
 import org.wikipathways.client.WikiPathwaysClient;
 
 public class LoginPanel extends JPanel implements ActionListener {
-	static String Username="";
-	static String Password ="";
+	static String Username = "";
+	static String Password = "";
 	boolean itsFirst = true;
 	boolean itsKeep = false;
 	JTextField UserField = new JTextField(15);
@@ -57,61 +58,63 @@ public class LoginPanel extends JPanel implements ActionListener {
 	private JComboBox clientDropdown;
 	WikiPathwaysClient client;
 	String actiontype;
-static boolean loggedin ;
-
+	static boolean loggedin;
 
 	public LoginPanel(PvDesktop desktop) {
 		super();
-		this.desktop = desktop;		
+		this.desktop = desktop;
 		setLayout(new GridLayout(3, 2));
 		add(new JLabel("Username:"));
 		add(UserField);
 		add(new JLabel("Password:"));
 		add(PassField);
 		add(itsKeepBox);
-		loggedin=false;
-		
+		loggedin = false;
+
 	}
 
+	public WikiPathwaysClient login() throws RemoteException,
+			MalformedURLException, ServiceException {
 
+		try {
 
+			client = WikiPathwaysClientPlugin.loadClient();
 
-	public  WikiPathwaysClient login() throws RemoteException, MalformedURLException,
-			ServiceException {
-	
-		
-		try{
-			
-		client = WikiPathwaysClientPlugin.loadClient();
-	
-		Username=UserField.getText();
-		Password=PassField.getText();
-	
-		
-		client.login(Username,Password);
-		loggedin=true;
-		if(!itsKeepBox.isSelected())
-		{
-			Username="";
-			Password="";
-		}
-		
-		}catch(Exception ex)
-		{
-			JOptionPane.showMessageDialog(null, "You do not have permissions. \n Please Send an email to:\n wikipathways-devel@googlegroups.com",
-					"WikiPathways Login ERROR", JOptionPane.ERROR_MESSAGE);
-			Username="";
-			Password="";
+			Username = UserField.getText();
+			Password = PassField.getText();
+			if (Validator.CheckNonAlpha(Username)) {
+
+				client.login(Username, Password);
+				loggedin = true;
+				if (!itsKeepBox.isSelected()) {
+					Username = "";
+					Password = "";
+				}
+
+			} else {
+				JOptionPane.showMessageDialog(null,
+						"Please Enter Valid UserName", "ERROR",
+						JOptionPane.ERROR_MESSAGE);
+				Username = "";
+				Password = "";
+			}
+		} catch (Exception ex) {
+			JOptionPane
+					.showMessageDialog(
+							null,
+							"You do not have permissions. \n Please Send an email to:\n wikipathways-devel@googlegroups.com",
+							"WikiPathways Login ERROR",
+							JOptionPane.ERROR_MESSAGE);
+			Username = "";
+			Password = "";
 		}
 		return client;
-	
+
 	}
 
-	
- @Override
+	@Override
 	public void actionPerformed(ActionEvent e) {
-		
-		
+
 	}
 
 }
