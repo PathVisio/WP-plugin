@@ -74,6 +74,7 @@ public class KeywordSearchPanel extends JPanel {
 	private JTable resultTable;
 	private JScrollPane resultspane;
 	private JLabel tipLabel;
+	private JLabel lblNumFound;
 
 	public KeywordSearchPanel(final WikiPathwaysClientPlugin plugin) throws MalformedURLException, ServiceException, RemoteException {
 		this.plugin = plugin;
@@ -150,7 +151,8 @@ public class KeywordSearchPanel extends JPanel {
 		resultspane = new JScrollPane(resultTable);
 
 		add(resultspane, BorderLayout.CENTER);
-
+		lblNumFound = new JLabel();
+		add (lblNumFound, BorderLayout.SOUTH);
 		searchField.requestDefaultFocus();
 
 		resultTable.addMouseListener(new MouseAdapter() {
@@ -192,6 +194,7 @@ public class KeywordSearchPanel extends JPanel {
 	 */
 	private void search() throws RemoteException, InterruptedException,
 			ExecutionException, MalformedURLException, ServiceException {
+		lblNumFound.setText("");
 		final String query = searchField.getText();
 
 		if (!query.isEmpty()) {
@@ -248,6 +251,7 @@ public class KeywordSearchPanel extends JPanel {
 					.toString()));
 			resultTable
 					.setRowSorter(new TableRowSorter(resultTable.getModel()));
+			lblNumFound.setText(" No.of results found: "+sw.get().length);
 		} else {
 			JOptionPane.showMessageDialog(null, "Please Enter a Search Query",
 					"ERROR", JOptionPane.ERROR_MESSAGE);

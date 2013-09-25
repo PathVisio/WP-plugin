@@ -79,6 +79,8 @@ public class LiteratureSearchPanel extends JPanel
 
 	private JLabel tipLabel;
 
+	private JLabel lblNumFound;
+
 	public LiteratureSearchPanel(final WikiPathwaysClientPlugin plugin) 
 	{
 
@@ -150,7 +152,8 @@ public class LiteratureSearchPanel extends JPanel
 
 		add(resultspane, BorderLayout.CENTER);
 
-	
+		lblNumFound = new JLabel();
+		add (lblNumFound, BorderLayout.SOUTH);
 
 		resultTable.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
@@ -181,6 +184,7 @@ public class LiteratureSearchPanel extends JPanel
 
 	private void searchByLiterature() throws RemoteException,InterruptedException, ExecutionException, MalformedURLException, ServiceException 
 	{
+		lblNumFound.setText("");
 		final String query = pubXref.getText();
 
 		if (!query.isEmpty()) 
@@ -236,6 +240,7 @@ public class LiteratureSearchPanel extends JPanel
 
 			resultTable.setModel(new LiteratureResultTableModel(sw.get(), client.toString()));
 			resultTable.setRowSorter(new TableRowSorter(resultTable.getModel()));
+			lblNumFound.setText(" No.of results found: "+sw.get().length);
 			}
 			else
 			{

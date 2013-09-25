@@ -17,19 +17,11 @@
 package org.pathvisio.wpclient.panels;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.net.MalformedURLException;
 
-import java.util.Collections;
-import java.util.Vector;
-
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -42,9 +34,6 @@ import org.pathvisio.core.debug.Logger;
 import org.pathvisio.wikipathways.webservice.WSSearchResult;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.pathvisio.wpclient.models.ResultTableModel;
-import org.wikipathways.client.WikiPathwaysClient;
-
-
 
 import com.jgoodies.forms.layout.CellConstraints;
 
@@ -80,6 +69,7 @@ public class PathwayPanel extends JPanel
 		
 		resultTable.setModel(new ResultTableModel(wsp,WikiPathwaysClientPlugin.loadClient().toString()));
 		resultTable.setRowSorter(new TableRowSorter(resultTable.getModel()));
+		
 		resultspane = new JScrollPane(resultTable);
 
 		add(resultspane, BorderLayout.CENTER);

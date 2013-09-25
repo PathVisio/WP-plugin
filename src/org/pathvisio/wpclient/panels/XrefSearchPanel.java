@@ -86,6 +86,7 @@ public class XrefSearchPanel extends JPanel {
 
 	public int flag = 0;
 	private JLabel tipLabel;
+	private JLabel lblNumFound;
 
 	public XrefSearchPanel(final WikiPathwaysClientPlugin plugin) {
 
@@ -169,7 +170,8 @@ public class XrefSearchPanel extends JPanel {
 		resultspane = new JScrollPane(resultTable);
 
 		add(resultspane, BorderLayout.CENTER);
-
+		lblNumFound = new JLabel();
+		add (lblNumFound, BorderLayout.SOUTH);
 		resultTable.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
@@ -202,6 +204,7 @@ public class XrefSearchPanel extends JPanel {
 
 	private void searchByXref() throws RemoteException, InterruptedException,
 			ExecutionException, MalformedURLException, ServiceException {
+		lblNumFound.setText("");
 		pxXref.clear();
 		if (!txtId.getText().isEmpty()) {
 			if(Validator.CheckNonAlphaAllowColon(txtId.getText()))
@@ -347,6 +350,7 @@ public class XrefSearchPanel extends JPanel {
 					.toString()));
 			resultTable
 					.setRowSorter(new TableRowSorter(resultTable.getModel()));
+			lblNumFound.setText(" No.of results found: "+sw.get().length);
 			}else {
 
 				JOptionPane.showMessageDialog(XrefSearchPanel.this,

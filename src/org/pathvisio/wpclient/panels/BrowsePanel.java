@@ -99,6 +99,8 @@ public class BrowsePanel extends JPanel
 
 	private PvDesktop desktop;
 
+	private JLabel lblNumFound;
+
 	public BrowsePanel(final PvDesktop desktop,final WikiPathwaysClientPlugin plugin) throws RemoteException, MalformedURLException, ServiceException {
 		this.plugin = plugin;
 		
@@ -245,7 +247,8 @@ public class BrowsePanel extends JPanel
 		resultTable = new JTable();
 		resultspane = new JScrollPane(resultTable);
 		add(resultspane, BorderLayout.CENTER);
-
+		lblNumFound = new JLabel();
+		add (lblNumFound, BorderLayout.SOUTH);
 		resultTable.addMouseListener(new MouseAdapter() 
 		{
 			public void mouseClicked(MouseEvent e) 
@@ -285,7 +288,7 @@ public class BrowsePanel extends JPanel
 	 */
 	protected void browse() throws RemoteException, InterruptedException,ExecutionException, MalformedURLException, ServiceException 
 	{
-		
+		lblNumFound.setText("");
 		
 		final WikiPathwaysClient client = WikiPathwaysClientPlugin.loadClient();
 		final ProgressKeeper pk = new ProgressKeeper();
@@ -409,6 +412,7 @@ public class BrowsePanel extends JPanel
 			}
 		});
 		resultTable.setRowSorter(new TableRowSorter(resultTable.getModel()));
+		lblNumFound.setText(" No.of results found: "+sw.get().length);
 		}
 		finally 
 		{

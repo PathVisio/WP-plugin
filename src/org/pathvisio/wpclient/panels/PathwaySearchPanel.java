@@ -75,6 +75,7 @@ public class PathwaySearchPanel extends JPanel {
 
 	public int flag = 0;
 	private JLabel tipLabel;
+	private JLabel lblNumFound;
 
 	public PathwaySearchPanel(final WikiPathwaysClientPlugin plugin) {
 
@@ -142,7 +143,8 @@ public class PathwaySearchPanel extends JPanel {
 		resultspane = new JScrollPane(resultTable);
 
 		add(resultspane, BorderLayout.CENTER);
-
+		lblNumFound = new JLabel();
+		add (lblNumFound, BorderLayout.SOUTH);
 		pTitleOrId.requestDefaultFocus();
 
 		resultTable.addMouseListener(new MouseAdapter() {
@@ -191,6 +193,7 @@ public class PathwaySearchPanel extends JPanel {
 
 	private void searchByTitle() throws RemoteException, InterruptedException,
 			ExecutionException, MalformedURLException, ServiceException {
+		lblNumFound.setText("");
 		final String query = pTitleOrId.getText();
 		if (!query.isEmpty()) {
 			if (Validator.CheckNonAlpha(query)) {
@@ -251,6 +254,7 @@ public class PathwaySearchPanel extends JPanel {
 						.toString()));
 				resultTable.setRowSorter(new TableRowSorter(resultTable
 						.getModel()));
+				lblNumFound.setText(" No.of results found: "+sw.get().length);
 			} else {
 				JOptionPane.showMessageDialog(null,
 						"Please Enter a Valid Title", "ERROR",
@@ -264,6 +268,7 @@ public class PathwaySearchPanel extends JPanel {
 
 	private void searchByID() throws RemoteException, InterruptedException,
 			ExecutionException, MalformedURLException, ServiceException {
+		lblNumFound.setText("");
 		final String query = pTitleOrId.getText();
 
 		if (!query.isEmpty()) {
@@ -317,6 +322,7 @@ public class PathwaySearchPanel extends JPanel {
 					.toString()));
 			resultTable
 					.setRowSorter(new TableRowSorter(resultTable.getModel()));
+			lblNumFound.setText(" No.of results found: "+sw.get().length);
 			} else {
 				JOptionPane.showMessageDialog(null,
 						"Please Enter a Valid ID", "ERROR",
