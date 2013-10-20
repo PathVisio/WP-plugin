@@ -129,8 +129,9 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 		dlg.addPanel(
 				"WikiPathways Plugin",
 				dlg.builder()
-						.booleanField(UrlPreference.TESTSITE_URL,
+						.booleanField(UrlPreference.USE_TESTSITE,
 								"Use WikiPathways Test Site to Search, Browse, Upload Pathways")
+						.stringField(UrlPreference.TESTSITE_URL, "TestSite:")
 						.build()
 
 		); 
@@ -139,7 +140,8 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 
 	enum UrlPreference implements Preference {
 
-		TESTSITE_URL(Boolean.toString(false));
+		USE_TESTSITE(Boolean.toString(false)),
+		TESTSITE_URL(new String("test2"));
 		UrlPreference(String defaultValue) {
 			this.defaultValue = defaultValue;
 		}
@@ -214,13 +216,13 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 
 	public static WikiPathwaysClient loadClient() throws MalformedURLException,
 			ServiceException {
-		
+		String testsite=PreferenceManager.getCurrent().get(UrlPreference.TESTSITE_URL);
 			// TODO: if preferences get changed - set client to null!!!!
 			if (PreferenceManager.getCurrent().getBoolean(
-					UrlPreference.TESTSITE_URL)) {
+					UrlPreference.USE_TESTSITE)) {
 				client = new WikiPathwaysClient(
 						new URL(
-								"http://test2.wikipathways.org/wpi/webservice/webservice.php"));
+								"http://"+testsite+".wikipathways.org/wpi/webservice/webservice.php"));
 			} else {
 				client = new WikiPathwaysClient(
 						new URL(
