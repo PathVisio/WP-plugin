@@ -58,7 +58,7 @@ public class WPQueries implements IWPQueries {
 		try {
 			client = new WikiPathwaysClient(new URL(PreferenceManager.getCurrent().get(URLPreference.CONNECTION_URL)));
 		} catch (MalformedURLException e) {
-			throw new FailedConnectionException("Can not connect to WikiPathways.");
+			throw new FailedConnectionException("Can not connect to WikiPathways.\nInvalid URL.");
 		} catch (ServiceException e) {
 			throw new FailedConnectionException("Can not connect to WikiPathways.");
 		}
@@ -161,14 +161,20 @@ public class WPQueries implements IWPQueries {
 		return new HashSet<WSCurationTag>(Arrays.asList(tags));
 	}
 
-
+	/**
+	 * finds all pathways by a text query
+	 */
+	@Override
 	public WSSearchResult[] findByText(String text, ProgressKeeper pk) throws RemoteException, FailedConnectionException  {
 		WikiPathwaysClient client = getClient();
 		if(pk != null) pk.setTaskName("Search for \"" + text + "\".");
 		WSSearchResult [] result = client.findPathwaysByText(text);
 		return result;
 	}
-		 
+		
+	/**
+	 * gets a specific pathway by id and revision
+	 */
 	@Override
 	public WSPathway getPathway(String id, Integer revision, ProgressKeeper pk) throws RemoteException, FailedConnectionException, ConverterException {
 		WikiPathwaysClient client = getClient();
@@ -177,6 +183,9 @@ public class WPQueries implements IWPQueries {
 		return pathway;
 	}
 		 
+	/**
+	 * finds all pathways by a text query for a specific organism
+	 */
 	@Override
 	public WSSearchResult[] findByTextInOrganism(String text, Organism organism, ProgressKeeper pk) throws RemoteException, FailedConnectionException {
 		WikiPathwaysClient client = getClient();
@@ -185,6 +194,9 @@ public class WPQueries implements IWPQueries {
 		return result;
 	}
 	
+	/**
+	 * finds all pathways by literature reference
+	 */
 	@Override
 	public WSSearchResult[] findByLiteratureReference(String reference, ProgressKeeper pk) throws RemoteException, FailedConnectionException {
 		WikiPathwaysClient client = getClient();
@@ -192,25 +204,37 @@ public class WPQueries implements IWPQueries {
 		WSSearchResult [] result = client.findPathwaysByLiterature(reference);
 		return result;
 	}
-		 
+		
+	/**
+	 * login necessary to upload new data
+	 */
 	@Override
 	public void login(String username, String password) throws RemoteException, FailedConnectionException {
 		WikiPathwaysClient client = getClient();
 		client.login(username, password);
 	}
 
+	/**
+	 * upload a new pathway
+	 */
 	@Override
 	public WSPathwayInfo uploadPathway(Pathway pathway) throws RemoteException, FailedConnectionException, ConverterException {
 		WikiPathwaysClient client = getClient();
 		return client.createPathway(pathway);
 	}
 	
+	/**
+	 * update a pathway
+	 */
 	@Override
 	public void updatePathway(Pathway pathway, String id, Integer revision, String description) throws RemoteException, FailedConnectionException, ConverterException {
 		WikiPathwaysClient client = getClient();
 		client.updatePathway(id, pathway, description, revision);
 	}
 
+	/**
+	 * updates a curation tag of a specific pathway
+	 */
 	@Override
 	public void updateCurationTag(String tag, String id, String description)
 			throws RemoteException, FailedConnectionException,
@@ -219,6 +243,9 @@ public class WPQueries implements IWPQueries {
 		client.saveCurationTag(id, tag, description);
 	}
 
+	/**
+	 * gets the pathway info for a specific pathway
+	 */
 	@Override
 	public WSPathwayInfo getPathwayInfo(String id, ProgressKeeper pk)
 			throws RemoteException, FailedConnectionException,
@@ -229,6 +256,9 @@ public class WPQueries implements IWPQueries {
 		return pathway;
 	}
 
+	/**
+	 * find pathways by a list of xrefs
+	 */
 	@Override
 	public WSSearchResult[] findByXref(Xref[] xrefs, ProgressKeeper pk) throws RemoteException, FailedConnectionException, ConverterException {
 		WikiPathwaysClient client = getClient();
@@ -237,6 +267,9 @@ public class WPQueries implements IWPQueries {
 		return results;
 	}
 
+	/**
+	 * gets xref list for a pathway
+	 */
 	@Override
 	public String[] getXrefList(String pwId, DataSource ds, ProgressKeeper pk) throws RemoteException, FailedConnectionException {
 		WikiPathwaysClient client = getClient();

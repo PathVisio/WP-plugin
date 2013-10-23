@@ -55,43 +55,23 @@ public interface IWPQueries {
 
 	public Set<WSCurationTag> getCurationTags(String pwId, ProgressKeeper pk) throws RemoteException, FailedConnectionException;
 
-	WSPathway getPathway(String id, Integer revision, ProgressKeeper pk)
-			throws RemoteException, FailedConnectionException,
-			ConverterException;
+	public WSPathway getPathway(String id, Integer revision, ProgressKeeper pk) throws RemoteException, FailedConnectionException, ConverterException;
 
-	WSSearchResult[] findByTextInOrganism(String text, Organism organism,
-			ProgressKeeper pk) throws RemoteException,
-			FailedConnectionException;
+	public WSSearchResult[] findByTextInOrganism(String text, Organism organism, ProgressKeeper pk) throws RemoteException, FailedConnectionException;
 
-	WSSearchResult[] findByLiteratureReference(String reference,
-			ProgressKeeper pk) throws RemoteException,
-			FailedConnectionException;
+	public WSSearchResult[] findByLiteratureReference(String reference, ProgressKeeper pk) throws RemoteException, FailedConnectionException;
 
-	void login(String username, String password) throws RemoteException,
-			FailedConnectionException;
+	public void login(String username, String password) throws RemoteException, FailedConnectionException;
 
-	WSPathwayInfo uploadPathway(Pathway pathway) throws RemoteException,
-			FailedConnectionException, ConverterException;
+	public WSPathwayInfo uploadPathway(Pathway pathway) throws RemoteException, FailedConnectionException, ConverterException;
 
-	void updatePathway(Pathway pathway, String id, Integer revision,
-			String description) throws RemoteException,
-			FailedConnectionException, ConverterException;
+	public void updatePathway(Pathway pathway, String id, Integer revision, String description) throws RemoteException, FailedConnectionException, ConverterException;
 
-	void updateCurationTag(String tag, String id, String description)
-			throws RemoteException, FailedConnectionException,
-			ConverterException;
+	public void updateCurationTag(String tag, String id, String description) throws RemoteException, FailedConnectionException, ConverterException;
 
-	WSPathwayInfo getPathwayInfo(String id, ProgressKeeper pk)
-			throws RemoteException, FailedConnectionException,
-			ConverterException;
+	public WSPathwayInfo getPathwayInfo(String id, ProgressKeeper pk) throws RemoteException, FailedConnectionException, ConverterException;
 
-	WSSearchResult[] findByXref(Xref[] xrefs, ProgressKeeper pk)
-			throws RemoteException, FailedConnectionException,
-			ConverterException;
+	public WSSearchResult[] findByXref(Xref[] xrefs, ProgressKeeper pk) throws RemoteException, FailedConnectionException, ConverterException;
 
-	String[] getXrefList(String pwId, DataSource ds, ProgressKeeper pk)
-			throws RemoteException, FailedConnectionException;
-	
-	// TODO: add all search queries
-	// TODO: add all update/upload queries
+	public String[] getXrefList(String pwId, DataSource ds, ProgressKeeper pk) throws RemoteException, FailedConnectionException;
 }
