@@ -54,7 +54,6 @@ import org.bridgedb.bio.Organism;
 import org.pathvisio.core.debug.Logger;
 import org.pathvisio.core.util.ProgressKeeper;
 import org.pathvisio.gui.ProgressDialog;
-import org.pathvisio.wikipathways.webservice.WSCurationTag;
 import org.pathvisio.wikipathways.webservice.WSPathwayInfo;
 import org.pathvisio.wpclient.FailedConnectionException;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
@@ -82,7 +81,7 @@ public class BrowsePanel extends JPanel {
 
 	private HashMap<String, String> curationTags;
 	private HashMap<String, String> collectionTags;
-	public static HashMap<String, String> tagImages;
+//	public static HashMap<String, String> tagImages;
 
 	private JPanel thisPanel;
 	private JLabel lblNumFound;
@@ -93,7 +92,7 @@ public class BrowsePanel extends JPanel {
 		
 		curationTags = new HashMap<String, String>();
 		collectionTags = new HashMap<String, String>();
-		tagImages = new HashMap<String, String>();
+//		tagImages = new HashMap<String, String>();
 
 		List<String> organisms = retrieveOrgansims();
 		setUpCurationTags();
@@ -273,13 +272,13 @@ public class BrowsePanel extends JPanel {
 		curationTags.put("Needs work", "Curation:NeedsWork");
 
 		// Curation Tags mapping for image resources
-		tagImages.put("Curation:MissingXRef", "MissingXRef");
-		tagImages.put("Curation:Stub", "Stub");
-		tagImages.put("Curation:NeedsWork", "NeedsWork");
-		tagImages.put("Curation:AnalysisCollection", "Curated");
-		tagImages.put("Curation:MissingDescription", "MissingDescription");
-		tagImages.put("Curation:NoInteractions", "Unconnected");
-		tagImages.put("Curation:NeedsReference", "NeedsRef");
+//		tagImages.put("Curation:MissingXRef", "MissingXRef");
+//		tagImages.put("Curation:Stub", "Stub");
+//		tagImages.put("Curation:NeedsWork", "NeedsWork");
+//		tagImages.put("Curation:AnalysisCollection", "Curated");
+//		tagImages.put("Curation:MissingDescription", "MissingDescription");
+//		tagImages.put("Curation:NoInteractions", "Unconnected");
+//		tagImages.put("Curation:NeedsReference", "NeedsRef");
 	}
 	
 	/**
@@ -347,12 +346,12 @@ public class BrowsePanel extends JPanel {
 							}
 						}
 					}
-					pk.report("Retrieve curation tags from WikiPathways");
+//					pk.report("Retrieve curation tags from WikiPathways");
 					List<BrowseResult> results = new ArrayList<BrowseResult>();
 					for(WSPathwayInfo info : pathways) {
 						BrowseResult res = new BrowseResult(info);
-						Set<WSCurationTag> tags = plugin.getWpQueries().getCurationTags(info.getId(), null);
-						res.getTags().addAll(tags);
+//						Set<WSCurationTag> tags = plugin.getWpQueries().getCurationTags(info.getId(), null);
+//						res.getTags().addAll(tags);
 						results.add(res);
 					}
 					pk.report(results.size() + " pathways found.");
