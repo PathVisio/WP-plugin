@@ -140,7 +140,7 @@ public class BrowsePanel extends JPanel
 		tags.put("Curation:NeedsWork", "NeedsWork");
 		tags.put("Curation:AnalysisCollection", "Curated");
 		tags.put("Curation:MissingDescription", "MissingDescription");
-		tags.put("Curation:NoInteractions", "UnConnected");
+		tags.put("Curation:NoInteractions", "Unconnected");
 		tags.put("Curation:NeedsReference", "NeedsRef");
 		setLayout(new BorderLayout());
 

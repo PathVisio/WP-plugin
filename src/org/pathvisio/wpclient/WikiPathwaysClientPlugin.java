@@ -69,6 +69,7 @@ import org.pathvisio.wpclient.actions.SearchAction;
 import org.pathvisio.wpclient.actions.UpdateAction;
 import org.pathvisio.wpclient.actions.UploadAction;
 import org.pathvisio.wpclient.panels.PathwayPanel;
+import org.pathvisio.wpclient.utils.FileUtils;
 import org.wikipathways.client.WikiPathwaysClient;
 
 /**
@@ -85,7 +86,7 @@ import org.wikipathways.client.WikiPathwaysClient;
 public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListener, VPathwayListener {
 	
 	private PvDesktop desktop;
-	private File tmpDir = new File(GlobalPreference.getApplicationDir(), "wpclient-cache");
+	private File tmpDir = new File(GlobalPreference.getPluginDir(), "wpclient-cache");
 	private JMenu uploadMenu, wikipathwaysMenu;
 	
 	public static String revisionno = "";
@@ -439,17 +440,11 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 	@Override
 	public void done() {
 		desktop.unregisterSubMenu("Plugins", wikipathwaysMenu);
-		try {
-			CommonsFileUtils.deleteDirectory(tmpDir);
-			if (tmpDir.exists()) {
-				throw new IOException("Failed to delete  directory '" + tmpDir);
-			}
-		} catch (IOException e) {
-
-			e.printStackTrace();
+		if(tmpDir.exists()) {
+			FileUtils.deleteDirectory(tmpDir);
 		}
 	}
-
+	
 	public void openPathwayXrefWithProgress(final WikiPathwaysClient client,
 			final Xref x, final int rev, final File tmpDir)
 			throws InterruptedException, ExecutionException {
