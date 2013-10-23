@@ -21,19 +21,22 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 
 import org.pathvisio.desktop.PvDesktop;
+import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.pathvisio.wpclient.panels.UpdatePathwayPanel;
 
 public class UpdateAction extends AbstractAction {
 
 	private PvDesktop desktop;
+	private WikiPathwaysClientPlugin plugin;
 	
-	public UpdateAction(PvDesktop desktop) {
+	public UpdateAction(PvDesktop desktop, WikiPathwaysClientPlugin plugin) {
 		this.desktop = desktop;
+		this.plugin = plugin;
 	}
 	
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		new UpdatePathwayPanel(desktop);
+		new UpdatePathwayPanel(desktop, plugin);
 	}
 
 }

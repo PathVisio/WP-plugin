@@ -158,14 +158,10 @@ public class PathwaySearchPanel extends JPanel {
 						if (flag == 1) {
 							SearchTableModel model = (SearchTableModel) target
 									.getModel();
-							File tmpDir = new File(plugin.getTmpDir(),
-									WikiPathwaysClientPlugin
-											.shortClientName(model.clientName));
+							File tmpDir = new File(plugin.getTmpDir(),FileUtils.getTimeStamp());
 							tmpDir.mkdirs();
 							flag = 0;
-							plugin.openPathwayWithProgress(
-									WikiPathwaysClientPlugin.loadClient(),
-									model.getValueAt(row, 0).toString(), 0,
+							plugin.openPathwayWithProgress(model.getValueAt(row, 0).toString(), 0,
 									tmpDir);
 						} else {
 							ResultTableModel model = (ResultTableModel) target
@@ -173,9 +169,7 @@ public class PathwaySearchPanel extends JPanel {
 							File tmpDir = new File(plugin.getTmpDir(),FileUtils.getTimeStamp());
 							tmpDir.mkdirs();
 
-							plugin.openPathwayWithProgress(
-									WikiPathwaysClientPlugin.loadClient(),
-									model.getValueAt(row, 0).toString(), 0,
+							plugin.openPathwayWithProgress(model.getValueAt(row, 0).toString(), 0,
 									tmpDir);
 
 						}
@@ -196,9 +190,6 @@ public class PathwaySearchPanel extends JPanel {
 		final String query = pTitleOrId.getText();
 		if (!query.isEmpty()) {
 			if (Validator.CheckNonAlpha(query)) {
-				final WikiPathwaysClient client = WikiPathwaysClientPlugin
-						.loadClient();
-
 				final ProgressKeeper pk = new ProgressKeeper();
 				final ProgressDialog d = new ProgressDialog(
 						JOptionPane.getFrameForComponent(this), "", pk, true,
@@ -214,7 +205,7 @@ public class PathwaySearchPanel extends JPanel {
 						ArrayList<WSSearchResult> results2 = new ArrayList<WSSearchResult>();
 						try {
 							pk.setTaskName("Searching By Pathway Title");
-							results = client.findPathwaysByText(query);
+							results = plugin.getWpQueries().findByText(query, pk);
 						} catch (Exception e) {
 							throw e;
 						} finally {
@@ -271,8 +262,7 @@ public class PathwaySearchPanel extends JPanel {
 
 		if (!query.isEmpty()) {
 			if (Validator.CheckNonAlpha(query)) {
-			final WikiPathwaysClient client = WikiPathwaysClientPlugin
-					.loadClient();
+
 			final ProgressKeeper pk = new ProgressKeeper();
 			final ProgressDialog d = new ProgressDialog(
 					JOptionPane.getFrameForComponent(this), "", pk, true, true);
@@ -287,7 +277,7 @@ public class PathwaySearchPanel extends JPanel {
 					ArrayList<WSPathwayInfo> results2 = new ArrayList<WSPathwayInfo>();
 					try {
 						pk.setTaskName("Searching By Pathway ID");
-						results2.add(client.getPathwayInfo(query));
+						results2.add(plugin.getWpQueries().getPathwayInfo(query, pk));
 						i++;
 					} catch (Exception e) {
 						throw e;
@@ -316,8 +306,7 @@ public class PathwaySearchPanel extends JPanel {
 			sw.execute();
 			d.setVisible(true);
 			flag = 1;
-			resultTable.setModel(new SearchTableModel(sw.get(), client
-					.toString()));
+			resultTable.setModel(new SearchTableModel(sw.get()));
 			resultTable
 					.setRowSorter(new TableRowSorter(resultTable.getModel()));
 			lblNumFound.setText(" No.of results found: "+sw.get().length);
@@ -335,13 +324,9 @@ public class PathwaySearchPanel extends JPanel {
 	private class SearchTableModel extends AbstractTableModel {
 		WSPathwayInfo[] results;
 		String[] columnNames = new String[] { "ID", "Name", "Species" };
-		String clientName;
 
-		public SearchTableModel(WSPathwayInfo[] wsPathwayInfos,
-				String clientName) {
-			this.clientName = clientName;
+		public SearchTableModel(WSPathwayInfo[] wsPathwayInfos) {
 			this.results = wsPathwayInfos;
-
 		}
 
 		public int getColumnCount() {

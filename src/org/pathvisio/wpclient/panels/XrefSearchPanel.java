@@ -54,12 +54,12 @@ import org.pathvisio.core.util.ProgressKeeper;
 import org.pathvisio.gui.DataSourceModel;
 import org.pathvisio.gui.ProgressDialog;
 import org.pathvisio.wikipathways.webservice.WSSearchResult;
+import org.pathvisio.wpclient.FailedConnectionException;
 import org.pathvisio.wpclient.WSResult;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.pathvisio.wpclient.models.XrefResultTableModel;
 import org.pathvisio.wpclient.utils.FileUtils;
 import org.pathvisio.wpclient.validators.Validator;
-import org.wikipathways.client.WikiPathwaysClient;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -141,26 +141,25 @@ public class XrefSearchPanel extends JPanel {
 		JPanel searchReferenceBox = new JPanel();
 		FormLayout layout2 = new FormLayout("p,3dlu,fill:pref:grow,1dlu,pref",
 				"pref,3dlu,pref,pref,pref");
-		CellConstraints cc2 = new CellConstraints();
 
 		searchReferenceBox.setLayout(layout2);
 
 		searchReferenceBox.setBorder(BorderFactory.createTitledBorder(
 				BorderFactory.createEtchedBorder(), "Search By Reference"));
 
-		searchReferenceBox.add(new JLabel("ID"), cc2.xy(1, 1));
-		searchReferenceBox.add(new JScrollPane(txtId), cc2.xyw(3, 1, 2));
+		searchReferenceBox.add(new JLabel("ID"), cc.xy(1, 1));
+		searchReferenceBox.add(new JScrollPane(txtId), cc.xyw(3, 1, 2));
 		// searchReferenceBox.add(new JLabel("System Code"), cc2.xy(1,3));
 		// searchReferenceBox.add(cbSyscode, cc2.xy(3,3));
 
 		JButton searchButton = new JButton(searchXrefAction);
-		searchReferenceBox.add(searchButton, cc2.xy(5, 1));
+		searchReferenceBox.add(searchButton, cc.xy(5, 1));
 
 		tipLabel = new JLabel(
 				"Enter Gene List (each in a new line)  eg- L:1234");
 		tipLabel.setFont(new Font("SansSerif", Font.ITALIC, 11));
 
-		searchReferenceBox.add(tipLabel, cc2.xyw(1, 4, 5));
+		searchReferenceBox.add(tipLabel, cc.xyw(1, 4, 5));
 
 		searchBox.add(searchReferenceBox, ccf.xyw(1, 4, 6));
 
@@ -186,8 +185,7 @@ public class XrefSearchPanel extends JPanel {
 						File tmpDir = new File(plugin.getTmpDir(),FileUtils.getTimeStamp());
 						tmpDir.mkdirs();
 
-						plugin.openPathwayWithProgress(WikiPathwaysClientPlugin
-								.loadClient(), model.getValueAt(row, 0)
+						plugin.openPathwayWithProgress(model.getValueAt(row, 0)
 								.toString(), 0, tmpDir, xrefs);
 
 					} catch (Exception ex) {
@@ -208,9 +206,6 @@ public class XrefSearchPanel extends JPanel {
 		if (!txtId.getText().isEmpty()) {
 			if(Validator.CheckNonAlphaAllowColon(txtId.getText()))
 			{
-
-			final WikiPathwaysClient client = WikiPathwaysClientPlugin
-					.loadClient();
 
 			final ProgressKeeper pk = new ProgressKeeper();
 			final ProgressDialog d = new ProgressDialog(
@@ -251,7 +246,7 @@ public class XrefSearchPanel extends JPanel {
 							pxXref.toArray(xrefs);
 
 							pk.setTaskName("Searching ");
-						WSSearchResult[] p = client.findPathwaysByXref(xrefs);
+							WSSearchResult[] p = plugin.getWpQueries().findByXref(xrefs, pk);
 							pk.setTaskName("Sorting");
 							results = sort(CreateIndexList(p));
 
@@ -299,7 +294,7 @@ public class XrefSearchPanel extends JPanel {
 				}
 
 				private Map<WSSearchResult, Integer> CreateIndexList(
-						WSSearchResult[] results) throws RemoteException {
+						WSSearchResult[] results) throws RemoteException, FailedConnectionException {
 					Map<String, WSSearchResult> result = new HashMap<String, WSSearchResult>();
 					Map<WSSearchResult, Integer> r = new HashMap<WSSearchResult, Integer>();
 					int count = 0;
@@ -313,8 +308,7 @@ public class XrefSearchPanel extends JPanel {
 						for (int k = 0; k < pxXref.size(); k++) {
 							Xref temp = pxXref.get(k);
 							
-							
-							String[] li = client.getXrefList(string,DataSource.getBySystemCode(temp.getDataSource().getSystemCode()));
+							String [] li = plugin.getWpQueries().getXrefList(string, DataSource.getBySystemCode(temp.getDataSource().getSystemCode()), pk);
 							for (int i = 0; i < li.length; i++) {
 								if (li[i].equalsIgnoreCase(temp.getId())) {
 									count++;

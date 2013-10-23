@@ -20,9 +20,7 @@ package org.pathvisio.wpclient;
 import java.awt.Color;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
@@ -46,9 +44,6 @@ import org.pathvisio.core.model.ConverterException;
 import org.pathvisio.core.model.Pathway;
 import org.pathvisio.core.model.PathwayElement;
 import org.pathvisio.core.preferences.GlobalPreference;
-import org.pathvisio.core.preferences.Preference;
-import org.pathvisio.core.preferences.PreferenceManager;
-import org.pathvisio.core.util.CommonsFileUtils;
 import org.pathvisio.core.util.ProgressKeeper;
 import org.pathvisio.core.view.GeneProduct;
 import org.pathvisio.core.view.Graphics;
@@ -68,7 +63,6 @@ import org.pathvisio.wpclient.actions.OpenPathwayFromXrefAction;
 import org.pathvisio.wpclient.actions.SearchAction;
 import org.pathvisio.wpclient.actions.UpdateAction;
 import org.pathvisio.wpclient.actions.UploadAction;
-import org.pathvisio.wpclient.impl.WPQueries;
 import org.pathvisio.wpclient.panels.PathwayPanel;
 import org.pathvisio.wpclient.preferences.URLPreference;
 import org.pathvisio.wpclient.utils.FileUtils;
@@ -94,12 +88,15 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 	
 	public static String revisionno = "";
 	public static String pathwayid = "";
+	
+	private WikiPathwaysClientPlugin plugin;
 
 	// handles 
 	private IWPQueries wpQueries;
 	
 	public WikiPathwaysClientPlugin(IWPQueries wpQueries) {
 		this.wpQueries = wpQueries;
+		plugin = this;
 	}
 
 	@Override
@@ -171,8 +168,8 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 			createMenu = new JMenuItem("Create Pathway");
 			updateMenu = new JMenuItem("Update Pathway");
 
-			UploadAction createAction = new UploadAction(desktop);
-			UpdateAction updateAction = new UpdateAction(desktop);
+			UploadAction createAction = new UploadAction(desktop, plugin);
+			UpdateAction updateAction = new UpdateAction(desktop, plugin);
 
 			createMenu.addActionListener(createAction);
 			updateMenu.addActionListener(updateAction);
@@ -201,13 +198,13 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 	
 	}
 
-	private static WikiPathwaysClient client;
-
-	public static WikiPathwaysClient loadClient() throws MalformedURLException,
-			ServiceException {
-		client = new WikiPathwaysClient(new URL(PreferenceManager.getCurrent().get(URLPreference.CONNECTION_URL)));
-		return client;
-	}
+//	private static WikiPathwaysClient client;
+//
+//	public static WikiPathwaysClient loadClient() throws MalformedURLException,
+//			ServiceException {
+//		client = new WikiPathwaysClient(new URL(PreferenceManager.getCurrent().get(URLPreference.CONNECTION_URL)));
+//		return client;
+//	}
 
 	/**
 	 * Register actions to provide option to open a pathway From Xref on right
@@ -232,33 +229,14 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 				if (ds == null) {
 					return;
 				}
-
-				WikiPathwaysClient client;
-				try {
-					client = loadClient();
-
-					if (client == null) {
-						return;
-					}
-
-					OpenPathwayFromXrefAction action = new OpenPathwayFromXrefAction(
-							WikiPathwaysClientPlugin.this, pe);
-					action.setClient(client);
-					menu.add(action);
-				} catch (MalformedURLException e1) {
-
-					e1.printStackTrace();
-				} catch (ServiceException e1) {
-
-					e1.printStackTrace();
-				}
-
+				OpenPathwayFromXrefAction action = new OpenPathwayFromXrefAction(
+						WikiPathwaysClientPlugin.this, pe);
+				menu.add(action);
 			}
 		});
 	}
 
-	public void openPathwayWithProgress(final WikiPathwaysClient client,
-			final String id, final int rev, final File tmpDir)
+	public void openPathwayWithProgress(final String id, final int rev, final File tmpDir)
 			throws InterruptedException, ExecutionException {
 		final ProgressKeeper pk = new ProgressKeeper();
 		final ProgressDialog d = new ProgressDialog(
@@ -269,7 +247,7 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 			protected Boolean doInBackground() throws Exception {
 				pk.setTaskName("Opening pathway");
 				try {
-					openPathway(client, id, rev, tmpDir);
+					openPathway(id, rev, tmpDir);
 				} catch (Exception e) {
 					Logger.log.error("The Pathway is not found", e);
 					JOptionPane.showMessageDialog(null,
@@ -293,8 +271,7 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 		sw.get();
 	}
 
-	public void openPathwayWithProgress(final WikiPathwaysClient client,
-			final String id, final int rev, final File tmpDir,
+	public void openPathwayWithProgress(final String id, final int rev, final File tmpDir,
 			final Xref[] xrefs) throws InterruptedException, ExecutionException {
 		final ProgressKeeper pk = new ProgressKeeper();
 		final ProgressDialog d = new ProgressDialog(
@@ -305,7 +282,7 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 			protected Boolean doInBackground() throws Exception {
 				pk.setTaskName("Opening pathway");
 				try {
-					openPathway(client, id, rev, tmpDir, xrefs);
+					openPathway(id, rev, tmpDir, xrefs);
 				} catch (Exception e) {
 					Logger.log.error("The Pathway is not found", e);
 					JOptionPane.showMessageDialog(null,
@@ -332,10 +309,11 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 	/**
 	 * Load Pathway into PathVisio on selection of pathway from list provided by
 	 * any Search/ Browse Dialog.
+	 * @throws FailedConnectionException 
 	 */
-	protected void openPathway(WikiPathwaysClient client, String id, int rev,
-			File tmpDir) throws RemoteException, ConverterException {
-		WSPathway wsp = client.getPathway(id, rev);
+	protected void openPathway(String id, int rev,
+			File tmpDir) throws RemoteException, ConverterException, FailedConnectionException {
+		WSPathway wsp = getWpQueries().getPathway(id, rev, null);
 		Pathway p = WikiPathwaysClient.toPathway(wsp);
 		File tmp = new File(tmpDir, wsp.getId() + ".r" + wsp.getRevision()
 				+ ".gpml");
@@ -351,11 +329,12 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 	/**
 	 * Load Pathway into PathVisio on selection of pathway from list provided by
 	 * any Search/ Browse Dialog.
+	 * @throws FailedConnectionException 
 	 */
-	protected void openPathway(WikiPathwaysClient client, String id, int rev,
+	protected void openPathway(String id, int rev,
 			File tmpDir, Xref[] xrefs) throws RemoteException,
-			ConverterException {
-		WSPathway wsp = client.getPathway(id, rev);
+			ConverterException, FailedConnectionException {
+		WSPathway wsp = getWpQueries().getPathway(id, rev, null);
 		Pathway p = WikiPathwaysClient.toPathway(wsp);
 		File tmp = new File(tmpDir, wsp.getId() + ".r" + wsp.getRevision()
 				+ ".gpml");
@@ -420,8 +399,7 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 		}
 	}
 	
-	public void openPathwayXrefWithProgress(final WikiPathwaysClient client,
-			final Xref x, final int rev, final File tmpDir)
+	public void openPathwayXrefWithProgress(final Xref x, final int rev, final File tmpDir)
 			throws InterruptedException, ExecutionException {
 
 		final ProgressKeeper pk = new ProgressKeeper();
@@ -433,7 +411,7 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 			protected Boolean doInBackground() throws Exception {
 				pk.setTaskName("Finding Related Pathways");
 				try {
-					openPathwayXref(client, x, rev, tmpDir);
+					openPathwayXref(x, rev, tmpDir);
 				} catch (Exception e) {
 					Logger.log.error("The Pathway is not found", e);
 					JOptionPane.showMessageDialog(null,
@@ -452,12 +430,12 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 		sw.get();
 	}
 
-	protected void openPathwayXref(WikiPathwaysClient client, Xref x, int rev,
-			File tmpDir) throws MalformedURLException, ServiceException {
+	protected void openPathwayXref(Xref x, int rev,
+			File tmpDir) throws MalformedURLException, ServiceException, FailedConnectionException, ConverterException {
 
 		WSSearchResult[] wsp;
 		try {
-			wsp = client.findPathwaysByXref(x);
+			wsp = getWpQueries().findByXref(new Xref[]{x}, null);
 
 			Xref[] xref = { x };
 			PathwayPanel p = new PathwayPanel(WikiPathwaysClientPlugin.this,

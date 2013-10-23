@@ -89,7 +89,7 @@ public class PathwayPanel extends JPanel
 					
 					try
 					{
-						plugin.openPathwayWithProgress(WikiPathwaysClientPlugin.loadClient(),model.getValueAt(row, 0).toString(), 0, tmpDir,xref);
+						plugin.openPathwayWithProgress(model.getValueAt(row, 0).toString(), 0, tmpDir,xref);
 					}
 					catch (Exception ex) 
 					{

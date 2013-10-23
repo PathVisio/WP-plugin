@@ -25,10 +25,8 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -51,10 +49,10 @@ import org.pathvisio.core.debug.Logger;
 import org.pathvisio.core.util.ProgressKeeper;
 import org.pathvisio.gui.ProgressDialog;
 import org.pathvisio.wikipathways.webservice.WSSearchResult;
+import org.pathvisio.wpclient.FailedConnectionException;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.pathvisio.wpclient.models.ResultTableModel;
 import org.pathvisio.wpclient.utils.FileUtils;
-import org.wikipathways.client.WikiPathwaysClient;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -79,17 +77,14 @@ public class KeywordSearchPanel extends JPanel {
 	private JLabel tipLabel;
 	private JLabel lblNumFound;
 
-	public KeywordSearchPanel(final WikiPathwaysClientPlugin plugin) throws MalformedURLException, ServiceException, RemoteException {
+	public KeywordSearchPanel(final WikiPathwaysClientPlugin plugin) throws MalformedURLException, ServiceException, RemoteException, FailedConnectionException {
 		this.plugin = plugin;
-		final WikiPathwaysClient client = WikiPathwaysClientPlugin
-				.loadClient();
 		setLayout(new BorderLayout());
 
 		Action searchAction = new AbstractAction("Search") {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					resultspane.setBorder(BorderFactory.createTitledBorder(
-							BorderFactory.createEtchedBorder(), "Pathways"));
+					resultspane.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Pathways"));
 					search();
 				} catch (Exception ex) {
 					JOptionPane
@@ -110,13 +105,7 @@ public class KeywordSearchPanel extends JPanel {
 		tipLabel.setFont(new Font("SansSerif", Font.ITALIC, 11));
 
 		// preparing List Of Organisms to load in species combobox
-		List<String> org = new ArrayList<String>();
-
-		// preparing organism list for combobox
-		org.add("ALL SPECIES");
-		String[] organisms = client.listOrganisms();
-		List<String> organismslist= new ArrayList<String>(Arrays.asList(organisms));
-		org.addAll(1, organismslist);
+		List<String> org = retrieveOrgansims();
 
 		organismOpt = new JComboBox(org.toArray());
 		organismOpt.addActionListener(searchAction);
@@ -171,9 +160,7 @@ public class KeywordSearchPanel extends JPanel {
 					tmpDir.mkdirs();
 
 					try {
-						plugin.openPathwayWithProgress(
-								WikiPathwaysClientPlugin.loadClient(),
-								model.getValueAt(row, 0).toString(), 0, tmpDir);
+						plugin.openPathwayWithProgress(model.getValueAt(row, 0).toString(), 0, tmpDir);
 					} catch (Exception ex) {
 						JOptionPane.showMessageDialog(KeywordSearchPanel.this,
 								ex.getMessage(), "Error",
@@ -185,6 +172,24 @@ public class KeywordSearchPanel extends JPanel {
 		});
 		
 	}
+	
+	/**
+	 * returns list of organisms for combo box
+	 * retrieves data from wikipathways
+	 */
+	private List<String> retrieveOrgansims() throws RemoteException, FailedConnectionException {
+		List<String> list = new ArrayList<String>();
+
+		// first element in list is "All species"
+		list.add("All species");
+		
+		// retrieve list of organisms from WikiPathways
+		List<String> organsims = plugin.getWpQueries().listOrganisms(null);
+		Collections.sort(organsims);
+		list.addAll(1, organsims);
+		
+		return list;
+	}
 
 	/**
 	 * Search method for- Search for pathways by name, pathway element labels
@@ -193,15 +198,11 @@ public class KeywordSearchPanel extends JPanel {
 	 * @throws ServiceException
 	 * @throws MalformedURLException
 	 */
-	private void search() throws RemoteException, InterruptedException,
-			ExecutionException, MalformedURLException, ServiceException {
+	private void search() throws RemoteException, InterruptedException, ExecutionException, MalformedURLException, ServiceException {
 		lblNumFound.setText("");
 		final String query = searchField.getText();
 
 		if (!query.isEmpty()) {
-
-			final WikiPathwaysClient client = WikiPathwaysClientPlugin
-					.loadClient();
 			final ProgressKeeper pk = new ProgressKeeper();
 			final ProgressDialog d = new ProgressDialog(
 					JOptionPane.getFrameForComponent(this), "", pk, true, true);
@@ -213,20 +214,16 @@ public class KeywordSearchPanel extends JPanel {
 					pk.setTaskName("Starting Search");
 
 					try {
-						if (organismOpt.getSelectedItem().toString()
-								.equalsIgnoreCase("ALL SPECIES")) {
+						if (organismOpt.getSelectedItem().toString().equalsIgnoreCase("ALL SPECIES")) {
 							pk.setTaskName("Searching in "
 									+ organismOpt.getSelectedItem().toString());
-							results = client.findPathwaysByText(query);
+							results = plugin.getWpQueries().findByText(query, pk);
 
-						} else
+						} else {
 							pk.setTaskName("Searching");
-						results = client.findPathwaysByText(query, Organism
-								.fromLatinName(organismOpt.getSelectedItem()
-										.toString()));
-
-					} catch (Exception e) {
-						throw e;
+							Organism org = Organism.fromLatinName(organismOpt.getSelectedItem().toString());
+							results = plugin.getWpQueries().findByTextInOrganism(query, org, pk);
+						}
 					} finally {
 						pk.finished();
 					}

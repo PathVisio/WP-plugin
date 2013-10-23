@@ -31,7 +31,6 @@ import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 
 import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -39,10 +38,8 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.xml.rpc.ServiceException;
 
-import org.pathvisio.desktop.PvDesktop;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.pathvisio.wpclient.validators.Validator;
-import org.wikipathways.client.WikiPathwaysClient;
 
 public class LoginPanel extends JPanel implements ActionListener {
 	static String Username = "";
@@ -53,16 +50,14 @@ public class LoginPanel extends JPanel implements ActionListener {
 	JPasswordField PassField = new JPasswordField(15);
 	JCheckBox itsKeepBox = new JCheckBox("Save details:", false);
 	boolean itsInit = false;
-	private PvDesktop desktop;
 	String clientName;
-	private JComboBox clientDropdown;
-	WikiPathwaysClient client;
 	String actiontype;
 	static boolean loggedin;
+	private WikiPathwaysClientPlugin plugin;
 
-	public LoginPanel(PvDesktop desktop) {
+	public LoginPanel(WikiPathwaysClientPlugin plugin) {
 		super();
-		this.desktop = desktop;
+		this.plugin = plugin;
 		setLayout(new GridLayout(3, 2));
 		add(new JLabel("Username:"));
 		add(UserField);
@@ -73,18 +68,15 @@ public class LoginPanel extends JPanel implements ActionListener {
 
 	}
 
-	public WikiPathwaysClient login() throws RemoteException,
+	public void login() throws RemoteException,
 			MalformedURLException, ServiceException {
 
 		try {
-
-			client = WikiPathwaysClientPlugin.loadClient();
-
 			Username = UserField.getText();
-			Password = PassField.getText();
+			Password = PassField.getPassword().toString();
 			if (Validator.CheckNonAlpha(Username)) {
 
-				client.login(Username, Password);
+				plugin.getWpQueries().login(Username, Password);
 				loggedin = true;
 				if (!itsKeepBox.isSelected()) {
 					Username = "";
@@ -99,6 +91,7 @@ public class LoginPanel extends JPanel implements ActionListener {
 				Password = "";
 			}
 		} catch (Exception ex) {
+			System.out.println(ex.getMessage());
 			JOptionPane
 					.showMessageDialog(
 							null,
@@ -108,8 +101,6 @@ public class LoginPanel extends JPanel implements ActionListener {
 			Username = "";
 			Password = "";
 		}
-		return client;
-
 	}
 
 	@Override

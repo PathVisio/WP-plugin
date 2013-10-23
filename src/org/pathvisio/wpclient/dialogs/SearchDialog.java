@@ -23,6 +23,7 @@ import java.rmi.RemoteException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -30,6 +31,7 @@ import javax.swing.border.Border;
 import javax.xml.rpc.ServiceException;
 
 import org.pathvisio.desktop.PvDesktop;
+import org.pathvisio.wpclient.FailedConnectionException;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.pathvisio.wpclient.panels.KeywordSearchPanel;
 import org.pathvisio.wpclient.panels.LiteratureSearchPanel;
@@ -37,22 +39,27 @@ import org.pathvisio.wpclient.panels.PathwaySearchPanel;
 import org.pathvisio.wpclient.panels.XrefSearchPanel;
 
 public class SearchDialog extends JDialog {
-	public SearchDialog(PvDesktop desktop,WikiPathwaysClientPlugin plugin) throws MalformedURLException, RemoteException, ServiceException
-	{
-	Search p = new Search(plugin);
-	final CardLayout cards = new CardLayout();
-	JDialog d = new JDialog(desktop.getFrame(), "Search WikiPathways",false);
-	d.setLayout(new BorderLayout());
-	Border padBorder = BorderFactory.createEmptyBorder(5, 5, 5, 5);
-	p.setLayout(cards);
-	p.setBorder(padBorder);	
 	
-	JScrollPane pnlScroll = new JScrollPane(p);	
-	d.add(pnlScroll);
-	d.pack();	
-	//loading dialog at the centre of the frame
-	d.setLocationRelativeTo(desktop.getSwingEngine().getFrame());
-	d.setVisible(true);
+	public SearchDialog(PvDesktop desktop,WikiPathwaysClientPlugin plugin) {
+		JDialog d = new JDialog(desktop.getFrame(), "Search WikiPathways",false);
+
+		try {
+			Search p = new Search(plugin);
+			final CardLayout cards = new CardLayout();
+			d.setLayout(new BorderLayout());
+			Border padBorder = BorderFactory.createEmptyBorder(5, 5, 5, 5);
+			p.setLayout(cards);
+			p.setBorder(padBorder);	
+			
+			JScrollPane pnlScroll = new JScrollPane(p);	
+			d.add(pnlScroll);
+			d.pack();	
+			//loading dialog at the centre of the frame
+			d.setLocationRelativeTo(desktop.getSwingEngine().getFrame());
+			d.setVisible(true);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(d, "Unable to connect to WikiPathways.", "Connection error", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 }
 /**
@@ -62,7 +69,7 @@ class Search extends JPanel
 {
 	JTabbedPane searchTabbedPane;
 	 
-	public Search(final WikiPathwaysClientPlugin plugin) throws MalformedURLException, RemoteException, ServiceException
+	public Search(final WikiPathwaysClientPlugin plugin) throws MalformedURLException, RemoteException, ServiceException, FailedConnectionException
 	{
 		KeywordSearchPanel p = new KeywordSearchPanel(plugin);
 		PathwaySearchPanel a = new PathwaySearchPanel(plugin);

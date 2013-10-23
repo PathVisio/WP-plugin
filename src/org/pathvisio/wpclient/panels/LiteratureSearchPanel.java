@@ -48,6 +48,7 @@ import org.pathvisio.gui.ProgressDialog;
 import org.pathvisio.wikipathways.webservice.WSIndexField;
 import org.pathvisio.wikipathways.webservice.WSSearchResult;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
+import org.pathvisio.wpclient.utils.FileUtils;
 import org.pathvisio.wpclient.validators.Validator;
 import org.wikipathways.client.WikiPathwaysClient;
 
@@ -165,9 +166,9 @@ public class LiteratureSearchPanel extends JPanel
 					{				
 					
 						LiteratureResultTableModel	model = (LiteratureResultTableModel) target.getModel();
-						File tmpDir = new File(plugin.getTmpDir(), WikiPathwaysClientPlugin.shortClientName(model.clientName));
+						File tmpDir = new File(plugin.getTmpDir(),FileUtils.getTimeStamp());
 						tmpDir.mkdirs();
-						plugin.openPathwayWithProgress(WikiPathwaysClientPlugin.loadClient(),model.getValueAt(row, 0).toString(), 0, tmpDir);
+						plugin.openPathwayWithProgress(model.getValueAt(row, 0).toString(), 0, tmpDir);
 					
 					}
 					catch (Exception ex) 
@@ -191,8 +192,6 @@ public class LiteratureSearchPanel extends JPanel
 		{
 			if(Validator.CheckNonAlpha(query))
 			{
-
-			final WikiPathwaysClient client = WikiPathwaysClientPlugin.loadClient();
 			
 			final ProgressKeeper pk = new ProgressKeeper();
 			final ProgressDialog d = new ProgressDialog(JOptionPane.getFrameForComponent(this), "", pk, true, true);
@@ -206,7 +205,7 @@ public class LiteratureSearchPanel extends JPanel
 					
 					try 
 					{
-						results = client.findPathwaysByLiterature(query);
+						results = plugin.getWpQueries().findByLiteratureReference(query, pk);
 						
 					}
 					catch (Exception e) 
@@ -238,7 +237,7 @@ public class LiteratureSearchPanel extends JPanel
 			sw.execute();
 			d.setVisible(true);
 
-			resultTable.setModel(new LiteratureResultTableModel(sw.get(), client.toString()));
+			resultTable.setModel(new LiteratureResultTableModel(sw.get()));
 			resultTable.setRowSorter(new TableRowSorter(resultTable.getModel()));
 			lblNumFound.setText(" No.of results found: "+sw.get().length);
 			}
@@ -262,11 +261,9 @@ public class LiteratureSearchPanel extends JPanel
 		WSSearchResult[] results;
 		String[] columnNames = new String[] { "ID", "Name", "Species",
 				"Literature Title" };
-		String clientName;
 
-		public LiteratureResultTableModel(WSSearchResult[] results, String clientName) 
+		public LiteratureResultTableModel(WSSearchResult[] results) 
 		{
-			this.clientName = clientName;
 			this.results = results;
 			flag = 2;
 		}

@@ -36,8 +36,8 @@ import javax.xml.rpc.ServiceException;
 import org.pathvisio.core.model.Pathway;
 import org.pathvisio.desktop.PvDesktop;
 import org.pathvisio.wikipathways.webservice.WSPathwayInfo;
+import org.pathvisio.wpclient.FailedConnectionException;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
-import org.wikipathways.client.WikiPathwaysClient;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -45,13 +45,13 @@ import com.jgoodies.forms.layout.FormLayout;
 public class UpdatePathwayPanel extends JPanel implements ActionListener {
 	LoginPanel p;
 	JDialog d,d2;
-	static WikiPathwaysClient client;
 	private JTextArea description = new JTextArea(2, 2);
 	private PvDesktop desktop;
-	private String Description="";
+	private WikiPathwaysClientPlugin plugin;
 
-	public UpdatePathwayPanel(PvDesktop desktop) {
+	public UpdatePathwayPanel(PvDesktop desktop, WikiPathwaysClientPlugin plugin) {
 		this.desktop = desktop;
+		this.plugin = plugin;
 //		this.plugin = plugin;
 		if (LoginPanel.Username.equals("") || LoginPanel.Password.equals("")) {
 			showLoginPanel();
@@ -111,7 +111,7 @@ public class UpdatePathwayPanel extends JPanel implements ActionListener {
 
 	private void showLoginPanel() {
 
-		p = new LoginPanel(desktop);
+		p = new LoginPanel(plugin);
 		d = new JDialog(desktop.getFrame(), "WikiPathways Login", false);
 		JButton submit = new JButton("Login");
 
@@ -143,24 +143,21 @@ public class UpdatePathwayPanel extends JPanel implements ActionListener {
 
 	}
 
-	public void UpdatePathway() throws RemoteException, MalformedURLException, ServiceException {
-		client = WikiPathwaysClientPlugin.loadClient();
-		client.login(LoginPanel.Username,LoginPanel.Password);
-			
-			if (client != null) {
+	public void UpdatePathway() throws RemoteException, MalformedURLException, ServiceException, FailedConnectionException {
+		plugin.getWpQueries().login(LoginPanel.Username,LoginPanel.Password);
 				try {
 					Pathway pathway = desktop
 					.getSwingEngine().getEngine().getActivePathway();
 						
 				
-					WSPathwayInfo wsPathwayInfo=client.getPathwayInfo(WikiPathwaysClientPlugin.pathwayid);
+					WSPathwayInfo wsPathwayInfo=plugin.getWpQueries().getPathwayInfo(WikiPathwaysClientPlugin.pathwayid, null);
 				
 				String newrevision=wsPathwayInfo.getRevision();
 				
 				if(WikiPathwaysClientPlugin.revisionno.equals(newrevision))
 				{
-					
-				client.updatePathway(WikiPathwaysClientPlugin.pathwayid, pathway, description.getText(),Integer.parseInt(WikiPathwaysClientPlugin.revisionno));
+				
+					plugin.getWpQueries().updatePathway(pathway, WikiPathwaysClientPlugin.pathwayid, Integer.parseInt(WikiPathwaysClientPlugin.revisionno), description.getText());
 					JOptionPane.showMessageDialog(null,
 							"The pathway is updated");
 				}
@@ -171,9 +168,8 @@ public class UpdatePathwayPanel extends JPanel implements ActionListener {
 							JOptionPane.ERROR_MESSAGE);
 
 				}
-			}
+			
 		
-
 	}
 
 	@Override
@@ -182,7 +178,7 @@ public class UpdatePathwayPanel extends JPanel implements ActionListener {
 		if ("Login".equals(e.getActionCommand())) {
 			d.dispose();
 			try {
-				client = p.login();
+				p.login();
 			} catch (RemoteException e1) {
 				
 				e1.printStackTrace();
@@ -198,7 +194,6 @@ public class UpdatePathwayPanel extends JPanel implements ActionListener {
 
 		}
 		if ("Update".equals(e.getActionCommand())) {
-			Description= description.getText();
 			try {
 				UpdatePathway();
 			} catch (RemoteException e1) {
@@ -209,6 +204,9 @@ public class UpdatePathwayPanel extends JPanel implements ActionListener {
 				e1.printStackTrace();
 			} catch (ServiceException e1) {
 				
+				e1.printStackTrace();
+			} catch (FailedConnectionException e1) {
+				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			d2.dispose();

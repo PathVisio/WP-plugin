@@ -177,7 +177,7 @@ public class BrowsePanel extends JPanel {
 					tmpDir.mkdirs();
 	
 					try  {
-						plugin.openPathwayWithProgress(WikiPathwaysClientPlugin.loadClient(),model.getValueAt(row, 0).toString(), 0, tmpDir);
+						plugin.openPathwayWithProgress(model.getValueAt(row, 0).toString(), 0, tmpDir);
 					} catch (Exception ex) {
 						JOptionPane.showMessageDialog(BrowsePanel.this,ex.getMessage(), "Error",JOptionPane.ERROR_MESSAGE);
 						Logger.log.error("Error", ex);

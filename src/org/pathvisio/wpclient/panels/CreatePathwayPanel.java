@@ -37,7 +37,6 @@ import org.pathvisio.core.model.Pathway;
 import org.pathvisio.desktop.PvDesktop;
 import org.pathvisio.wikipathways.webservice.WSPathwayInfo;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
-import org.wikipathways.client.WikiPathwaysClient;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -46,12 +45,12 @@ public class CreatePathwayPanel extends JPanel implements ActionListener {
 	LoginPanel p;
 	JDialog d,d2;
 	
-	static WikiPathwaysClient client;
 	private JTextArea description = new JTextArea(2, 2);
 	private PvDesktop desktop;
-	private String Description="";
+	private WikiPathwaysClientPlugin plugin;
 
-	public CreatePathwayPanel(PvDesktop desktop) {
+	public CreatePathwayPanel(PvDesktop desktop, WikiPathwaysClientPlugin plugin) {
+		this.plugin = plugin;
 		this.desktop = desktop;
 		if (LoginPanel.Username.equals("") || LoginPanel.Password.equals("")) {
 			showLoginPanel();
@@ -102,7 +101,7 @@ public class CreatePathwayPanel extends JPanel implements ActionListener {
 
 	private void showLoginPanel() {
 
-		p = new LoginPanel(desktop);
+		p = new LoginPanel(plugin);
 		d = new JDialog(desktop.getFrame(), "WikiPathways Login", false);
 		JButton submit = new JButton("Login");
 
@@ -136,33 +135,20 @@ public class CreatePathwayPanel extends JPanel implements ActionListener {
 	}
 
 	public void createPathway() {
+		try {
+			Pathway pathway = desktop.getSwingEngine().getEngine().getActivePathway();
+			WSPathwayInfo l = plugin.getWpQueries().uploadPathway(pathway);
+			plugin.getWpQueries().updateCurationTag( "Curation:UnderConstruction", l.getId(), "");
+			JOptionPane.showMessageDialog(null,
+					"The Pathway " + l.getId() + " has been Uploaded. \n With Curation Tag : Under Construction. \n Please Update the Curation Tag.");
+						WikiPathwaysClientPlugin.revisionno =l.getRevision();
+						WikiPathwaysClientPlugin.pathwayid = l.getId();
 
-	
-			
-			if (client != null) {
-				try {
-					Pathway pathway = desktop
-					.getSwingEngine().getEngine().getActivePathway();
-						
-					pathway.getMappInfo().addComment(Description, "WP-Client");				
-				
-				
-								WSPathwayInfo l = client.createPathway(pathway);
-								client.saveCurationTag(l.getId(), "Curation:UnderConstruction", "curation tag UnderConstruction added by WikiPathways Client Plugin",Integer.parseInt(l.getRevision()));
-									JOptionPane.showMessageDialog(null,
-							"The Pathway " + l.getId() + " has been Uploaded. \n With Curation Tag : Under Construction. \n Please Update the Curation Tag.");
-								WikiPathwaysClientPlugin.revisionno =l.getRevision();
-								WikiPathwaysClientPlugin.pathwayid = l.getId();
-
-				} catch (Exception e) {
-					JOptionPane.showMessageDialog(null,
-							"Error While creating a pathway", "ERROR",
-							JOptionPane.ERROR_MESSAGE);
-
-				}
-			}
-		
-
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null,
+					"Error While creating a pathway", "ERROR",
+					JOptionPane.ERROR_MESSAGE);
+		}
 	}
 
 	@Override
@@ -171,28 +157,22 @@ public class CreatePathwayPanel extends JPanel implements ActionListener {
 		if ("Login".equals(e.getActionCommand())) {
 			d.dispose();
 			try {
-				client = p.login();
+				p.login();
 			} catch (RemoteException e1) {
-				
 				e1.printStackTrace();
 			} catch (MalformedURLException e1) {
-				
 				e1.printStackTrace();
 			} catch (ServiceException e1) {
-				
 				e1.printStackTrace();
 			}
-			if(LoginPanel.loggedin)
-			showDescriptionPanel();
+			if(LoginPanel.loggedin) {
+				showDescriptionPanel();
+			}
 
 		}
-		if ("Create".equals(e.getActionCommand())) {
-			Description= description.getText();
-		
+		if ("Create".equals(e.getActionCommand())) {		
 			createPathway();
 			d2.dispose();
-			
-
 		}
 	}
 

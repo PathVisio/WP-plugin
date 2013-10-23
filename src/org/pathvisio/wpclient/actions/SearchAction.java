@@ -17,13 +17,10 @@
 package org.pathvisio.wpclient.actions;
 
 import java.awt.event.ActionEvent;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.rmi.RemoteException;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
-import javax.xml.rpc.ServiceException;
 
 import org.pathvisio.desktop.PvDesktop;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
@@ -53,19 +50,6 @@ public class SearchAction extends AbstractAction
 	public void actionPerformed(ActionEvent e) 
 	{
 
-		try {
-			new SearchDialog(desktop, plugin);
-		} catch (MalformedURLException e1) {
-			
-			e1.printStackTrace();
-		} catch (RemoteException e1) {
-			
-			e1.printStackTrace();
-		} catch (ServiceException e1) {
-			
-			e1.printStackTrace();
-		}
-		
-		
+		new SearchDialog(desktop, plugin);
 	}
 }

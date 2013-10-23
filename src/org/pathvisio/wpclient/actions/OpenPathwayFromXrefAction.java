@@ -39,7 +39,6 @@ import org.wikipathways.client.WikiPathwaysClient;
 public class OpenPathwayFromXrefAction extends AbstractAction
 {
 	private PathwayElement elm;
-	private WikiPathwaysClient client;
 	private WikiPathwaysClientPlugin plugin;
 	
 
@@ -52,11 +51,6 @@ public class OpenPathwayFromXrefAction extends AbstractAction
 		}
 		this.plugin = plugin;
 		this.elm = elm;
-	}
-
-	public void setClient(WikiPathwaysClient client)
-	{
-		this.client = client;
 	}
 	
 	public void actionPerformed(ActionEvent evt)
@@ -86,13 +80,13 @@ public class OpenPathwayFromXrefAction extends AbstractAction
 			{
 			 File tmpDir= new File(plugin.getTmpDir(), x.getDataSource().getFullName());
 			 tmpDir.mkdirs();
-			 plugin.openPathwayWithProgress(client, x.getId(), 0, tmpDir);					
+			 plugin.openPathwayWithProgress(x.getId(), 0, tmpDir);					
 			}
 			else
 			{
 			File tmpDir= new File(plugin.getTmpDir(), x.getDataSource().getFullName());
 			 tmpDir.mkdirs();
-			 plugin.openPathwayXrefWithProgress(client, x, 0, tmpDir);
+			 plugin.openPathwayXrefWithProgress(x, 0, tmpDir);
 				
 			}
 		} 
