@@ -76,8 +76,7 @@ import org.wikipathways.client.WikiPathwaysClient;
  * This plugin also includes a dialog to search, advanced search browse and load
  * pathways from WikiPathways (like in the Cytoscape GPML plugin).
  * 
- * @author Thomas Kelder, Sravanthi Sinha, Martina Kutmon
- * @version 1.0
+ * @author Thomas Kelder, Sravanthi Sinha, mkutmon
  */
 public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListener, VPathwayListener {
 	

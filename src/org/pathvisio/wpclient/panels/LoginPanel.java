@@ -73,7 +73,7 @@ public class LoginPanel extends JPanel implements ActionListener {
 
 		try {
 			Username = UserField.getText();
-			Password = PassField.getPassword().toString();
+			Password = new String(PassField.getPassword());
 			if (Validator.CheckNonAlpha(Username)) {
 
 				plugin.getWpQueries().login(Username, Password);
