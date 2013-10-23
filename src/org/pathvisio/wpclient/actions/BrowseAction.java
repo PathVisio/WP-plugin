@@ -31,6 +31,7 @@ import org.pathvisio.core.util.ProgressKeeper;
 import org.pathvisio.desktop.PvDesktop;
 import org.pathvisio.wikipathways.webservice.WSCurationTag;
 import org.pathvisio.wikipathways.webservice.WSPathwayInfo;
+import org.pathvisio.wpclient.FailedConnectionException;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.pathvisio.wpclient.dialogs.BrowseDialog;
 import org.wikipathways.client.WikiPathwaysClient;
@@ -69,6 +70,9 @@ public class BrowseAction extends AbstractAction {
 			e1.printStackTrace();
 		} catch (ServiceException e1) {
 
+			e1.printStackTrace();
+		} catch (FailedConnectionException e1) {
+			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 	}

@@ -68,6 +68,7 @@ import org.pathvisio.wpclient.actions.OpenPathwayFromXrefAction;
 import org.pathvisio.wpclient.actions.SearchAction;
 import org.pathvisio.wpclient.actions.UpdateAction;
 import org.pathvisio.wpclient.actions.UploadAction;
+import org.pathvisio.wpclient.impl.WPQueries;
 import org.pathvisio.wpclient.panels.PathwayPanel;
 import org.pathvisio.wpclient.utils.FileUtils;
 import org.wikipathways.client.WikiPathwaysClient;
@@ -95,6 +96,8 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 	// menu items will only be enabled when pathway is opened
 	private JMenuItem createMenu;
 	private JMenuItem updateMenu;
+	
+	private WPQueries wpQueries;
 
 	@Override
 	public void init(PvDesktop desktop) {
@@ -112,7 +115,9 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 			// register a listener to notify when a pathway is opened
 			desktop.getSwingEngine().getEngine()
 					.addApplicationEventListener(this);
-
+			
+			wpQueries = new WPQueries();
+			wpQueries.initialize("http://www.wikipathways.org/wpi/webservice/webservice.php");
 		} catch (Exception e) {
 			Logger.log.error("Error while initializing WikiPathways client", e);
 			JOptionPane.showMessageDialog(desktop.getSwingEngine()
@@ -137,6 +142,10 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 
 		); 
 
+	}
+
+	public WPQueries getWpQueries() {
+		return wpQueries;
 	}
 
 	enum UrlPreference implements Preference {

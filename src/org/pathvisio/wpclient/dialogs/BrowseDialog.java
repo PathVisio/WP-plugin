@@ -30,12 +30,13 @@ import javax.swing.border.Border;
 import javax.xml.rpc.ServiceException;
 
 import org.pathvisio.desktop.PvDesktop;
+import org.pathvisio.wpclient.FailedConnectionException;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.pathvisio.wpclient.panels.BrowsePanel;
 
 public class BrowseDialog extends JDialog {
 
-	public BrowseDialog(PvDesktop desktop, WikiPathwaysClientPlugin plugin) throws RemoteException, MalformedURLException, ServiceException {
+	public BrowseDialog(PvDesktop desktop, WikiPathwaysClientPlugin plugin) throws RemoteException, MalformedURLException, ServiceException, FailedConnectionException {
 
 		Browse p = new Browse(desktop, plugin);
 		final CardLayout cards = new CardLayout();
@@ -64,8 +65,8 @@ public class BrowseDialog extends JDialog {
 class Browse extends JPanel {
 	JTabbedPane searchTabbedPane;
 
-	public Browse(final PvDesktop desktop, final WikiPathwaysClientPlugin plugin) throws RemoteException, MalformedURLException, ServiceException {
-		BrowsePanel p = new BrowsePanel(desktop, plugin);
+	public Browse(final PvDesktop desktop, final WikiPathwaysClientPlugin plugin) throws RemoteException, MalformedURLException, ServiceException, FailedConnectionException {
+		BrowsePanel p = new BrowsePanel(plugin);
 
 		add(p);
 	}

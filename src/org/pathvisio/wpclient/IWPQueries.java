@@ -16,11 +16,16 @@
 //
 package org.pathvisio.wpclient;
 
+import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.List;
 import java.util.Set;
+
+import javax.xml.rpc.ServiceException;
 
 import org.bridgedb.bio.Organism;
 import org.pathvisio.core.util.ProgressKeeper;
+import org.pathvisio.wikipathways.webservice.WSCurationTag;
 import org.pathvisio.wikipathways.webservice.WSPathwayInfo;
 import org.pathvisio.wikipathways.webservice.WSSearchResult;
 import org.wikipathways.client.WikiPathwaysClient;
@@ -30,25 +35,29 @@ import org.wikipathways.client.WikiPathwaysClient;
  * Interface for WP queries that can be used by other plugins
  * that depend on the WP Client plugin
  * 
- * @author Martina Kutmon
+ * @author mkutmon
  *
  */
 public interface IWPQueries {
 
-	public String [] listOrganisms (WikiPathwaysClient client, ProgressKeeper pk) throws RemoteException;
+	// which wikipathways webservice should be used
+	// main site: http://www.wikipathways.org/wpi/webservice/webservice.php
+	// returns true if successful
+	public void initialize(String url) throws FailedConnectionException;
 	
-	public Set<WSPathwayInfo> browseAll(WikiPathwaysClient client, ProgressKeeper pk) throws RemoteException;
+	public List<String> listOrganisms (ProgressKeeper pk) throws RemoteException, FailedConnectionException;
+	
+	public Set<WSPathwayInfo> browseAll(ProgressKeeper pk) throws RemoteException, FailedConnectionException;
 
-	public Set<WSPathwayInfo> browseByOrganism(WikiPathwaysClient client,
-				Organism organism , ProgressKeeper pk) throws RemoteException;
+	public Set<WSPathwayInfo> browseByOrganism(Organism organism , ProgressKeeper pk) throws RemoteException, FailedConnectionException;
 	
-	public Set<WSPathwayInfo> browseByCurationTag(WikiPathwaysClient client,
-			String curationTag , ProgressKeeper pk) throws RemoteException;
+	public Set<WSPathwayInfo> browseByCurationTag(String curationTag , ProgressKeeper pk) throws RemoteException, FailedConnectionException;
 	
-	public Set<WSPathwayInfo> browseByOrganismAndCurationTag(
-			WikiPathwaysClient client, Organism organism, String curationTag , ProgressKeeper pk) throws RemoteException;
+	public Set<WSPathwayInfo> browseByOrganismAndCurationTag(Organism organism, String curationTag , ProgressKeeper pk) throws RemoteException, FailedConnectionException;
 	
-	public WSSearchResult[] findByText(WikiPathwaysClient client, String text, ProgressKeeper pk) throws RemoteException;
+	public WSSearchResult[] findByText(String text, ProgressKeeper pk) throws RemoteException, FailedConnectionException;
+
+	public Set<WSCurationTag> getCurationTags(String pwId, ProgressKeeper pk) throws RemoteException, FailedConnectionException;
 	
 	// TODO: add all search queries
 	// TODO: add all update/upload queries

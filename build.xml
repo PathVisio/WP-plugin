@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="org.pathvisio.wpclient" default="install" basedir=".">
 
-  <property name="pathvisio.dir" value="../../"/>
+  <property name="pathvisio.dir" value="../../../pv-35/"/>
 	<property name="bundle.dest" value="dist"/>
 	<property name="jar.name" value="org.pathvisio.wpclient.jar"/>
 

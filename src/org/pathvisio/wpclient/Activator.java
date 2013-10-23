@@ -24,8 +24,8 @@ import org.pathvisio.wpclient.impl.WPQueries;
 
 /**
  * OSGi activator class for the WikiPathways Plugin
- * @author Sravanthi Sinha
- * @author Martina Kutmon
+ * @author SravanthiSinha
+ * @author mkutmon
  */
 public class Activator implements BundleActivator{
 	
