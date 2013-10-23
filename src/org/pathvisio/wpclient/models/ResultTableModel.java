@@ -31,11 +31,9 @@ public class ResultTableModel extends AbstractTableModel
 	{
 		WSSearchResult[] results;
 		String[] columnNames = new String[] { "ID", "Name", "Species" };
-		public String clientName;
 
-		public ResultTableModel(WSSearchResult[] results, String clientName) 
+		public ResultTableModel(WSSearchResult[] results) 
 		{
-			this.clientName = clientName;
 			this.results = results;
 		}
 

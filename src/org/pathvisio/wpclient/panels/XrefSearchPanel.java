@@ -57,6 +57,7 @@ import org.pathvisio.wikipathways.webservice.WSSearchResult;
 import org.pathvisio.wpclient.WSResult;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.pathvisio.wpclient.models.XrefResultTableModel;
+import org.pathvisio.wpclient.utils.FileUtils;
 import org.pathvisio.wpclient.validators.Validator;
 import org.wikipathways.client.WikiPathwaysClient;
 
@@ -182,9 +183,7 @@ public class XrefSearchPanel extends JPanel {
 
 						XrefResultTableModel model = (XrefResultTableModel ) target
 								.getModel();
-						File tmpDir = new File(plugin.getTmpDir(),
-								WikiPathwaysClientPlugin
-										.shortClientName(model.clientName));
+						File tmpDir = new File(plugin.getTmpDir(),FileUtils.getTimeStamp());
 						tmpDir.mkdirs();
 
 						plugin.openPathwayWithProgress(WikiPathwaysClientPlugin
@@ -346,8 +345,7 @@ public class XrefSearchPanel extends JPanel {
 			sw.execute();
 			d.setVisible(true);
 
-			resultTable.setModel(new XrefResultTableModel(sw.get(), client
-					.toString()));
+			resultTable.setModel(new XrefResultTableModel(sw.get()));
 			resultTable
 					.setRowSorter(new TableRowSorter(resultTable.getModel()));
 			lblNumFound.setText(" No.of results found: "+sw.get().length);

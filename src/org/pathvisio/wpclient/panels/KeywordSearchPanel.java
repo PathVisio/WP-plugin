@@ -25,8 +25,10 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -51,6 +53,7 @@ import org.pathvisio.gui.ProgressDialog;
 import org.pathvisio.wikipathways.webservice.WSSearchResult;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.pathvisio.wpclient.models.ResultTableModel;
+import org.pathvisio.wpclient.utils.FileUtils;
 import org.wikipathways.client.WikiPathwaysClient;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
@@ -164,9 +167,7 @@ public class KeywordSearchPanel extends JPanel {
 					ResultTableModel model = (ResultTableModel) target
 							.getModel();
 
-					File tmpDir = new File(plugin.getTmpDir(),
-							WikiPathwaysClientPlugin
-									.shortClientName(model.clientName));
+					File tmpDir = new File(plugin.getTmpDir(), FileUtils.getTimeStamp());
 					tmpDir.mkdirs();
 
 					try {
@@ -247,8 +248,7 @@ public class KeywordSearchPanel extends JPanel {
 			sw.execute();
 			d.setVisible(true);
 
-			resultTable.setModel(new ResultTableModel(sw.get(), client
-					.toString()));
+			resultTable.setModel(new ResultTableModel(sw.get()));
 			resultTable
 					.setRowSorter(new TableRowSorter(resultTable.getModel()));
 			lblNumFound.setText(" No.of results found: "+sw.get().length);

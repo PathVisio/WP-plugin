@@ -31,11 +31,9 @@ public class XrefResultTableModel extends AbstractTableModel
 	{
 		WSResult[] results;
 		String[] columnNames = new String[] { "ID", "Name", "Species","No.of Genes" };
-		public String clientName;
 
-		public XrefResultTableModel(WSResult[] results, String clientName) 
+		public XrefResultTableModel(WSResult[] results) 
 		{
-			this.clientName = clientName;
 			this.results = results;
 		}
 

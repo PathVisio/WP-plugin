@@ -17,6 +17,8 @@
 package org.pathvisio.wpclient.utils;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * file handling operations
@@ -37,6 +39,13 @@ public class FileUtils {
 			}
 		}
 		directory.delete();
+	}
+	
+	public static String getTimeStamp() {
+		Date date = new Date();
+		SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
+		String formattedDate = sdf.format(date);
+		return formattedDate;
 	}
 	
 }

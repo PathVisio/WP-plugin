@@ -67,7 +67,7 @@ public class PathwayPanel extends JPanel
 		// Center contains table model for results
 		resultTable = new JTable();
 		
-		resultTable.setModel(new ResultTableModel(wsp,WikiPathwaysClientPlugin.loadClient().toString()));
+		resultTable.setModel(new ResultTableModel(wsp));
 		resultTable.setRowSorter(new TableRowSorter(resultTable.getModel()));
 		
 		resultspane = new JScrollPane(resultTable);

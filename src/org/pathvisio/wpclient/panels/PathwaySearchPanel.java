@@ -50,6 +50,7 @@ import org.pathvisio.wikipathways.webservice.WSPathwayInfo;
 import org.pathvisio.wikipathways.webservice.WSSearchResult;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.pathvisio.wpclient.models.ResultTableModel;
+import org.pathvisio.wpclient.utils.FileUtils;
 import org.pathvisio.wpclient.validators.Validator;
 import org.wikipathways.client.WikiPathwaysClient;
 
@@ -169,9 +170,7 @@ public class PathwaySearchPanel extends JPanel {
 						} else {
 							ResultTableModel model = (ResultTableModel) target
 									.getModel();
-							File tmpDir = new File(plugin.getTmpDir(),
-									WikiPathwaysClientPlugin
-											.shortClientName(model.clientName));
+							File tmpDir = new File(plugin.getTmpDir(),FileUtils.getTimeStamp());
 							tmpDir.mkdirs();
 
 							plugin.openPathwayWithProgress(
@@ -250,8 +249,7 @@ public class PathwaySearchPanel extends JPanel {
 
 				sw.execute();
 				d.setVisible(true);
-				resultTable.setModel(new ResultTableModel(sw.get(), client
-						.toString()));
+				resultTable.setModel(new ResultTableModel(sw.get()));
 				resultTable.setRowSorter(new TableRowSorter(resultTable
 						.getModel()));
 				lblNumFound.setText(" No.of results found: "+sw.get().length);
