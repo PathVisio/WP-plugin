@@ -20,9 +20,14 @@ import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Set;
 
+import org.bridgedb.DataSource;
+import org.bridgedb.Xref;
 import org.bridgedb.bio.Organism;
+import org.pathvisio.core.model.ConverterException;
+import org.pathvisio.core.model.Pathway;
 import org.pathvisio.core.util.ProgressKeeper;
 import org.pathvisio.wikipathways.webservice.WSCurationTag;
+import org.pathvisio.wikipathways.webservice.WSPathway;
 import org.pathvisio.wikipathways.webservice.WSPathwayInfo;
 import org.pathvisio.wikipathways.webservice.WSSearchResult;
 
@@ -49,6 +54,43 @@ public interface IWPQueries {
 	public WSSearchResult[] findByText(String text, ProgressKeeper pk) throws RemoteException, FailedConnectionException;
 
 	public Set<WSCurationTag> getCurationTags(String pwId, ProgressKeeper pk) throws RemoteException, FailedConnectionException;
+
+	WSPathway getPathway(String id, Integer revision, ProgressKeeper pk)
+			throws RemoteException, FailedConnectionException,
+			ConverterException;
+
+	WSSearchResult[] findByTextInOrganism(String text, Organism organism,
+			ProgressKeeper pk) throws RemoteException,
+			FailedConnectionException;
+
+	WSSearchResult[] findByLiteratureReference(String reference,
+			ProgressKeeper pk) throws RemoteException,
+			FailedConnectionException;
+
+	void login(String username, String password) throws RemoteException,
+			FailedConnectionException;
+
+	WSPathwayInfo uploadPathway(Pathway pathway) throws RemoteException,
+			FailedConnectionException, ConverterException;
+
+	void updatePathway(Pathway pathway, String id, Integer revision,
+			String description) throws RemoteException,
+			FailedConnectionException, ConverterException;
+
+	void updateCurationTag(String tag, String id, String description)
+			throws RemoteException, FailedConnectionException,
+			ConverterException;
+
+	WSPathwayInfo getPathwayInfo(String id, ProgressKeeper pk)
+			throws RemoteException, FailedConnectionException,
+			ConverterException;
+
+	WSSearchResult[] findByXref(Xref[] xrefs, ProgressKeeper pk)
+			throws RemoteException, FailedConnectionException,
+			ConverterException;
+
+	String[] getXrefList(String pwId, DataSource ds, ProgressKeeper pk)
+			throws RemoteException, FailedConnectionException;
 	
 	// TODO: add all search queries
 	// TODO: add all update/upload queries

@@ -26,10 +26,15 @@ import java.util.Set;
 
 import javax.xml.rpc.ServiceException;
 
+import org.bridgedb.DataSource;
+import org.bridgedb.Xref;
 import org.bridgedb.bio.Organism;
+import org.pathvisio.core.model.ConverterException;
+import org.pathvisio.core.model.Pathway;
 import org.pathvisio.core.preferences.PreferenceManager;
 import org.pathvisio.core.util.ProgressKeeper;
 import org.pathvisio.wikipathways.webservice.WSCurationTag;
+import org.pathvisio.wikipathways.webservice.WSPathway;
 import org.pathvisio.wikipathways.webservice.WSPathwayInfo;
 import org.pathvisio.wikipathways.webservice.WSSearchResult;
 import org.pathvisio.wpclient.FailedConnectionException;
@@ -117,7 +122,6 @@ public class WPQueries implements IWPQueries {
 	 */
 	@Override
 	public Set<WSPathwayInfo> browseByOrganismAndCurationTag(Organism organism, String curationTag, ProgressKeeper pk) throws RemoteException, FailedConnectionException {
-		WikiPathwaysClient client = getClient();
 		Set<WSPathwayInfo> set = new HashSet<WSPathwayInfo>();
 		
 		if(pk != null) pk.setTaskName("Browse WikiPathways");
@@ -130,7 +134,6 @@ public class WPQueries implements IWPQueries {
 				set.add(info);
 			}
 		}
-		
 		return set;
 	}
 
@@ -140,7 +143,6 @@ public class WPQueries implements IWPQueries {
 	@Override
 	public List<String> listOrganisms(ProgressKeeper pk) throws RemoteException, FailedConnectionException {
 		WikiPathwaysClient client = getClient();
-		
 		if(pk != null) pk.setTaskName("Test connection to WikiPathways");
 		if(pk != null) pk.report("Get list of organisms from WikiPathways");
 		String [] organisms = client.listOrganisms();
@@ -153,19 +155,92 @@ public class WPQueries implements IWPQueries {
 	@Override
 	public Set<WSCurationTag> getCurationTags(String pwId, ProgressKeeper pk) throws RemoteException, FailedConnectionException {
 		WikiPathwaysClient client = getClient();
-		
 		if(pk != null) pk.setTaskName("Retrieve curation tag");
 		if(pk != null) pk.report("Get curation tags for pathway " + pwId);
 		WSCurationTag [] tags = client.getCurationTags(pwId);
 		return new HashSet<WSCurationTag>(Arrays.asList(tags));
 	}
 
+
+	public WSSearchResult[] findByText(String text, ProgressKeeper pk) throws RemoteException, FailedConnectionException  {
+		WikiPathwaysClient client = getClient();
+		if(pk != null) pk.setTaskName("Search for \"" + text + "\".");
+		WSSearchResult [] result = client.findPathwaysByText(text);
+		return result;
+	}
+		 
 	@Override
-	public WSSearchResult[] findByText(String text, ProgressKeeper pk) {
-		// TODO Auto-generated method stub
-		return null;
+	public WSPathway getPathway(String id, Integer revision, ProgressKeeper pk) throws RemoteException, FailedConnectionException, ConverterException {
+		WikiPathwaysClient client = getClient();
+		if(pk != null) pk.setTaskName("Get pathway " + id + ".");
+		WSPathway pathway = client.getPathway(id, revision);
+		return pathway;
+	}
+		 
+	@Override
+	public WSSearchResult[] findByTextInOrganism(String text, Organism organism, ProgressKeeper pk) throws RemoteException, FailedConnectionException {
+		WikiPathwaysClient client = getClient();
+		if(pk != null) pk.setTaskName("Search for \"" + text + "\" in " + organism.latinName() + " pathways.");
+		WSSearchResult [] result = client.findPathwaysByText(text, organism);
+		return result;
+	}
+	
+	@Override
+	public WSSearchResult[] findByLiteratureReference(String reference, ProgressKeeper pk) throws RemoteException, FailedConnectionException {
+		WikiPathwaysClient client = getClient();
+		if(pk != null) pk.setTaskName("Search for literature reference \"" + reference + "\".");
+		WSSearchResult [] result = client.findPathwaysByLiterature(reference);
+		return result;
+	}
+		 
+	@Override
+	public void login(String username, String password) throws RemoteException, FailedConnectionException {
+		WikiPathwaysClient client = getClient();
+		client.login(username, password);
 	}
 
+	@Override
+	public WSPathwayInfo uploadPathway(Pathway pathway) throws RemoteException, FailedConnectionException, ConverterException {
+		WikiPathwaysClient client = getClient();
+		return client.createPathway(pathway);
+	}
+	
+	@Override
+	public void updatePathway(Pathway pathway, String id, Integer revision, String description) throws RemoteException, FailedConnectionException, ConverterException {
+		WikiPathwaysClient client = getClient();
+		client.updatePathway(id, pathway, description, revision);
+	}
 
+	@Override
+	public void updateCurationTag(String tag, String id, String description)
+			throws RemoteException, FailedConnectionException,
+			ConverterException {
+		WikiPathwaysClient client = getClient();
+		client.saveCurationTag(id, tag, description);
+	}
 
+	@Override
+	public WSPathwayInfo getPathwayInfo(String id, ProgressKeeper pk)
+			throws RemoteException, FailedConnectionException,
+			ConverterException {
+		WikiPathwaysClient client = getClient();
+		if(pk != null) pk.setTaskName("Get pathway " + id + ".");
+		WSPathwayInfo pathway = client.getPathwayInfo(id);
+		return pathway;
+	}
+
+	@Override
+	public WSSearchResult[] findByXref(Xref[] xrefs, ProgressKeeper pk) throws RemoteException, FailedConnectionException, ConverterException {
+		WikiPathwaysClient client = getClient();
+		if(pk != null) pk.setTaskName("Find pathways containing\nxrefs.");
+		WSSearchResult[] results = client.findPathwaysByXref(xrefs);
+		return results;
+	}
+
+	@Override
+	public String[] getXrefList(String pwId, DataSource ds, ProgressKeeper pk) throws RemoteException, FailedConnectionException {
+		WikiPathwaysClient client = getClient();
+		if(pk != null) pk.setTaskName("Retrieve Xref List");
+		return client.getXrefList(pwId, ds);
+	}
 }
