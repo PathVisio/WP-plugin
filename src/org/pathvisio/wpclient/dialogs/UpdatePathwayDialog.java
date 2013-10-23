@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 //
-package org.pathvisio.wpclient.panels;
+package org.pathvisio.wpclient.dialogs;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -34,32 +34,33 @@ import javax.swing.JTextArea;
 import javax.xml.rpc.ServiceException;
 
 import org.pathvisio.core.model.Pathway;
-import org.pathvisio.desktop.PvDesktop;
 import org.pathvisio.wikipathways.webservice.WSPathwayInfo;
 import org.pathvisio.wpclient.FailedConnectionException;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
+import org.pathvisio.wpclient.panels.LoginPanel;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-public class UpdatePathwayPanel extends JPanel implements ActionListener {
+/**
+ * JPanel 
+ * @author martinakutmon
+ *
+ */
+public class UpdatePathwayDialog implements ActionListener {
 	LoginPanel p;
 	JDialog d,d2;
 	private JTextArea description = new JTextArea(2, 2);
-	private PvDesktop desktop;
 	private WikiPathwaysClientPlugin plugin;
 
-	public UpdatePathwayPanel(PvDesktop desktop, WikiPathwaysClientPlugin plugin) {
-		this.desktop = desktop;
+	public UpdatePathwayDialog(WikiPathwaysClientPlugin plugin) {
 		this.plugin = plugin;
-//		this.plugin = plugin;
-		if (LoginPanel.Username.equals("") || LoginPanel.Password.equals("")) {
+		if (LoginPanel.username.equals("") || LoginPanel.password.equals("")) {
 			showLoginPanel();
 		}
-		if (!(LoginPanel.Username.equals("") && LoginPanel.Password.equals(""))){
+		if (!(LoginPanel.username.equals("") && LoginPanel.password.equals(""))){
 			showDescriptionPanel();
 		}
-
 	}
 
 	private void showDescriptionPanel() {
@@ -68,24 +69,15 @@ public class UpdatePathwayPanel extends JPanel implements ActionListener {
 				"pref, 2dlu, pref");
 		CellConstraints cc = new CellConstraints();
 		descriptionPanel dp = new descriptionPanel();
-		d2 = new JDialog(desktop.getFrame(), "WikiPathways", false);
+		d2 = new JDialog(plugin.getDesktop().getFrame(), "WikiPathways", false);
 		JButton submit = new JButton("Update");
 
 		submit.setActionCommand("Update");
 		submit.addActionListener(this);
 		d2.setLayout(layout);
-		//GridBagConstraints c = new GridBagConstraints();
 
-		//c.gridwidth = GridBagConstraints.REMAINDER;
-		//c.fill = GridBagConstraints.BOTH;
-		//c.weightx = 1.0;
-		//c.weighty = 1.0;
 		d2.add(dp, cc.xyw(2, 1,3));
 
-	//	c.weighty = 0.0;
-	//	c.weightx = 0.5;
-	//	c.fill = GridBagConstraints.NONE;
-	//	c.gridwidth = GridBagConstraints.HORIZONTAL;
 		JPanel p = new JPanel();
 
 		p.add(submit);
@@ -94,9 +86,8 @@ public class UpdatePathwayPanel extends JPanel implements ActionListener {
 		d2.pack();
 		d2.setVisible(true);
 		d2.setResizable(false);
-		d2.setLocationRelativeTo(desktop.getSwingEngine().getFrame());
+		d2.setLocationRelativeTo(plugin.getDesktop().getSwingEngine().getFrame());
 		d2.setVisible(true);
-
 	}
 
 	private class descriptionPanel extends JPanel {
@@ -105,14 +96,12 @@ public class UpdatePathwayPanel extends JPanel implements ActionListener {
 			setLayout(new GridLayout(2, 2));
 			add(new JLabel("Give a description of your changes"));
 			add(new JScrollPane(description));
-
 		}
 	}
 
 	private void showLoginPanel() {
-
 		p = new LoginPanel(plugin);
-		d = new JDialog(desktop.getFrame(), "WikiPathways Login", false);
+		d = new JDialog(plugin.getDesktop().getFrame(), "WikiPathways Login", false);
 		JButton submit = new JButton("Login");
 
 		submit.setActionCommand("Login");
@@ -138,38 +127,27 @@ public class UpdatePathwayPanel extends JPanel implements ActionListener {
 		d.pack();
 		d.setVisible(true);
 		d.setResizable(false);
-		d.setLocationRelativeTo(desktop.getSwingEngine().getFrame());
+		d.setLocationRelativeTo(plugin.getDesktop().getSwingEngine().getFrame());
 		d.setVisible(true);
-
 	}
 
 	public void UpdatePathway() throws RemoteException, MalformedURLException, ServiceException, FailedConnectionException {
-		plugin.getWpQueries().login(LoginPanel.Username,LoginPanel.Password);
-				try {
-					Pathway pathway = desktop
-					.getSwingEngine().getEngine().getActivePathway();
-						
-				
-					WSPathwayInfo wsPathwayInfo=plugin.getWpQueries().getPathwayInfo(WikiPathwaysClientPlugin.pathwayid, null);
-				
-				String newrevision=wsPathwayInfo.getRevision();
-				
-				if(WikiPathwaysClientPlugin.revisionno.equals(newrevision))
-				{
-				
-					plugin.getWpQueries().updatePathway(pathway, WikiPathwaysClientPlugin.pathwayid, Integer.parseInt(WikiPathwaysClientPlugin.revisionno), description.getText());
-					JOptionPane.showMessageDialog(null,
-							"The pathway is updated");
-				}
-
-				} catch (Exception e) {
-					JOptionPane.showMessageDialog(null,
-							"Error While creating a pathway", "ERROR",
-							JOptionPane.ERROR_MESSAGE);
-
-				}
+		plugin.getWpQueries().login(LoginPanel.username,LoginPanel.password);
+		try {
+			Pathway pathway = plugin.getDesktop().getSwingEngine().getEngine().getActivePathway();
+			WSPathwayInfo wsPathwayInfo=plugin.getWpQueries().getPathwayInfo(WikiPathwaysClientPlugin.pathwayid, null);
+			String newrevision=wsPathwayInfo.getRevision();
 			
-		
+			if(WikiPathwaysClientPlugin.revisionno.equals(newrevision)) {
+				plugin.getWpQueries().updatePathway(pathway, WikiPathwaysClientPlugin.pathwayid, Integer.parseInt(WikiPathwaysClientPlugin.revisionno), description.getText());
+				JOptionPane.showMessageDialog(null,
+					"The pathway is updated");
+			}
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null,
+				"Error While creating a pathway", "ERROR",
+					JOptionPane.ERROR_MESSAGE);
+		}		
 	}
 
 	@Override
@@ -179,40 +157,21 @@ public class UpdatePathwayPanel extends JPanel implements ActionListener {
 			d.dispose();
 			try {
 				p.login();
-			} catch (RemoteException e1) {
-				
+			} catch (Exception e1) {
 				e1.printStackTrace();
-			} catch (MalformedURLException e1) {
-				
-				e1.printStackTrace();
-			} catch (ServiceException e1) {
-				
-				e1.printStackTrace();
-			}
+			} 
+			
 			if(LoginPanel.loggedin)
 			showDescriptionPanel();
-
 		}
+		
 		if ("Update".equals(e.getActionCommand())) {
 			try {
 				UpdatePathway();
-			} catch (RemoteException e1) {
-				
+			} catch (Exception e1) {
 				e1.printStackTrace();
-			} catch (MalformedURLException e1) {
-				
-				e1.printStackTrace();
-			} catch (ServiceException e1) {
-				
-				e1.printStackTrace();
-			} catch (FailedConnectionException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+			} 
 			d2.dispose();
-			
-
 		}
 	}
-
 }

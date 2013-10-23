@@ -18,6 +18,7 @@ package org.pathvisio.wpclient.panels;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.FocusTraversalPolicy;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
@@ -65,8 +66,7 @@ import com.jgoodies.forms.layout.FormLayout;
  * element labels 2.Search by text but for specific species
  * 
  * @author Sravanthi Sinha
- * @author Martina Kutmon
- * @version 1.0
+ * @author mkutmon
  */
 public class KeywordSearchPanel extends JPanel {
 	private WikiPathwaysClientPlugin plugin;
@@ -170,7 +170,6 @@ public class KeywordSearchPanel extends JPanel {
 				}
 			}
 		});
-		
 	}
 	
 	/**
@@ -250,8 +249,8 @@ public class KeywordSearchPanel extends JPanel {
 					.setRowSorter(new TableRowSorter(resultTable.getModel()));
 			lblNumFound.setText(" No.of results found: "+sw.get().length);
 		} else {
-			JOptionPane.showMessageDialog(null, "Please Enter a Search Query",
-					"ERROR", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(), "Please Enter a Search Query",
+					"Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 

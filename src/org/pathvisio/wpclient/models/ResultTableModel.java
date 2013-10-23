@@ -24,45 +24,38 @@ import org.pathvisio.wikipathways.webservice.WSSearchResult;
  * This class creates the ResultTableModel 
  * Based on the results
  * @author Sravanthi Sinha
- * @author Martina Kutmon
- * @version 1.0 
+ * @author mkutmon
  */
-public class ResultTableModel extends AbstractTableModel
-	{
-		WSSearchResult[] results;
-		String[] columnNames = new String[] { "ID", "Name", "Species" };
+public class ResultTableModel extends AbstractTableModel {
+	WSSearchResult[] results;
+	String[] columnNames = new String[] { "ID", "Name", "Species" };
 
-		public ResultTableModel(WSSearchResult[] results) 
-		{
-			this.results = results;
-		}
+	public ResultTableModel(WSSearchResult[] results) {
+		this.results = results;
+	}
 
-		public int getColumnCount()
-		{
-			return 3;
-		}
+	public int getColumnCount() {
+		return 3;
+	}
 
-		public int getRowCount() 
-		{
-			return results.length;
-		}
+	public int getRowCount() {
+		return results.length;
+	}
 
-		public Object getValueAt(int rowIndex, int columnIndex)
-		{
-			WSSearchResult r = results[rowIndex];
-			switch (columnIndex) {
+	public Object getValueAt(int rowIndex, int columnIndex) {
+		WSSearchResult r = results[rowIndex];
+		switch (columnIndex) {
 			case 0:
 				return r.getId();
 			case 1:
 				return r.getName();
 			case 2:
 				return r.getSpecies();
-			}
-			return "";
 		}
-
-		public String getColumnName(int column) 
-		{
-			return columnNames[column];
-		}
+		return "";
 	}
+
+	public String getColumnName(int column)  {
+		return columnNames[column];
+	}
+}

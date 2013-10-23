@@ -14,14 +14,26 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 //
-package org.pathvisio.wpclient;
+package org.pathvisio.wpclient.impl;
 
 import org.pathvisio.wikipathways.webservice.WSSearchResult;
 
+/**
+ * object stores the results of search by xref list
+ * for each pathway it stores how many of the query xrefs 
+ * is in the pathway
+ * @author mkutmon
+ *
+ */
 public class WSResult {
-	WSSearchResult wsSearchResult;
-	int count;
+	
+	private WSSearchResult wsSearchResult;
+	private int count;
 
+	//////////////////////////////////////
+	// SETTERS & GETTERS
+	//////////////////////////////////////
+	
 	public WSSearchResult getWsSearchResult() {
 		return wsSearchResult;
 	}

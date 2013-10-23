@@ -23,77 +23,56 @@ import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 
 import org.bridgedb.Xref;
-import org.pathvisio.core.debug.Logger;
 import org.pathvisio.core.model.PathwayElement;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
-import org.wikipathways.client.WikiPathwaysClient;
 
 /**
 * This class handles the GUI for the pathway to load 
 * Load Pathway into PathVisio on choosing option of "Open Pathway from WikiPathways"
 * from right click menu of pathway element (consedering the Xref of the selected element)
 * 	@author Sravanthi Sinha
-* 	@author Martina Kutmon
-* 	@version 1.0
+* 	@author mkutmon
 */
-public class OpenPathwayFromXrefAction extends AbstractAction
-{
+public class OpenPathwayFromXrefAction extends AbstractAction {
 	private PathwayElement elm;
 	private WikiPathwaysClientPlugin plugin;
 	
-
-	public OpenPathwayFromXrefAction(WikiPathwaysClientPlugin plugin, PathwayElement elm)
-	{
-		if(elm.getDataNodeType().equalsIgnoreCase("Pathway"))
-		putValue(NAME, "Open pathway from WikiPathways");
-		else  {
-			putValue(NAME, "Find pathways containing "+elm.getXref());
-		}
+	public OpenPathwayFromXrefAction(WikiPathwaysClientPlugin plugin, PathwayElement elm) {
 		this.plugin = plugin;
 		this.elm = elm;
+		if(elm.getDataNodeType().equals("Pathway")) {
+			putValue(NAME, "Open Pathway from WikiPathways");
+		} else  {
+			putValue(NAME, "Find pathways containing " + elm.getXref());
+		}
 	}
 	
-	public void actionPerformed(ActionEvent evt)
-	{
-		try
-		{
-			int flag=0;
-			Xref x = elm.getXref();
-			try
-			{
-				if((x.getDataSource().toString().isEmpty()) ||x.getId().isEmpty())
-				{				
-				throw new Exception();
+	public void actionPerformed(ActionEvent evt) {
+		Xref xref = elm.getXref();
+		if(xref.getDataSource() != null && xref.getId() != null) {
+			// pathway nodes - open pathway from wikipathways
+			if(elm.getDataNodeType().equals("Pathway")) {
+				try{
+					if(xref.getId().startsWith("WP")) {
+						File tmpDir= new File(plugin.getTmpDir(), xref.getDataSource().getSystemCode() + "_" + xref.getId());
+						tmpDir.mkdirs();
+						plugin.openPathwayWithProgress(xref.getId(), 0, tmpDir);
+					} 
+				} catch(Exception ex) {
+					JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(), "Can not open pathway from WikiPathways.", "Error", JOptionPane.ERROR_MESSAGE);
 				}
-				if((x.getId().matches(".*\\d.*")) && (x.getId().startsWith("WP")))
-				{
-				flag++;
+			// other datanodes - search for pathways containing the same datanode
+			} else {
+				try {
+					File tmpDir= new File(plugin.getTmpDir(), xref.getDataSource().getSystemCode() + "_" + xref.getId());
+					tmpDir.mkdirs();
+					plugin.openPathwayXrefWithProgress(xref, 0, tmpDir);
+				} catch(Exception e) {
+					JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(), "Can not open pathway from WikiPathways.", "Error", JOptionPane.ERROR_MESSAGE);
 				}
-				
 			}
-			catch (Exception e)
-			{
-			Logger.log.error("The Pathway was annotated with an invalid identifier", e);
-			JOptionPane.showMessageDialog(null,"The Pathway is annotated with an invalid identifier", "ERROR", JOptionPane.ERROR_MESSAGE);
-			}
-			if(flag>0)
-			{
-			 File tmpDir= new File(plugin.getTmpDir(), x.getDataSource().getFullName());
-			 tmpDir.mkdirs();
-			 plugin.openPathwayWithProgress(x.getId(), 0, tmpDir);					
-			}
-			else
-			{
-			File tmpDir= new File(plugin.getTmpDir(), x.getDataSource().getFullName());
-			 tmpDir.mkdirs();
-			 plugin.openPathwayXrefWithProgress(x, 0, tmpDir);
-				
-			}
-		} 
-		catch (Exception e) 
-		{
-			Logger.log.error("Error while loading pathway from remote database", e);
-			JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+		} else {
+			JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(), "Error occured when searching for pathways.\nPlease check annotation of the selected element.", "Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 }

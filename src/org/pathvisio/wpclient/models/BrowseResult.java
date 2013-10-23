@@ -26,6 +26,8 @@ import org.pathvisio.wikipathways.webservice.WSPathwayInfo;
  */
 public class BrowseResult {
 
+	// TODO: CURATION TAGS are currently disabled to improve performance
+	
 	private WSPathwayInfo pathway;
 //	private List<WSCurationTag> tags;
 	

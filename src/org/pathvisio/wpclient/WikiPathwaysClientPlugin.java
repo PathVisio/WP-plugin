@@ -105,42 +105,36 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 			tmpDir.mkdirs();
 			Logger.log.info("Initializing WikiPathways Client plugin");
 
+			// intialization
 			initPreferences();
-
 			registerActions();
 
 			new WikipathwaysPluginManagerAction(desktop);
 
 			// register a listener to notify when a pathway is opened
-			desktop.getSwingEngine().getEngine()
-					.addApplicationEventListener(this);
+			desktop.getSwingEngine().getEngine().addApplicationEventListener(this);
+			
 		} catch (Exception e) {
 			Logger.log.error("Error while initializing WikiPathways client", e);
-			JOptionPane.showMessageDialog(desktop.getSwingEngine()
-					.getApplicationPanel(), e.getMessage(), "Error",
+			JOptionPane.showMessageDialog(desktop.getSwingEngine().getApplicationPanel(), 
+					"Could not initialize WikiPathways client plugin.", "Error",
 					JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
 	/**
 	 * Initializing Preferences.
+	 * URLPreference - specify webservice URL
 	 */
 	private void initPreferences() {
 		PreferencesDlg dlg = desktop.getPreferencesDlg();
 		
-		dlg.addPanel(
-				"WikiPathways Plugin",
-				dlg.builder().stringField(URLPreference.CONNECTION_URL, "WP webservice URL").build()); 
+		dlg.addPanel("WikiPathways Plugin",
+			dlg.builder().stringField(URLPreference.CONNECTION_URL, "WP webservice URL").build()); 
 
 	}
 
-	public IWPQueries getWpQueries() {
-		return wpQueries;
-	}
-
-	public File getTmpDir() {
-		return tmpDir;
-	}
+	
 	/**
 	 * Preparing the Submenu For WikiPathways Menu
 	 */
@@ -154,10 +148,8 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 			JMenuItem browseMenu = new JMenuItem("Browse");
 
 			// preparing actions for menus and submenus
-			SearchAction searchAction = new SearchAction(desktop,
-					WikiPathwaysClientPlugin.this);
-			BrowseAction browseAction = new BrowseAction(desktop,
-					WikiPathwaysClientPlugin.this);
+			SearchAction searchAction = new SearchAction(plugin);
+			BrowseAction browseAction = new BrowseAction(plugin);
 
 			searchMenu.addActionListener(searchAction);
 			browseMenu.addActionListener(browseAction);
@@ -167,8 +159,8 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 			createMenu = new JMenuItem("Create Pathway");
 			updateMenu = new JMenuItem("Update Pathway");
 
-			UploadAction createAction = new UploadAction(desktop, plugin);
-			UpdateAction updateAction = new UpdateAction(desktop, plugin);
+			UploadAction createAction = new UploadAction(plugin);
+			UpdateAction updateAction = new UpdateAction(plugin);
 
 			createMenu.addActionListener(createAction);
 			updateMenu.addActionListener(updateAction);
@@ -457,12 +449,27 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 
 	@Override
 	public void applicationEvent(ApplicationEvent e) {
-	
 		updateState();
 	}
 
 	@Override
-	public void vPathwayEvent(VPathwayEvent arg0) {
+	public void vPathwayEvent(VPathwayEvent e) {
 		updateState();
+	}
+	
+	//////////////////////////////////////
+	// SETTERS & GETTERS
+	//////////////////////////////////////
+
+	public IWPQueries getWpQueries() {
+		return wpQueries;
+	}
+
+	public File getTmpDir() {
+		return tmpDir;
+	}
+
+	public PvDesktop getDesktop() {
+		return desktop;
 	}
 }

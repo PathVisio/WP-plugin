@@ -25,13 +25,11 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -52,7 +50,6 @@ import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.pathvisio.wpclient.models.ResultTableModel;
 import org.pathvisio.wpclient.utils.FileUtils;
 import org.pathvisio.wpclient.validators.Validator;
-import org.wikipathways.client.WikiPathwaysClient;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -62,26 +59,20 @@ import com.jgoodies.forms.layout.FormLayout;
  * TabbedPane of Search
  * 
  * @author Sravanthi Sinha
- * @author Martina Kutmon
- * @version 1.0
+ * @author mkutmon
  */
 public class PathwaySearchPanel extends JPanel {
-	WikiPathwaysClientPlugin plugin;
-	JTextField pTitleOrId;
-	JComboBox clientDropdown;
-	java.util.HashMap<String, String> curationtags = new HashMap<String, String>();
-	JTable resultTable;
-	int i = 0;
+	private WikiPathwaysClientPlugin plugin;
+	private JTextField pTitleOrId;
+	private JTable resultTable;
 	private JScrollPane resultspane;
 
-	public int flag = 0;
+	private int flag = 0;
 	private JLabel tipLabel;
 	private JLabel lblNumFound;
 
 	public PathwaySearchPanel(final WikiPathwaysClientPlugin plugin) {
-
 		this.plugin = plugin;
-
 		setLayout(new BorderLayout());
 		pTitleOrId = new JTextField();
 
@@ -103,7 +94,6 @@ public class PathwaySearchPanel extends JPanel {
 					Logger.log.error("Error searching WikiPathways", ex);
 				}
 			}
-
 		};
 
 		pTitleOrId.addActionListener(searchAction);
@@ -115,7 +105,7 @@ public class PathwaySearchPanel extends JPanel {
 		FormLayout layoutf = new FormLayout(
 				"p,3dlu,120px,2dlu,30px,pref:grow,3dlu",
 				"pref, pref, 4dlu, pref, 4dlu, pref");
-		CellConstraints ccf = new CellConstraints();
+		CellConstraints cc = new CellConstraints();
 
 		searchBox.setLayout(layoutf);
 		searchBox.setBorder(BorderFactory.createTitledBorder(BorderFactory
@@ -125,7 +115,6 @@ public class PathwaySearchPanel extends JPanel {
 		FormLayout layout = new FormLayout(
 				"3dlu,p,3dlu,2dlu,30px,fill:pref:grow,2dlu",
 				"pref, pref, 4dlu, pref, 4dlu, pref");
-		CellConstraints cc = new CellConstraints();
 
 		searchOptBox.setLayout(layout);
 		searchOptBox.setBorder(BorderFactory.createTitledBorder(
@@ -135,7 +124,7 @@ public class PathwaySearchPanel extends JPanel {
 
 		searchOptBox.add(tipLabel, cc.xyw(2, 2, 5));
 
-		searchBox.add(searchOptBox, ccf.xyw(1, 1, 6));
+		searchBox.add(searchOptBox, cc.xyw(1, 1, 6));
 
 		add(searchBox, BorderLayout.NORTH);
 
@@ -156,22 +145,17 @@ public class PathwaySearchPanel extends JPanel {
 
 					try {
 						if (flag == 1) {
-							SearchTableModel model = (SearchTableModel) target
-									.getModel();
+							SearchTableModel model = (SearchTableModel) target.getModel();
 							File tmpDir = new File(plugin.getTmpDir(),FileUtils.getTimeStamp());
 							tmpDir.mkdirs();
 							flag = 0;
-							plugin.openPathwayWithProgress(model.getValueAt(row, 0).toString(), 0,
-									tmpDir);
+							plugin.openPathwayWithProgress(model.getValueAt(row, 0).toString(), 0, tmpDir);
 						} else {
-							ResultTableModel model = (ResultTableModel) target
-									.getModel();
+							ResultTableModel model = (ResultTableModel) target.getModel();
 							File tmpDir = new File(plugin.getTmpDir(),FileUtils.getTimeStamp());
 							tmpDir.mkdirs();
 
-							plugin.openPathwayWithProgress(model.getValueAt(row, 0).toString(), 0,
-									tmpDir);
-
+							plugin.openPathwayWithProgress(model.getValueAt(row, 0).toString(), 0, tmpDir);
 						}
 					} catch (Exception ex) {
 						JOptionPane.showMessageDialog(PathwaySearchPanel.this,
@@ -184,42 +168,38 @@ public class PathwaySearchPanel extends JPanel {
 		});
 	}
 
-	private void searchByTitle() throws RemoteException, InterruptedException,
-			ExecutionException, MalformedURLException, ServiceException {
+	private void searchByTitle() throws RemoteException, InterruptedException, ExecutionException, MalformedURLException, ServiceException {
 		lblNumFound.setText("");
 		final String query = pTitleOrId.getText();
 		if (!query.isEmpty()) {
 			if (Validator.CheckNonAlpha(query)) {
 				final ProgressKeeper pk = new ProgressKeeper();
-				final ProgressDialog d = new ProgressDialog(
-						JOptionPane.getFrameForComponent(this), "", pk, true,
-						true);
-				i = 0;
+				final ProgressDialog d = new ProgressDialog(JOptionPane.getFrameForComponent(this), "", pk, true, true);
+				
 				SwingWorker<WSSearchResult[], Void> sw = new SwingWorker<WSSearchResult[], Void>() {
+					
 					WSSearchResult[] results;
 
-					protected WSSearchResult[] doInBackground()
-							throws Exception {
+					protected WSSearchResult[] doInBackground() throws Exception {
 						pk.setTaskName("Searching");
 
+						int i = 0;
 						ArrayList<WSSearchResult> results2 = new ArrayList<WSSearchResult>();
 						try {
 							pk.setTaskName("Searching By Pathway Title");
 							results = plugin.getWpQueries().findByText(query, pk);
-						} catch (Exception e) {
-							throw e;
 						} finally {
 							pk.finished();
 						}
 
 						for (WSSearchResult wsSearchResult : results) {
-							if (wsSearchResult.getName().toUpperCase()
-									.indexOf(query.toUpperCase()) != -1) {
+							if (wsSearchResult.getName().toUpperCase().indexOf(query.toUpperCase()) != -1) {
 								results2.add(wsSearchResult);
 								i++;
 
 							}
 						}
+						
 						results = new WSSearchResult[i];
 						results2.toArray(results);
 						return results;
@@ -229,8 +209,7 @@ public class PathwaySearchPanel extends JPanel {
 					protected void done() {
 						if (!pk.isCancelled()) {
 							if (results.length == 0) {
-								JOptionPane.showMessageDialog(null,
-										"0 results found");
+								JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(), "0 results found");
 							}
 						} else if (pk.isCancelled()) {
 							pk.finished();
@@ -241,8 +220,7 @@ public class PathwaySearchPanel extends JPanel {
 				sw.execute();
 				d.setVisible(true);
 				resultTable.setModel(new ResultTableModel(sw.get()));
-				resultTable.setRowSorter(new TableRowSorter(resultTable
-						.getModel()));
+				resultTable.setRowSorter(new TableRowSorter(resultTable.getModel()));
 				lblNumFound.setText(" No.of results found: "+sw.get().length);
 			} else {
 				JOptionPane.showMessageDialog(null,
@@ -255,69 +233,63 @@ public class PathwaySearchPanel extends JPanel {
 		}
 	}
 
-	private void searchByID() throws RemoteException, InterruptedException,
-			ExecutionException, MalformedURLException, ServiceException {
+	private void searchByID() throws RemoteException, InterruptedException, ExecutionException, MalformedURLException, ServiceException {
 		lblNumFound.setText("");
 		final String query = pTitleOrId.getText();
 
 		if (!query.isEmpty()) {
 			if (Validator.CheckNonAlpha(query)) {
-
-			final ProgressKeeper pk = new ProgressKeeper();
-			final ProgressDialog d = new ProgressDialog(
-					JOptionPane.getFrameForComponent(this), "", pk, true, true);
-
-			SwingWorker<WSPathwayInfo[], Void> sw = new SwingWorker<WSPathwayInfo[], Void>() {
-				WSPathwayInfo[] results3;
-
-				protected WSPathwayInfo[] doInBackground() throws Exception {
-					i = 0;
-					pk.setTaskName("Searching");
-
-					ArrayList<WSPathwayInfo> results2 = new ArrayList<WSPathwayInfo>();
-					try {
-						pk.setTaskName("Searching By Pathway ID");
-						results2.add(plugin.getWpQueries().getPathwayInfo(query, pk));
-						i++;
-					} catch (Exception e) {
-						throw e;
-					} finally {
-						pk.finished();
-					}
-
-					results3 = new WSPathwayInfo[i];
-					results2.toArray(results3);
-					return results3;
-
-				}
-
-				protected void done() {
-					if (!pk.isCancelled()) {
-						if (results3.length == 0) {
-							JOptionPane.showMessageDialog(null,
-									"0 results found");
+	
+				final ProgressKeeper pk = new ProgressKeeper();
+				final ProgressDialog d = new ProgressDialog(JOptionPane.getFrameForComponent(this), "", pk, true, true);
+	
+				SwingWorker<WSPathwayInfo[], Void> sw = new SwingWorker<WSPathwayInfo[], Void>() {
+					
+					WSPathwayInfo[] results;
+					
+					protected WSPathwayInfo[] doInBackground() throws Exception {
+						int i = 0;
+						pk.setTaskName("Searching");
+	
+						ArrayList<WSPathwayInfo> results2 = new ArrayList<WSPathwayInfo>();
+						try {
+							pk.setTaskName("Searching By Pathway ID");
+							results2.add(plugin.getWpQueries().getPathwayInfo(query, pk));
+							i++;
+						} finally {
+							pk.finished();
 						}
-					} else if (pk.isCancelled()) {
-						pk.finished();
+	
+						results = new WSPathwayInfo[i];
+						results2.toArray(results);
+						return results;
 					}
-				}
-			};
-
-			sw.execute();
-			d.setVisible(true);
-			flag = 1;
-			resultTable.setModel(new SearchTableModel(sw.get()));
-			resultTable
-					.setRowSorter(new TableRowSorter(resultTable.getModel()));
-			lblNumFound.setText(" No.of results found: "+sw.get().length);
+	
+					protected void done() {
+						if (!pk.isCancelled()) {
+							if (results.length == 0) {
+								JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(),"0 results found");
+							}
+						} else if (pk.isCancelled()) {
+							pk.finished();
+						}
+					}
+				};
+	
+				sw.execute();
+				d.setVisible(true);
+				flag = 1;
+				resultTable.setModel(new SearchTableModel(sw.get()));
+				resultTable.setRowSorter(new TableRowSorter(resultTable.getModel()));
+				lblNumFound.setText(sw.get().length + " pathways found.");
 			} else {
 				JOptionPane.showMessageDialog(null,
-						"Please Enter a Valid ID", "ERROR",
+						"Please Enter a Valid ID", "Error",
 						JOptionPane.ERROR_MESSAGE);
 			}
 		} else {
 			JOptionPane.showMessageDialog(null, "Please Enter a Search Query",
-					"ERROR", JOptionPane.ERROR_MESSAGE);
+					"Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -348,13 +320,10 @@ public class PathwaySearchPanel extends JPanel {
 				return r.getSpecies();
 			}
 			return "";
-
 		}
 
 		public String getColumnName(int column) {
 			return columnNames[column];
 		}
-
 	}
-
 }

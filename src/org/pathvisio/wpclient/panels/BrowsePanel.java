@@ -69,7 +69,6 @@ import com.jgoodies.forms.layout.FormLayout;
  * 	@author SravanthiSinha
  * 	@author mkutmon
  */
-
 public class BrowsePanel extends JPanel {
 	private final WikiPathwaysClientPlugin plugin;
 
@@ -118,7 +117,7 @@ public class BrowsePanel extends JPanel {
 		DefaultFormBuilder curationOptBuilder = new DefaultFormBuilder(	new FormLayout("right:pref, 3dlu,right:pref"));
 		curationOptBuilder.append(curationOpt);
 	
-			// Browse annotation labels
+		// Browse annotation labels
 		JPanel opts = new JPanel();
 		opts.setLayout(new CardLayout());
 		JPanel idOpt = idOptBuilder.getPanel();
@@ -189,15 +188,11 @@ public class BrowsePanel extends JPanel {
 	}
 	
 	Action browseAction = new AbstractAction("Browse") {
-		public void actionPerformed(ActionEvent e) 
-		{
-			try 
-			{
+		public void actionPerformed(ActionEvent e) {
+			try {
 				resultspane.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Pathways"));
 				browse();
-			}
-			catch (Exception ex) 
-			{
+			} catch (Exception ex) {
 				JOptionPane.showMessageDialog(BrowsePanel.this,ex.getMessage(), "Error",JOptionPane.ERROR_MESSAGE);
 				Logger.log.error("Error browsing WikiPathways", ex);
 			}

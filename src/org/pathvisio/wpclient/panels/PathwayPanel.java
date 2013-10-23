@@ -35,33 +35,20 @@ import org.pathvisio.wikipathways.webservice.WSSearchResult;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.pathvisio.wpclient.models.ResultTableModel;
 
-import com.jgoodies.forms.layout.CellConstraints;
-
 /**
  * This class creates the Table Model List containing the pathways  
  * 	@author Sravanthi Sinha
- * 	@author Martina Kutmon
- * 	@version 1.0
+ * 	@author mkutmon
  */
-public class PathwayPanel extends JPanel 
-{
-	WikiPathwaysClientPlugin plugin;
-
-	JTable resultTable;
+public class PathwayPanel extends JPanel {
+	
+	private JTable resultTable;
 	private JScrollPane resultspane;	
 	
-	public PathwayPanel(final WikiPathwaysClientPlugin plugin, WSSearchResult[] wsp, final File tmpDir,final Xref[] xref) throws MalformedURLException, ServiceException 
-	{
-		this.plugin = plugin;
-
+	public PathwayPanel(final WikiPathwaysClientPlugin plugin, WSSearchResult[] wsp, final File tmpDir,final Xref[] xref) throws MalformedURLException, ServiceException  {
 		setLayout(new BorderLayout());	
-
 		JPanel searchOptBox = new JPanel();
 		
-		CellConstraints cc = new CellConstraints();	
-	
-
-
 		add(searchOptBox, BorderLayout.NORTH);
 
 		// Center contains table model for results
@@ -74,25 +61,18 @@ public class PathwayPanel extends JPanel
 
 		add(resultspane, BorderLayout.CENTER);
 		
-	
-		resultTable.addMouseListener(new MouseAdapter()
-		{
-			public void mouseClicked(MouseEvent e) 
-			{
-				if (e.getClickCount() == 2) 
-				{
+		resultTable.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
 					JTable target = (JTable) e.getSource();
 					int row = target.getSelectedRow();
 					ResultTableModel model = (ResultTableModel ) target.getModel();
 					
 					tmpDir.mkdirs();
 					
-					try
-					{
+					try {
 						plugin.openPathwayWithProgress(model.getValueAt(row, 0).toString(), 0, tmpDir,xref);
-					}
-					catch (Exception ex) 
-					{
+					} catch (Exception ex) {
 						JOptionPane.showMessageDialog(PathwayPanel.this,ex.getMessage(), "Error",JOptionPane.ERROR_MESSAGE);
 						Logger.log.error("Error", ex);
 					}
@@ -100,9 +80,4 @@ public class PathwayPanel extends JPanel
 			}
 		});
 	}
-
-
-	
-	
-
 }

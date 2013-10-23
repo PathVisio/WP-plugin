@@ -20,23 +20,24 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
-import org.pathvisio.desktop.PvDesktop;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
-import org.pathvisio.wpclient.panels.UpdatePathwayPanel;
+import org.pathvisio.wpclient.dialogs.UpdatePathwayDialog;
 
+/**
+ * action that enabled the update of a pathway
+ * @author mkutmon, SravanthiSinah
+ *
+ */
 public class UpdateAction extends AbstractAction {
 
-	private PvDesktop desktop;
 	private WikiPathwaysClientPlugin plugin;
 	
-	public UpdateAction(PvDesktop desktop, WikiPathwaysClientPlugin plugin) {
-		this.desktop = desktop;
+	public UpdateAction(WikiPathwaysClientPlugin plugin) {
 		this.plugin = plugin;
 	}
 	
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		new UpdatePathwayPanel(desktop, plugin);
+		new UpdatePathwayDialog(plugin);
 	}
-
 }

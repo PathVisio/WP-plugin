@@ -26,72 +26,72 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
 import javax.swing.border.Border;
 import javax.xml.rpc.ServiceException;
 
-import org.pathvisio.desktop.PvDesktop;
 import org.pathvisio.wpclient.FailedConnectionException;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.pathvisio.wpclient.panels.BrowsePanel;
 
 public class BrowseDialog {
 
-	public BrowseDialog(PvDesktop desktop, WikiPathwaysClientPlugin plugin) {
-		JDialog d = new JDialog(desktop.getFrame(), "Browse WikiPathways", false);
-		Browse p;
+	private JDialog dialog;
+	private Browse browsePanel;
+	
+	public BrowseDialog(WikiPathwaysClientPlugin plugin) {
+		dialog = new JDialog(plugin.getDesktop().getFrame(), "Browse WikiPathways", false);
+		
 		try {
-			p = new Browse(desktop, plugin);
-			d.setLayout(new BorderLayout());
+			browsePanel = new Browse(plugin);
+			dialog.setLayout(new BorderLayout());
 			Border padBorder = BorderFactory.createEmptyBorder(5, 5, 5, 5);
-			p.setLayout(new CardLayout());
-			p.setBorder(padBorder);	
+			browsePanel.setLayout(new CardLayout());
+			browsePanel.setBorder(padBorder);	
 			
-			JScrollPane pnlScroll = new JScrollPane(p);	
-			d.add(pnlScroll);
-			d.pack();	
+			JScrollPane pnlScroll = new JScrollPane(browsePanel);	
+			dialog.add(pnlScroll);
+			dialog.pack();	
 			//loading dialog at the centre of the frame
-			d.setLocationRelativeTo(desktop.getSwingEngine().getFrame());
-			d.setVisible(true);
+			dialog.setLocationRelativeTo(plugin.getDesktop().getSwingEngine().getFrame());
+			dialog.setVisible(true);
+			
 		} catch (RemoteException e) {
-			JOptionPane.showMessageDialog(d,
+			JOptionPane.showMessageDialog(dialog,
 				    "Can not connect to WikiPathways webservice.",
 				    "Connection error",
 				    JOptionPane.ERROR_MESSAGE);
-			d.setVisible(false);
+			dialog.setVisible(false);
 		} catch (MalformedURLException e) {
-			JOptionPane.showMessageDialog(d,
+			JOptionPane.showMessageDialog(dialog,
 				    "Can not connect to WikiPathways webservice.\nInvalid URL.",
 				    "Connection error",
 				    JOptionPane.ERROR_MESSAGE);
-			d.setVisible(false);
+			dialog.setVisible(false);
 		} catch (ServiceException e) {
-			JOptionPane.showMessageDialog(d,
+			JOptionPane.showMessageDialog(dialog,
 				    "Can not connect to WikiPathways webservice.",
 				    "Connection error",
 				    JOptionPane.ERROR_MESSAGE);
-			d.setVisible(false);
+			dialog.setVisible(false);
 		} catch (FailedConnectionException e) {
-			JOptionPane.showMessageDialog(d,
+			JOptionPane.showMessageDialog(dialog,
 				    "Can not connect to WikiPathways webservice.",
 				    "Connection error",
 				    JOptionPane.ERROR_MESSAGE);
-			d.setVisible(false);
+			dialog.setVisible(false);
 		}
 	}
-
-}
-
-/**
- * Load Search Dialog with Search and AdvancedSearch in the TabbedPane
- */
-class Browse extends JPanel {
-	JTabbedPane searchTabbedPane;
-
-	public Browse(final PvDesktop desktop, final WikiPathwaysClientPlugin plugin) throws RemoteException, MalformedURLException, ServiceException, FailedConnectionException {
-		BrowsePanel p = new BrowsePanel(plugin);
-
-		add(p);
+	
+	/**
+	 * Load Search Dialog with Search and AdvancedSearch in the TabbedPane
+	 */
+	private class Browse extends JPanel {
+		
+		public Browse(WikiPathwaysClientPlugin plugin) throws RemoteException, MalformedURLException, ServiceException, FailedConnectionException {
+			BrowsePanel p = new BrowsePanel(plugin);
+			add(p);
+		}
 	}
-
 }
+
+

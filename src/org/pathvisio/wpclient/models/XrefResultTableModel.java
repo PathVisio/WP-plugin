@@ -24,33 +24,27 @@ import org.pathvisio.wpclient.WSResult;
  * This class creates the ResultTableModel 
  * Based on the results
  * @author Sravanthi Sinha
- * @author Martina Kutmon
- * @version 1.0 
+ * @author mkutmon
  */
-public class XrefResultTableModel extends AbstractTableModel
-	{
-		WSResult[] results;
-		String[] columnNames = new String[] { "ID", "Name", "Species","No.of Genes" };
+public class XrefResultTableModel extends AbstractTableModel {
+	WSResult[] results;
+	String[] columnNames = new String[] { "ID", "Name", "Species","No.of Genes" };
 
-		public XrefResultTableModel(WSResult[] results) 
-		{
-			this.results = results;
-		}
+	public XrefResultTableModel(WSResult[] results) {
+		this.results = results;
+	}
 
-		public int getColumnCount()
-		{
-			return 4;
-		}
+	public int getColumnCount() {
+		return 4;
+	}
 
-		public int getRowCount() 
-		{
-			return results.length;
-		}
+	public int getRowCount() {
+		return results.length;
+	}
 
-		public Object getValueAt(int rowIndex, int columnIndex)
-		{
-			WSResult r = results[rowIndex];
-			switch (columnIndex) {
+	public Object getValueAt(int rowIndex, int columnIndex) {
+		WSResult r = results[rowIndex];
+		switch (columnIndex) {
 			case 0:
 				return r.getWsSearchResult().getId();
 			case 1:
@@ -59,12 +53,11 @@ public class XrefResultTableModel extends AbstractTableModel
 				return r.getWsSearchResult().getSpecies();
 			case 3:
 				return r.getCount();
-			}
-			return "";
 		}
-
-		public String getColumnName(int column) 
-		{
-			return columnNames[column];
-		}
+		return "";
 	}
+
+	public String getColumnName(int column) {
+		return columnNames[column];
+	}
+}

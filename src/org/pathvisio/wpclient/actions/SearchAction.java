@@ -22,11 +22,8 @@ import java.net.URL;
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 
-import org.pathvisio.desktop.PvDesktop;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.pathvisio.wpclient.dialogs.SearchDialog;
-
-
 
 /**
  * Search menu action in the WikiPathways menu
@@ -34,22 +31,17 @@ import org.pathvisio.wpclient.dialogs.SearchDialog;
 public class SearchAction extends AbstractAction
 {
 	private String IMG_SEARCH = "resources/search.gif";
-	URL url = WikiPathwaysClientPlugin.class.getClassLoader().getResource(IMG_SEARCH);
-	PvDesktop desktop;
+	private URL url = WikiPathwaysClientPlugin.class.getClassLoader().getResource(IMG_SEARCH);
 	private WikiPathwaysClientPlugin plugin;
 
-	public SearchAction(PvDesktop desktop, WikiPathwaysClientPlugin plugin) 
-	{
-		this.desktop=desktop;
-		this.plugin=plugin;
+	public SearchAction(WikiPathwaysClientPlugin plugin) {
+		this.plugin = plugin;
 		putValue(NAME, "Search");
 		putValue(SMALL_ICON, new ImageIcon(url));
-		putValue(SHORT_DESCRIPTION, "Search pathways in Wikipathways");
+		putValue(SHORT_DESCRIPTION, "Search Pathways in WikiPathways");
 	}
 
-	public void actionPerformed(ActionEvent e) 
-	{
-
-		new SearchDialog(desktop, plugin);
+	public void actionPerformed(ActionEvent e)  {
+		new SearchDialog(plugin);
 	}
 }

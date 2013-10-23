@@ -34,7 +34,6 @@ import javax.swing.JTextArea;
 import javax.xml.rpc.ServiceException;
 
 import org.pathvisio.core.model.Pathway;
-import org.pathvisio.desktop.PvDesktop;
 import org.pathvisio.wikipathways.webservice.WSPathwayInfo;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 
@@ -42,23 +41,20 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 public class CreatePathwayPanel extends JPanel implements ActionListener {
-	LoginPanel p;
-	JDialog d,d2;
+	private LoginPanel p;
+	private JDialog dialog, descriptionDialog;
 	
 	private JTextArea description = new JTextArea(2, 2);
-	private PvDesktop desktop;
 	private WikiPathwaysClientPlugin plugin;
 
-	public CreatePathwayPanel(PvDesktop desktop, WikiPathwaysClientPlugin plugin) {
+	public CreatePathwayPanel(WikiPathwaysClientPlugin plugin) {
 		this.plugin = plugin;
-		this.desktop = desktop;
-		if (LoginPanel.Username.equals("") || LoginPanel.Password.equals("")) {
+		if (LoginPanel.username.equals("") || LoginPanel.password.equals("")) {
 			showLoginPanel();
 		}
-		if (!(LoginPanel.Username.equals("") && LoginPanel.Password.equals("")) ){
+		if (!(LoginPanel.username.equals("") && LoginPanel.password.equals("")) ){
 			showDescriptionPanel();
 		}
-
 	}
 
 	private void showDescriptionPanel() {
@@ -66,55 +62,52 @@ public class CreatePathwayPanel extends JPanel implements ActionListener {
 				"7dlu,150px,fill:pref,150px",
 				"pref, 2dlu, pref");
 		CellConstraints cc = new CellConstraints();
-		descriptionPanel dp = new descriptionPanel();
-		d2 = new JDialog(desktop.getFrame(), "WikiPathways", false);
+		DescriptionPanel dp = new DescriptionPanel();
+		descriptionDialog = new JDialog(plugin.getDesktop().getFrame(), "WikiPathways", false);
 		JButton submit = new JButton("create");
 
 		submit.setActionCommand("Create");
 		submit.addActionListener(this);
-		d2.setLayout(layout);
+		descriptionDialog.setLayout(layout);
 	
-		d2.add(dp, cc.xyw(2, 1,3));
+		descriptionDialog.add(dp, cc.xyw(2, 1,3));
 
 		JPanel p = new JPanel();
 
 		p.add(submit);
-		d2.add(p, cc.xy(3,3));
+		descriptionDialog.add(p, cc.xy(3,3));
 
-		d2.pack();
-		d2.setVisible(true);
-		d2.setResizable(false);
-		d2.setLocationRelativeTo(desktop.getSwingEngine().getFrame());
-		d2.setVisible(true);
-
+		descriptionDialog.pack();
+		descriptionDialog.setVisible(true);
+		descriptionDialog.setResizable(false);
+		descriptionDialog.setLocationRelativeTo(plugin.getDesktop().getFrame());
+		descriptionDialog.setVisible(true);
 	}
 
-	private class descriptionPanel extends JPanel {
-		public descriptionPanel() {
+	private class DescriptionPanel extends JPanel {
+		public DescriptionPanel() {
 			super();
 			setLayout(new GridLayout(2, 2));
 			add(new JLabel("Description for Pathway:"));
 			add(new JScrollPane(description));
-
 		}
 	}
 
 	private void showLoginPanel() {
-
 		p = new LoginPanel(plugin);
-		d = new JDialog(desktop.getFrame(), "WikiPathways Login", false);
+		dialog = new JDialog(plugin.getDesktop().getFrame(), "WikiPathways Login", false);
 		JButton submit = new JButton("Login");
 
 		submit.setActionCommand("Login");
 		submit.addActionListener(this);
-		d.setLayout(new GridBagLayout());
+		dialog.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = 1.0;
 		c.weighty = 1.0;
-		d.add(p, c);
+		dialog.add(p, c);
 
 		c.weighty = 0.0;
 		c.weightx = 0.5;
@@ -123,20 +116,19 @@ public class CreatePathwayPanel extends JPanel implements ActionListener {
 		JPanel p = new JPanel();
 
 		p.add(submit);
-		d.add(p, c);
+		dialog.add(p, c);
 
-		d.pack();
-		d.setVisible(true);
+		dialog.pack();
+		dialog.setVisible(true);
 	
-		d.setResizable(false);
-		d.setLocationRelativeTo(desktop.getSwingEngine().getFrame());
-		d.setVisible(true);
-
+		dialog.setResizable(false);
+		dialog.setLocationRelativeTo(plugin.getDesktop().getSwingEngine().getFrame());
+		dialog.setVisible(true);
 	}
 
 	public void createPathway() {
 		try {
-			Pathway pathway = desktop.getSwingEngine().getEngine().getActivePathway();
+			Pathway pathway = plugin.getDesktop().getSwingEngine().getEngine().getActivePathway();
 			WSPathwayInfo l = plugin.getWpQueries().uploadPathway(pathway);
 			plugin.getWpQueries().updateCurationTag( "Curation:UnderConstruction", l.getId(), "");
 			JOptionPane.showMessageDialog(null,
@@ -155,9 +147,13 @@ public class CreatePathwayPanel extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 
 		if ("Login".equals(e.getActionCommand())) {
-			d.dispose();
+			dialog.dispose();
 			try {
 				p.login();
+				
+				if(LoginPanel.loggedin) {
+					showDescriptionPanel();
+				}
 			} catch (RemoteException e1) {
 				e1.printStackTrace();
 			} catch (MalformedURLException e1) {
@@ -165,15 +161,9 @@ public class CreatePathwayPanel extends JPanel implements ActionListener {
 			} catch (ServiceException e1) {
 				e1.printStackTrace();
 			}
-			if(LoginPanel.loggedin) {
-				showDescriptionPanel();
-			}
-
-		}
-		if ("Create".equals(e.getActionCommand())) {		
+		} else if ("Create".equals(e.getActionCommand())) {		
 			createPathway();
-			d2.dispose();
+			descriptionDialog.dispose();
 		}
 	}
-
 }

@@ -20,13 +20,10 @@ package org.pathvisio.wpclient.panels;
  * Class: LoginPanel
  * Description: A simple class to get username and password.
  * @author Sravanthi Sinha
- * @author Martina Kutmon
- * @version 1.0
+ * @author mkutmon
  **/
 
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 
@@ -41,22 +38,17 @@ import javax.xml.rpc.ServiceException;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.pathvisio.wpclient.validators.Validator;
 
-public class LoginPanel extends JPanel implements ActionListener {
-	static String Username = "";
-	static String Password = "";
-	boolean itsFirst = true;
-	boolean itsKeep = false;
-	JTextField UserField = new JTextField(15);
-	JPasswordField PassField = new JPasswordField(15);
-	JCheckBox itsKeepBox = new JCheckBox("Save details:", false);
-	boolean itsInit = false;
-	String clientName;
-	String actiontype;
-	static boolean loggedin;
+public class LoginPanel extends JPanel {
+	public static String username = "";
+	public static String password = "";
+	public static boolean loggedin;
+
+	private JTextField UserField = new JTextField(15);
+	private JPasswordField PassField = new JPasswordField(15);
+	private JCheckBox itsKeepBox = new JCheckBox("Save details:", false);
 	private WikiPathwaysClientPlugin plugin;
 
 	public LoginPanel(WikiPathwaysClientPlugin plugin) {
-		super();
 		this.plugin = plugin;
 		setLayout(new GridLayout(3, 2));
 		add(new JLabel("Username:"));
@@ -65,30 +57,25 @@ public class LoginPanel extends JPanel implements ActionListener {
 		add(PassField);
 		add(itsKeepBox);
 		loggedin = false;
-
 	}
 
-	public void login() throws RemoteException,
-			MalformedURLException, ServiceException {
-
+	public void login() throws RemoteException, MalformedURLException, ServiceException {
 		try {
-			Username = UserField.getText();
-			Password = new String(PassField.getPassword());
-			if (Validator.CheckNonAlpha(Username)) {
-
-				plugin.getWpQueries().login(Username, Password);
+			username = UserField.getText();
+			password = new String(PassField.getPassword());
+			if (Validator.CheckNonAlpha(username)) {
+				plugin.getWpQueries().login(username, password);
 				loggedin = true;
 				if (!itsKeepBox.isSelected()) {
-					Username = "";
-					Password = "";
+					username = "";
+					password = "";
 				}
-
 			} else {
 				JOptionPane.showMessageDialog(null,
 						"Please Enter Valid UserName", "ERROR",
 						JOptionPane.ERROR_MESSAGE);
-				Username = "";
-				Password = "";
+				username = "";
+				password = "";
 			}
 		} catch (Exception ex) {
 			System.out.println(ex.getMessage());
@@ -98,14 +85,8 @@ public class LoginPanel extends JPanel implements ActionListener {
 							"You do not have permissions. \n Please Send an email to:\n wikipathways-devel@googlegroups.com",
 							"WikiPathways Login ERROR",
 							JOptionPane.ERROR_MESSAGE);
-			Username = "";
-			Password = "";
+			username = "";
+			password = "";
 		}
 	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-
-	}
-
 }

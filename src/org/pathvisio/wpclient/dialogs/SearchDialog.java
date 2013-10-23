@@ -30,7 +30,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.border.Border;
 import javax.xml.rpc.ServiceException;
 
-import org.pathvisio.desktop.PvDesktop;
 import org.pathvisio.wpclient.FailedConnectionException;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.pathvisio.wpclient.panels.KeywordSearchPanel;
@@ -40,50 +39,47 @@ import org.pathvisio.wpclient.panels.XrefSearchPanel;
 
 public class SearchDialog extends JDialog {
 	
-	public SearchDialog(PvDesktop desktop,WikiPathwaysClientPlugin plugin) {
-		JDialog d = new JDialog(desktop.getFrame(), "Search WikiPathways",false);
+	public SearchDialog(WikiPathwaysClientPlugin plugin) {
+		JDialog d = new JDialog(plugin.getDesktop().getFrame(), "Search WikiPathways",false);
 
 		try {
 			Search p = new Search(plugin);
-			final CardLayout cards = new CardLayout();
 			d.setLayout(new BorderLayout());
 			Border padBorder = BorderFactory.createEmptyBorder(5, 5, 5, 5);
-			p.setLayout(cards);
+			p.setLayout(new CardLayout());
 			p.setBorder(padBorder);	
 			
 			JScrollPane pnlScroll = new JScrollPane(p);	
 			d.add(pnlScroll);
 			d.pack();	
 			//loading dialog at the centre of the frame
-			d.setLocationRelativeTo(desktop.getSwingEngine().getFrame());
+			d.setLocationRelativeTo(plugin.getDesktop().getSwingEngine().getFrame());
 			d.setVisible(true);
+			
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(d, "Unable to connect to WikiPathways.", "Connection error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
-}
-/**
- *Load Search Dialog with Search and AdvancedSearch in the TabbedPane
- */
-class Search extends JPanel
-{
-	JTabbedPane searchTabbedPane;
-	 
-	public Search(final WikiPathwaysClientPlugin plugin) throws MalformedURLException, RemoteException, ServiceException, FailedConnectionException
-	{
-		KeywordSearchPanel p = new KeywordSearchPanel(plugin);
-		PathwaySearchPanel a = new PathwaySearchPanel(plugin);
-		LiteratureSearchPanel r = new LiteratureSearchPanel(plugin);
-		XrefSearchPanel sp = new XrefSearchPanel(plugin);
-		
-		searchTabbedPane = new JTabbedPane();
-		searchTabbedPane.addTab("KeyWord Search", p);
-		searchTabbedPane.addTab("Pathway Search", a);
-		searchTabbedPane.addTab("Search By Identifier", sp);
-		searchTabbedPane.addTab("References", r);
-		
-		add(searchTabbedPane);
-	}
 	
-
+	/**
+	 *Load Search Dialog with Search and AdvancedSearch in the TabbedPane
+	 */
+	private class Search extends JPanel {
+		private JTabbedPane searchTabbedPane;
+		 
+		public Search(WikiPathwaysClientPlugin plugin) throws MalformedURLException, RemoteException, ServiceException, FailedConnectionException {
+			KeywordSearchPanel p = new KeywordSearchPanel(plugin);
+			PathwaySearchPanel a = new PathwaySearchPanel(plugin);
+			LiteratureSearchPanel r = new LiteratureSearchPanel(plugin);
+			XrefSearchPanel sp = new XrefSearchPanel(plugin);
+			
+			searchTabbedPane = new JTabbedPane();
+			searchTabbedPane.addTab("KeyWord Search", p);
+			searchTabbedPane.addTab("Pathway Search", a);
+			searchTabbedPane.addTab("Search By Identifier", sp);
+			searchTabbedPane.addTab("References", r);
+			
+			add(searchTabbedPane);
+		}
+	}
 }

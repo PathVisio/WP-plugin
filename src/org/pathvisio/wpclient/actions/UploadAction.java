@@ -20,23 +20,24 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
-import org.pathvisio.desktop.PvDesktop;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.pathvisio.wpclient.panels.CreatePathwayPanel;
 
+/**
+ * action that enabled the upload of a new pathway
+ * @author mkutmon, SravanthiSinah
+ */
 public class UploadAction extends AbstractAction {
 
-	private PvDesktop desktop;
 	private WikiPathwaysClientPlugin plugin;
 	
-	public UploadAction(PvDesktop desktop, WikiPathwaysClientPlugin plugin) {
-		this.desktop = desktop;
+	public UploadAction(WikiPathwaysClientPlugin plugin) {
 		this.plugin = plugin;
 	}
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		new CreatePathwayPanel(desktop, plugin);
+		new CreatePathwayPanel(plugin);
 	}
 
 }

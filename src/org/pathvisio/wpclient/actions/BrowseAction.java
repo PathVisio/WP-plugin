@@ -20,7 +20,6 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
-import org.pathvisio.desktop.PvDesktop;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.pathvisio.wpclient.dialogs.BrowseDialog;
 
@@ -32,22 +31,19 @@ import org.pathvisio.wpclient.dialogs.BrowseDialog;
  * and CUrtaion Tags
  * 
  * @author Sravanthi Sinha
- * @author Martina Kutmon
- * @version 1.0
+ * @author mkutmon
  */
 public class BrowseAction extends AbstractAction {
 
-	PvDesktop desktop;
 	private WikiPathwaysClientPlugin plugin;
 
-	public BrowseAction(PvDesktop desktop, WikiPathwaysClientPlugin plugin) {
-		this.desktop = desktop;
+	public BrowseAction(WikiPathwaysClientPlugin plugin) {
 		this.plugin = plugin;
 		putValue(NAME, "Browse");
-		putValue(SHORT_DESCRIPTION, "Browse pathways in Wikipathways");
+		putValue(SHORT_DESCRIPTION, "Browse Pathways in WikiPathways");
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		new BrowseDialog(desktop, plugin);
+		new BrowseDialog(plugin);
 	}
 }
