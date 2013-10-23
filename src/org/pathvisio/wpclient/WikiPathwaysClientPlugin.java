@@ -89,15 +89,17 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 	private PvDesktop desktop;
 	private File tmpDir = new File(GlobalPreference.getPluginDir(), "wpclient-cache");
 	private JMenu uploadMenu, wikipathwaysMenu;
+	private JMenuItem createMenu,updateMenu;
 	
 	public static String revisionno = "";
 	public static String pathwayid = "";
+
+	// handles 
+	private IWPQueries wpQueries;
 	
-	// menu items will only be enabled when pathway is opened
-	private JMenuItem createMenu;
-	private JMenuItem updateMenu;
-	
-	private WPQueries wpQueries;
+	public WikiPathwaysClientPlugin(IWPQueries wpQueries) {
+		this.wpQueries = wpQueries;
+	}
 
 	@Override
 	public void init(PvDesktop desktop) {
@@ -116,7 +118,6 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 			desktop.getSwingEngine().getEngine()
 					.addApplicationEventListener(this);
 			
-			wpQueries = new WPQueries();
 			wpQueries.initialize("http://www.wikipathways.org/wpi/webservice/webservice.php");
 		} catch (Exception e) {
 			Logger.log.error("Error while initializing WikiPathways client", e);
@@ -144,7 +145,7 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 
 	}
 
-	public WPQueries getWpQueries() {
+	public IWPQueries getWpQueries() {
 		return wpQueries;
 	}
 

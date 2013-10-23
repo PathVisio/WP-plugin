@@ -33,14 +33,15 @@ public class Activator implements BundleActivator{
 
 	@Override
 	public void start(BundleContext context) throws Exception {
-		plugin = new WikiPathwaysClientPlugin();
-		context.registerService(Plugin.class.getName(), plugin, null);
-		
 		// provide API for wikipathways queries
 		// other plugins that depend on this plugin can use this API to
 		// query data on wikipathways
 		IWPQueries wpQueries = new WPQueries();
 		context.registerService(IWPQueries.class.getName(), wpQueries, null);
+		
+		// register plugin so it will be initialized by PathVisio
+		plugin = new WikiPathwaysClientPlugin(wpQueries);
+		context.registerService(Plugin.class.getName(), plugin, null);
 	}
 
 	@Override
