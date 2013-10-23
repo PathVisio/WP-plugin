@@ -23,6 +23,7 @@ import java.rmi.RemoteException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -34,27 +35,49 @@ import org.pathvisio.wpclient.FailedConnectionException;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.pathvisio.wpclient.panels.BrowsePanel;
 
-public class BrowseDialog extends JDialog {
+public class BrowseDialog {
 
-	public BrowseDialog(PvDesktop desktop, WikiPathwaysClientPlugin plugin) throws RemoteException, MalformedURLException, ServiceException, FailedConnectionException {
-
-		Browse p = new Browse(desktop, plugin);
-		final CardLayout cards = new CardLayout();
-		JDialog d = new JDialog(desktop.getFrame(), "Browse WikiPathways",
-				false);
-	
-		
-		d.setLayout(new BorderLayout());
-		Border padBorder = BorderFactory.createEmptyBorder(5, 5, 5, 5);
-		p.setLayout(cards);
-		p.setBorder(padBorder);	
-		
-		JScrollPane pnlScroll = new JScrollPane(p);	
-		d.add(pnlScroll);
-		d.pack();	
-		//loading dialog at the centre of the frame
-		d.setLocationRelativeTo(desktop.getSwingEngine().getFrame());
-		d.setVisible(true);
+	public BrowseDialog(PvDesktop desktop, WikiPathwaysClientPlugin plugin) {
+		JDialog d = new JDialog(desktop.getFrame(), "Browse WikiPathways", false);
+		Browse p;
+		try {
+			p = new Browse(desktop, plugin);
+			d.setLayout(new BorderLayout());
+			Border padBorder = BorderFactory.createEmptyBorder(5, 5, 5, 5);
+			p.setLayout(new CardLayout());
+			p.setBorder(padBorder);	
+			
+			JScrollPane pnlScroll = new JScrollPane(p);	
+			d.add(pnlScroll);
+			d.pack();	
+			//loading dialog at the centre of the frame
+			d.setLocationRelativeTo(desktop.getSwingEngine().getFrame());
+			d.setVisible(true);
+		} catch (RemoteException e) {
+			JOptionPane.showMessageDialog(d,
+				    "Can not connect to WikiPathways webservice.",
+				    "Connection error",
+				    JOptionPane.ERROR_MESSAGE);
+			d.setVisible(false);
+		} catch (MalformedURLException e) {
+			JOptionPane.showMessageDialog(d,
+				    "Can not connect to WikiPathways webservice.\nInvalid URL.",
+				    "Connection error",
+				    JOptionPane.ERROR_MESSAGE);
+			d.setVisible(false);
+		} catch (ServiceException e) {
+			JOptionPane.showMessageDialog(d,
+				    "Can not connect to WikiPathways webservice.",
+				    "Connection error",
+				    JOptionPane.ERROR_MESSAGE);
+			d.setVisible(false);
+		} catch (FailedConnectionException e) {
+			JOptionPane.showMessageDialog(d,
+				    "Can not connect to WikiPathways webservice.",
+				    "Connection error",
+				    JOptionPane.ERROR_MESSAGE);
+			d.setVisible(false);
+		}
 	}
 
 }

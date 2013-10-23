@@ -87,88 +87,85 @@ public class BrowsePanel extends JPanel {
 	private JPanel thisPanel;
 	private JLabel lblNumFound;
 
-	public BrowsePanel(final WikiPathwaysClientPlugin plugin) throws RemoteException, MalformedURLException, ServiceException, FailedConnectionException {
+	public BrowsePanel(final WikiPathwaysClientPlugin plugin) throws RemoteException, FailedConnectionException {
 		this.plugin = plugin;
 		this.thisPanel = this;
 		
 		curationTags = new HashMap<String, String>();
 		collectionTags = new HashMap<String, String>();
 		tagImages = new HashMap<String, String>();
-		
+
 		List<String> organisms = retrieveOrgansims();
 		setUpCurationTags();
-		
+			
 		this.setLayout(new BorderLayout());
-
+	
 		// Browse Option Combo boxes
 		organismOpt = new JComboBox(organisms.toArray());
 		organismOpt.setSelectedItem(Organism.HomoSapiens.latinName());
-
+	
 		collOpt = new JComboBox(getCollectionTags().toArray());
 		collOpt.setSelectedItem("All pathways");
 		
 		curationOpt = new JComboBox(getCurationTags().toArray());
 		curationOpt.setSelectedItem("All tags");
-		
+			
 		DefaultFormBuilder idOptBuilder = new DefaultFormBuilder(new FormLayout("right:pref, 3dlu,right:pref"));
 		idOptBuilder.append(organismOpt);
-		
+			
 		DefaultFormBuilder colOptBuilder = new DefaultFormBuilder(new FormLayout("right:pref, 3dlu,right:pref"));
 		colOptBuilder.append(collOpt);
-		
+			
 		DefaultFormBuilder curationOptBuilder = new DefaultFormBuilder(	new FormLayout("right:pref, 3dlu,right:pref"));
 		curationOptBuilder.append(curationOpt);
-
-		// Browse annotation labels
+	
+			// Browse annotation labels
 		JPanel opts = new JPanel();
 		opts.setLayout(new CardLayout());
 		JPanel idOpt = idOptBuilder.getPanel();
 		opts.add(idOpt, "Species");
 		JLabel speciesLabel = new JLabel("Species:");
-
+	
 		JPanel opts2 = new JPanel();
 		opts2.setLayout(new CardLayout());
 		JPanel collOptBuilder = colOptBuilder.getPanel();
 		opts2.add(collOptBuilder, "Collections");
 		JLabel collectionLabel = new JLabel("Collection:");
-
+	
 		JPanel opts4 = new JPanel();
 		opts4.setLayout(new CardLayout());
 		JPanel curOpt = curationOptBuilder.getPanel();
 		opts4.add(curOpt, "Curation");
 		JLabel curationTagLabel = new JLabel("Curation Tag:");
-		
+			
 		// NORTH PANEL = SETTINGS
 		JPanel browseOptBox = new JPanel();
 		FormLayout layout = new FormLayout("left:pref,6dlu,left:pref,6dlu,left:pref,6dlu,left:pref,6dlu,left:pref,6dlu","p,20dlu");
 		CellConstraints cc = new CellConstraints();
-
+	
 		browseOptBox.setLayout(layout);
 		browseOptBox.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),"Browse options"));
 		browseOptBox.add(speciesLabel, cc.xy(1, 1));
 		browseOptBox.add(opts, cc.xy(1, 2));
 		browseOptBox.add(collectionLabel, cc.xy(3, 1));
 		browseOptBox.add(opts2, cc.xy(3, 2));
-
+	
 		browseOptBox.add(curationTagLabel, cc.xy(5, 1));
 		browseOptBox.add(opts4, cc.xy(5, 2));
 		JButton browseButton = new JButton(browseAction);
-
-		browseOptBox.add(browseButton, cc.xy(7, 2));
-		add(browseOptBox, BorderLayout.CENTER);
-
 	
+		browseOptBox.add(browseButton, cc.xy(7, 2));
 		add(browseOptBox, BorderLayout.NORTH);
-
+	
 		// CENTER PANEL = RESULT TABLE
 		resultTable = new JTable();
 		resultspane = new JScrollPane(resultTable);
 		add(resultspane, BorderLayout.CENTER);
-		
+			
 		// SOUTH PANEL = STATUS 
 		lblNumFound = new JLabel();
 		add(lblNumFound, BorderLayout.SOUTH);
-		
+			
 		resultTable.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
@@ -179,7 +176,7 @@ public class BrowsePanel extends JPanel {
 
 					File tmpDir = new File(plugin.getTmpDir(), new Timestamp(new java.util.Date().getTime()).toString());
 					tmpDir.mkdirs();
-
+	
 					try  {
 						plugin.openPathwayWithProgress(WikiPathwaysClientPlugin.loadClient(),model.getValueAt(row, 0).toString(), 0, tmpDir);
 					} catch (Exception ex) {
@@ -189,6 +186,7 @@ public class BrowsePanel extends JPanel {
 				}
 			}
 		});
+
 	}
 	
 	Action browseAction = new AbstractAction("Browse") {
