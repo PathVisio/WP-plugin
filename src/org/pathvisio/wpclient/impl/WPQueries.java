@@ -27,12 +27,14 @@ import java.util.Set;
 import javax.xml.rpc.ServiceException;
 
 import org.bridgedb.bio.Organism;
+import org.pathvisio.core.preferences.PreferenceManager;
 import org.pathvisio.core.util.ProgressKeeper;
 import org.pathvisio.wikipathways.webservice.WSCurationTag;
 import org.pathvisio.wikipathways.webservice.WSPathwayInfo;
 import org.pathvisio.wikipathways.webservice.WSSearchResult;
 import org.pathvisio.wpclient.FailedConnectionException;
 import org.pathvisio.wpclient.IWPQueries;
+import org.pathvisio.wpclient.preferences.URLPreference;
 import org.wikipathways.client.WikiPathwaysClient;
 
 
@@ -45,22 +47,17 @@ import org.wikipathways.client.WikiPathwaysClient;
  *
  */
 public class WPQueries implements IWPQueries {
-
-	private WikiPathwaysClient client;
-	private static String DEFAULT_URL = "http://www.wikipathways.org/wpi/webservice/webservice.php";
-	
-	/**
-	 * can be used to change the client URL
-	 */
-	@Override
-	public void initialize(String url) throws FailedConnectionException {
+		
+	private WikiPathwaysClient getClient() throws FailedConnectionException {
+		WikiPathwaysClient client;
 		try {
-			client = new WikiPathwaysClient(new URL(url));
-		} catch (ServiceException e) {
-			throw new FailedConnectionException("Cannot connect to WikiPathways webservice");
+			client = new WikiPathwaysClient(new URL(PreferenceManager.getCurrent().get(URLPreference.CONNECTION_URL)));
 		} catch (MalformedURLException e) {
-			throw new FailedConnectionException("Invalid URL");
+			throw new FailedConnectionException("Can not connect to WikiPathways.");
+		} catch (ServiceException e) {
+			throw new FailedConnectionException("Can not connect to WikiPathways.");
 		}
+		return client;
 	}
 	
 	/**
@@ -68,7 +65,7 @@ public class WPQueries implements IWPQueries {
 	 */
 	@Override
 	public Set<WSPathwayInfo> browseAll(ProgressKeeper pk) throws RemoteException, FailedConnectionException {
-		if(client == null) initialize(DEFAULT_URL);
+		WikiPathwaysClient client = getClient();
 		Set<WSPathwayInfo> set = new HashSet<WSPathwayInfo>();
 
 		if(pk != null) pk.setTaskName("Browsing WikiPathways");
@@ -83,7 +80,7 @@ public class WPQueries implements IWPQueries {
 	 */
 	@Override
 	public Set<WSPathwayInfo> browseByOrganism(Organism organism, ProgressKeeper pk) throws RemoteException, FailedConnectionException {
-		if(client == null) initialize(DEFAULT_URL);
+		WikiPathwaysClient client = getClient();
 		Set<WSPathwayInfo> set = new HashSet<WSPathwayInfo>();
 
 		if(pk != null) pk.setTaskName("Browse WikiPathways");
@@ -100,7 +97,7 @@ public class WPQueries implements IWPQueries {
 	 */
 	@Override
 	public Set<WSPathwayInfo> browseByCurationTag(String curationTag, ProgressKeeper pk) throws RemoteException, FailedConnectionException {
-		if(client == null) initialize(DEFAULT_URL);
+		WikiPathwaysClient client = getClient();
 		Set<WSPathwayInfo> set = new HashSet<WSPathwayInfo>();
 
 		if(pk != null) pk.setTaskName("Browse WikiPathways");
@@ -120,7 +117,7 @@ public class WPQueries implements IWPQueries {
 	 */
 	@Override
 	public Set<WSPathwayInfo> browseByOrganismAndCurationTag(Organism organism, String curationTag, ProgressKeeper pk) throws RemoteException, FailedConnectionException {
-		if(client == null) initialize(DEFAULT_URL);
+		WikiPathwaysClient client = getClient();
 		Set<WSPathwayInfo> set = new HashSet<WSPathwayInfo>();
 		
 		if(pk != null) pk.setTaskName("Browse WikiPathways");
@@ -142,7 +139,7 @@ public class WPQueries implements IWPQueries {
 	 */
 	@Override
 	public List<String> listOrganisms(ProgressKeeper pk) throws RemoteException, FailedConnectionException {
-		if(client == null) initialize(DEFAULT_URL);
+		WikiPathwaysClient client = getClient();
 		
 		if(pk != null) pk.setTaskName("Test connection to WikiPathways");
 		if(pk != null) pk.report("Get list of organisms from WikiPathways");
@@ -155,7 +152,7 @@ public class WPQueries implements IWPQueries {
 	 */
 	@Override
 	public Set<WSCurationTag> getCurationTags(String pwId, ProgressKeeper pk) throws RemoteException, FailedConnectionException {
-		if(client == null) initialize(DEFAULT_URL);
+		WikiPathwaysClient client = getClient();
 		
 		if(pk != null) pk.setTaskName("Retrieve curation tag");
 		if(pk != null) pk.report("Get curation tags for pathway " + pwId);

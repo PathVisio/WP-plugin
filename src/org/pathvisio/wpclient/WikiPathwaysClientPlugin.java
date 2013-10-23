@@ -70,6 +70,7 @@ import org.pathvisio.wpclient.actions.UpdateAction;
 import org.pathvisio.wpclient.actions.UploadAction;
 import org.pathvisio.wpclient.impl.WPQueries;
 import org.pathvisio.wpclient.panels.PathwayPanel;
+import org.pathvisio.wpclient.preferences.URLPreference;
 import org.pathvisio.wpclient.utils.FileUtils;
 import org.wikipathways.client.WikiPathwaysClient;
 
@@ -117,8 +118,6 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 			// register a listener to notify when a pathway is opened
 			desktop.getSwingEngine().getEngine()
 					.addApplicationEventListener(this);
-			
-			wpQueries.initialize("http://www.wikipathways.org/wpi/webservice/webservice.php");
 		} catch (Exception e) {
 			Logger.log.error("Error while initializing WikiPathways client", e);
 			JOptionPane.showMessageDialog(desktop.getSwingEngine()
@@ -135,33 +134,12 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 		
 		dlg.addPanel(
 				"WikiPathways Plugin",
-				dlg.builder()
-						.booleanField(UrlPreference.USE_TESTSITE,
-								"Use WikiPathways Test Site to Search, Browse, Upload Pathways")
-						.stringField(UrlPreference.TESTSITE_URL, "TestSite:")
-						.build()
-
-		); 
+				dlg.builder().stringField(URLPreference.CONNECTION_URL, "WP webservice URL").build()); 
 
 	}
 
 	public IWPQueries getWpQueries() {
 		return wpQueries;
-	}
-
-	enum UrlPreference implements Preference {
-
-		USE_TESTSITE(Boolean.toString(false)),
-		TESTSITE_URL(new String("test2"));
-		UrlPreference(String defaultValue) {
-			this.defaultValue = defaultValue;
-		}
-
-		private String defaultValue;
-
-		public String getDefault() {
-			return defaultValue;
-		}
 	}
 
 	public File getTmpDir() {
@@ -227,20 +205,7 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 
 	public static WikiPathwaysClient loadClient() throws MalformedURLException,
 			ServiceException {
-		String testsite=PreferenceManager.getCurrent().get(UrlPreference.TESTSITE_URL);
-			// TODO: if preferences get changed - set client to null!!!!
-			if (PreferenceManager.getCurrent().getBoolean(
-					UrlPreference.USE_TESTSITE)) {
-				client = new WikiPathwaysClient(
-						new URL(
-								"http://"+testsite+".wikipathways.org/wpi/webservice/webservice.php"));
-			} else {
-				client = new WikiPathwaysClient(
-						new URL(
-								"http://www.wikipathways.org/wpi/webservice/webservice.php"));
-			}
-
-		
+		client = new WikiPathwaysClient(new URL(PreferenceManager.getCurrent().get(URLPreference.CONNECTION_URL)));
 		return client;
 	}
 

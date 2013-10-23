@@ -16,19 +16,15 @@
 //
 package org.pathvisio.wpclient;
 
-import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Set;
-
-import javax.xml.rpc.ServiceException;
 
 import org.bridgedb.bio.Organism;
 import org.pathvisio.core.util.ProgressKeeper;
 import org.pathvisio.wikipathways.webservice.WSCurationTag;
 import org.pathvisio.wikipathways.webservice.WSPathwayInfo;
 import org.pathvisio.wikipathways.webservice.WSSearchResult;
-import org.wikipathways.client.WikiPathwaysClient;
 
 /**
  * 
@@ -39,11 +35,6 @@ import org.wikipathways.client.WikiPathwaysClient;
  *
  */
 public interface IWPQueries {
-
-	// which wikipathways webservice should be used
-	// main site: http://www.wikipathways.org/wpi/webservice/webservice.php
-	// returns true if successful
-	public void initialize(String url) throws FailedConnectionException;
 	
 	public List<String> listOrganisms (ProgressKeeper pk) throws RemoteException, FailedConnectionException;
 	
