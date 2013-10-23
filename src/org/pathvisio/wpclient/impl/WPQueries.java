@@ -49,6 +49,9 @@ public class WPQueries implements IWPQueries {
 	private WikiPathwaysClient client;
 	private static String DEFAULT_URL = "http://www.wikipathways.org/wpi/webservice/webservice.php";
 	
+	/**
+	 * can be used to change the client URL
+	 */
 	@Override
 	public void initialize(String url) throws FailedConnectionException {
 		try {
@@ -60,29 +63,31 @@ public class WPQueries implements IWPQueries {
 		}
 	}
 	
+	/**
+	 * retrieves all pathways from wikipathways
+	 */
 	@Override
 	public Set<WSPathwayInfo> browseAll(ProgressKeeper pk) throws RemoteException, FailedConnectionException {
-		System.out.println(client);
 		if(client == null) initialize(DEFAULT_URL);
-		System.out.println(client);
 		Set<WSPathwayInfo> set = new HashSet<WSPathwayInfo>();
 
-		pk.setTaskName("Browsing WikiPathways");
+		if(pk != null) pk.setTaskName("Browsing WikiPathways");
 		WSPathwayInfo[] result = client.listPathways();
 		set.addAll(Arrays.asList(result));
 		
 		return set;
 	}
 
+	/**
+	 * retrieves all pathways for one organism from wikipathways
+	 */
 	@Override
 	public Set<WSPathwayInfo> browseByOrganism(Organism organism, ProgressKeeper pk) throws RemoteException, FailedConnectionException {
-		System.out.println(client);
-
 		if(client == null) initialize(DEFAULT_URL);
 		Set<WSPathwayInfo> set = new HashSet<WSPathwayInfo>();
 
-		pk.setTaskName("Browse WikiPathways");
-		pk.report("Get pathways for species " + organism.latinName());
+		if(pk != null) pk.setTaskName("Browse WikiPathways");
+		if(pk != null) pk.report("Get pathways for species " + organism.latinName());
 		
 		WSPathwayInfo[] result = client.listPathways(organism);
 		set.addAll(Arrays.asList(result));
@@ -90,13 +95,16 @@ public class WPQueries implements IWPQueries {
 		return set;
 	}
 
+	/**
+	 * retrieves all pathways tags with a curation tag from wikipathways
+	 */
 	@Override
 	public Set<WSPathwayInfo> browseByCurationTag(String curationTag, ProgressKeeper pk) throws RemoteException, FailedConnectionException {
 		if(client == null) initialize(DEFAULT_URL);
 		Set<WSPathwayInfo> set = new HashSet<WSPathwayInfo>();
 
-		pk.setTaskName("Browse WikiPathways");
-		pk.report("Get pathways with curation tag: " + curationTag);
+		if(pk != null) pk.setTaskName("Browse WikiPathways");
+		if(pk != null) pk.report("Get pathways with curation tag: " + curationTag);
 		
 		WSCurationTag[] result = client.getCurationTagsByName(curationTag);
 		for (WSCurationTag tag : result) {
@@ -106,17 +114,19 @@ public class WPQueries implements IWPQueries {
 		return set;
 	}
 
+	/**
+	 * retrieves all pathways from a specific organism that are tags with 
+	 * a sepcific curation tag from wikipathways
+	 */
 	@Override
 	public Set<WSPathwayInfo> browseByOrganismAndCurationTag(Organism organism, String curationTag, ProgressKeeper pk) throws RemoteException, FailedConnectionException {
-		System.out.println(client);
 		if(client == null) initialize(DEFAULT_URL);
 		Set<WSPathwayInfo> set = new HashSet<WSPathwayInfo>();
 		
-		pk.setTaskName("Browse WikiPathways");
-		pk.report("Get pathways with curation tag " + curationTag);
+		if(pk != null) pk.setTaskName("Browse WikiPathways");
+		if(pk != null) pk.report("Get pathways with curation tag " + curationTag);
 		Set<WSPathwayInfo> pwyCurTag = browseByCurationTag(curationTag,pk);
-		System.out.println(pwyCurTag);
-		pk.report("Filter pathways for species " + organism.latinName());
+		if(pk != null) pk.report("Filter pathways for species " + organism.latinName());
 		
 		for (WSPathwayInfo info : pwyCurTag) {
 			if (info.getSpecies().equals(organism.latinName())) {
@@ -127,6 +137,9 @@ public class WPQueries implements IWPQueries {
 		return set;
 	}
 
+	/**
+	 * retrieves a list of organisms from wikipathways
+	 */
 	@Override
 	public List<String> listOrganisms(ProgressKeeper pk) throws RemoteException, FailedConnectionException {
 		if(client == null) initialize(DEFAULT_URL);
@@ -137,6 +150,9 @@ public class WPQueries implements IWPQueries {
 		return Arrays.asList(organisms);
 	}
 	
+	/**
+	 * retrieves a list of curation tags for a specific pathway
+	 */
 	@Override
 	public Set<WSCurationTag> getCurationTags(String pwId, ProgressKeeper pk) throws RemoteException, FailedConnectionException {
 		if(client == null) initialize(DEFAULT_URL);
