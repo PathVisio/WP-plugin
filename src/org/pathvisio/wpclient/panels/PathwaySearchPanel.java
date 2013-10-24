@@ -223,12 +223,12 @@ public class PathwaySearchPanel extends JPanel {
 				resultTable.setRowSorter(new TableRowSorter(resultTable.getModel()));
 				lblNumFound.setText(sw.get().length + " pathways found.");
 			} else {
-				JOptionPane.showMessageDialog(null,
+				JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(),
 						"Please Enter a Valid Title", "ERROR",
 						JOptionPane.ERROR_MESSAGE);
 			}
 		} else {
-			JOptionPane.showMessageDialog(null, "Please Enter a Search Query",
+			JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(), "Please Enter a Search Query",
 					"ERROR", JOptionPane.ERROR_MESSAGE);
 		}
 	}
@@ -283,12 +283,12 @@ public class PathwaySearchPanel extends JPanel {
 				resultTable.setRowSorter(new TableRowSorter(resultTable.getModel()));
 				lblNumFound.setText(sw.get().length + " pathways found.");
 			} else {
-				JOptionPane.showMessageDialog(null,
+				JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(),
 						"Please Enter a Valid ID", "Error",
 						JOptionPane.ERROR_MESSAGE);
 			}
 		} else {
-			JOptionPane.showMessageDialog(null, "Please Enter a Search Query",
+			JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(), "Please Enter a Search Query",
 					"Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}

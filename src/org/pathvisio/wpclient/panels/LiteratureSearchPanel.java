@@ -179,7 +179,7 @@ public class LiteratureSearchPanel extends JPanel {
 					protected void done() {
 						if(!pk.isCancelled()) {
 							if(results.length == 0) {
-								 JOptionPane.showMessageDialog(null,"0 results found");
+								 JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(),"0 results found");
 							}
 						} else if(pk.isCancelled()) {
 							pk.finished();
@@ -194,10 +194,10 @@ public class LiteratureSearchPanel extends JPanel {
 				resultTable.setRowSorter(new TableRowSorter(resultTable.getModel()));
 				lblNumFound.setText(sw.get().length + " pathways found.");
 			} else {
-				JOptionPane.showMessageDialog(null, "Please Enter a Valid Query","Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(), "Please Enter a Valid Query","Error", JOptionPane.ERROR_MESSAGE);
 			}
 		} else {
-			JOptionPane.showMessageDialog(null, "Please Enter a Search Query","Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(), "Please Enter a Search Query","Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 

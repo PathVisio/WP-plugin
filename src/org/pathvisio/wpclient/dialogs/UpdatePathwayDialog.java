@@ -23,6 +23,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
+import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -34,6 +35,7 @@ import javax.swing.JTextArea;
 import javax.xml.rpc.ServiceException;
 
 import org.pathvisio.core.model.Pathway;
+import org.pathvisio.wikipathways.webservice.WSCurationTag;
 import org.pathvisio.wikipathways.webservice.WSPathwayInfo;
 import org.pathvisio.wpclient.FailedConnectionException;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
@@ -139,12 +141,50 @@ public class UpdatePathwayDialog implements ActionListener {
 			String newrevision=wsPathwayInfo.getRevision();
 			
 			if(WikiPathwaysClientPlugin.revisionno.equals(newrevision)) {
+
+				boolean curTagActive = false;
+				boolean feaTagActive = false;
+				boolean updateCurTag = false;
+				boolean updateFeaTag = false;
+				Set<WSCurationTag> tags = plugin.getWpQueries().getCurationTags(WikiPathwaysClientPlugin.pathwayid, null);
+				for(WSCurationTag tag : tags) {
+					if(tag.getName().equals("Curation:AnalysisCollection")) {
+						if(tag.getRevision().equals(WikiPathwaysClientPlugin.revisionno)) {
+							curTagActive = true;
+						}
+					} else if (tag.getName().equals("Curation:FeaturedPathway")) {
+						if(tag.getRevision().equals(WikiPathwaysClientPlugin.revisionno)) {
+							feaTagActive = true;
+						}
+					}
+				}
+				if(curTagActive || feaTagActive) {
+					int n = JOptionPane.showConfirmDialog(
+							plugin.getDesktop().getFrame(),
+						    "Do you want to update the Curated/Featured Collection tag?",
+						    "Tag update",
+						    JOptionPane.YES_NO_OPTION);
+					if(n == JOptionPane.YES_OPTION) {
+						if(curTagActive) {
+							updateCurTag = true;
+						}
+						if(feaTagActive) {
+							updateFeaTag = true;
+						}
+					}
+				}
 				plugin.getWpQueries().updatePathway(pathway, WikiPathwaysClientPlugin.pathwayid, Integer.parseInt(WikiPathwaysClientPlugin.revisionno), description.getText());
-				JOptionPane.showMessageDialog(null,
-					"The pathway is updated");
+				if(updateCurTag) {
+					plugin.getWpQueries().updateCurationTag("Curation:AnalysisCollection", WikiPathwaysClientPlugin.pathwayid, "");
+				}
+				if(updateFeaTag) {
+					plugin.getWpQueries().updateCurationTag("Curation:FeaturedPathway", WikiPathwaysClientPlugin.pathwayid, "");
+				}
+				
+				JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(), "The pathway is updated");
 			}
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null,
+			JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(),
 				"Error While creating a pathway", "ERROR",
 					JOptionPane.ERROR_MESSAGE);
 		}		

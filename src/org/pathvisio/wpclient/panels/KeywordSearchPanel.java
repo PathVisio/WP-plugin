@@ -232,7 +232,7 @@ public class KeywordSearchPanel extends JPanel {
 				protected void done() {
 					if (!pk.isCancelled()) {
 						if (results.length == 0) {
-							JOptionPane.showMessageDialog(null,
+							JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(),
 									"0 results found");
 						}
 					} else if (pk.isCancelled()) {

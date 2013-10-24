@@ -71,7 +71,7 @@ public class LoginPanel extends JPanel {
 					password = "";
 				}
 			} else {
-				JOptionPane.showMessageDialog(null,
+				JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(),
 						"Please Enter Valid UserName", "ERROR",
 						JOptionPane.ERROR_MESSAGE);
 				username = "";
@@ -81,7 +81,7 @@ public class LoginPanel extends JPanel {
 			System.out.println(ex.getMessage());
 			JOptionPane
 					.showMessageDialog(
-							null,
+							plugin.getDesktop().getFrame(),
 							"You do not have permissions. \n Please Send an email to:\n wikipathways-devel@googlegroups.com",
 							"WikiPathways Login ERROR",
 							JOptionPane.ERROR_MESSAGE);

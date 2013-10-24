@@ -131,13 +131,13 @@ public class CreatePathwayPanel extends JPanel implements ActionListener {
 			Pathway pathway = plugin.getDesktop().getSwingEngine().getEngine().getActivePathway();
 			WSPathwayInfo l = plugin.getWpQueries().uploadPathway(pathway);
 			plugin.getWpQueries().updateCurationTag( "Curation:UnderConstruction", l.getId(), "");
-			JOptionPane.showMessageDialog(null,
+			JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(),
 					"The Pathway " + l.getId() + " has been Uploaded. \n With Curation Tag : Under Construction. \n Please Update the Curation Tag.");
 						WikiPathwaysClientPlugin.revisionno =l.getRevision();
 						WikiPathwaysClientPlugin.pathwayid = l.getId();
 
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null,
+			JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(),
 					"Error While creating a pathway", "ERROR",
 					JOptionPane.ERROR_MESSAGE);
 		}

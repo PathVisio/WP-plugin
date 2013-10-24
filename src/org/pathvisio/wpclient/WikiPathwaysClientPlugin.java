@@ -131,7 +131,6 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 		
 		dlg.addPanel("WikiPathways Plugin",
 			dlg.builder().stringField(URLPreference.CONNECTION_URL, "WP webservice URL").build()); 
-
 	}
 
 	
@@ -241,7 +240,7 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 					openPathway(id, rev, tmpDir);
 				} catch (Exception e) {
 					Logger.log.error("The Pathway is not found", e);
-					JOptionPane.showMessageDialog(null,
+					JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(),
 							"The Pathway is not found", "ERROR",
 							JOptionPane.ERROR_MESSAGE);
 				} finally {
@@ -276,7 +275,7 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 					openPathway(id, rev, tmpDir, xrefs);
 				} catch (Exception e) {
 					Logger.log.error("The Pathway is not found", e);
-					JOptionPane.showMessageDialog(null,
+					JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(),
 							"The Pathway is not found", "ERROR",
 							JOptionPane.ERROR_MESSAGE);
 				} finally {
@@ -405,7 +404,7 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 					openPathwayXref(x, rev, tmpDir);
 				} catch (Exception e) {
 					Logger.log.error("The Pathway is not found", e);
-					JOptionPane.showMessageDialog(null,
+					JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(),
 							"The Pathway is not found", "ERROR",
 							JOptionPane.ERROR_MESSAGE);
 				} finally {
