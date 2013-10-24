@@ -225,14 +225,7 @@ public class WPQueries implements IWPQueries {
 	@Override
 	public WSPathwayInfo uploadPathway(Pathway pathway) throws RemoteException, FailedConnectionException, ConverterException {
 		WikiPathwaysClient client = getClient();
-		try{
-			WSPathwayInfo info = client.createPathway(pathway);
-			System.out.println(info.getId() + "\t" + info.getName());
-			return info;
-		} catch(RemoteException e) {
-			e.printStackTrace();
-		}
-		return null;
+		return client.createPathway(pathway);
 	}
 	
 	/**
