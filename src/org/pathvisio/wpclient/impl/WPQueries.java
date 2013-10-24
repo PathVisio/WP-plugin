@@ -241,11 +241,11 @@ public class WPQueries implements IWPQueries {
 	 * updates a curation tag of a specific pathway
 	 */
 	@Override
-	public void updateCurationTag(String tag, String id, String description)
+	public void updateCurationTag(String tag, String id, String description, int revision)
 			throws RemoteException, FailedConnectionException,
 			ConverterException {
 		WikiPathwaysClient client = getClient();
-		client.saveCurationTag(id, tag, description);
+		client.saveCurationTag(id, tag, description, revision);
 	}
 
 	/**

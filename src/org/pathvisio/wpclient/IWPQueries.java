@@ -67,8 +67,7 @@ public interface IWPQueries {
 
 	public void updatePathway(Pathway pathway, String id, Integer revision, String description) throws RemoteException, FailedConnectionException, ConverterException;
 
-	public void updateCurationTag(String tag, String id, String description) throws RemoteException, FailedConnectionException, ConverterException;
-
+	public void updateCurationTag(String tag, String id, String description, int revision) throws RemoteException, FailedConnectionException, ConverterException;
 	public WSPathwayInfo getPathwayInfo(String id, ProgressKeeper pk) throws RemoteException, FailedConnectionException, ConverterException;
 
 	public WSSearchResult[] findByXref(Xref[] xrefs, ProgressKeeper pk) throws RemoteException, FailedConnectionException, ConverterException;

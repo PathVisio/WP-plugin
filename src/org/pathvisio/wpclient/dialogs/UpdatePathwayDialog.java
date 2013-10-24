@@ -174,11 +174,12 @@ public class UpdatePathwayDialog implements ActionListener {
 					}
 				}
 				plugin.getWpQueries().updatePathway(pathway, WikiPathwaysClientPlugin.pathwayid, Integer.parseInt(WikiPathwaysClientPlugin.revisionno), description.getText());
+				WSPathwayInfo info = plugin.getWpQueries().getPathwayInfo(WikiPathwaysClientPlugin.pathwayid, null);
 				if(updateCurTag) {
-					plugin.getWpQueries().updateCurationTag("Curation:AnalysisCollection", WikiPathwaysClientPlugin.pathwayid, "");
+					plugin.getWpQueries().updateCurationTag("Curation:AnalysisCollection", WikiPathwaysClientPlugin.pathwayid, "", Integer.parseInt(info.getRevision()));
 				}
 				if(updateFeaTag) {
-					plugin.getWpQueries().updateCurationTag("Curation:FeaturedPathway", WikiPathwaysClientPlugin.pathwayid, "");
+					plugin.getWpQueries().updateCurationTag("Curation:FeaturedPathway", WikiPathwaysClientPlugin.pathwayid, "", Integer.parseInt(info.getRevision()));
 				}
 				
 				JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(), "The pathway is updated");
