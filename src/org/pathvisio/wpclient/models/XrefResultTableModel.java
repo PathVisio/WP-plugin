@@ -18,7 +18,7 @@ package org.pathvisio.wpclient.models;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.pathvisio.wpclient.WSResult;
+import org.pathvisio.wpclient.impl.WSResult;
 
 /**
  * This class creates the ResultTableModel 
@@ -28,7 +28,7 @@ import org.pathvisio.wpclient.WSResult;
  */
 public class XrefResultTableModel extends AbstractTableModel {
 	WSResult[] results;
-	String[] columnNames = new String[] { "ID", "Name", "Species","No.of Genes" };
+	String[] columnNames = new String[] { "ID", "Name", "Species","Gene Count" };
 
 	public XrefResultTableModel(WSResult[] results) {
 		this.results = results;

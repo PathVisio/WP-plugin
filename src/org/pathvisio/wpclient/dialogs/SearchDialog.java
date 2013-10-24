@@ -25,7 +25,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.border.Border;
 import javax.xml.rpc.ServiceException;
@@ -49,8 +48,7 @@ public class SearchDialog extends JDialog {
 			p.setLayout(new CardLayout());
 			p.setBorder(padBorder);	
 			
-			JScrollPane pnlScroll = new JScrollPane(p);	
-			d.add(pnlScroll);
+			d.add(p);
 			d.pack();	
 			//loading dialog at the centre of the frame
 			d.setLocationRelativeTo(plugin.getDesktop().getSwingEngine().getFrame());

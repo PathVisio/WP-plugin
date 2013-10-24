@@ -25,7 +25,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.border.Border;
 import javax.xml.rpc.ServiceException;
 
@@ -48,8 +47,7 @@ public class BrowseDialog {
 			browsePanel.setLayout(new CardLayout());
 			browsePanel.setBorder(padBorder);	
 			
-			JScrollPane pnlScroll = new JScrollPane(browsePanel);	
-			dialog.add(pnlScroll);
+			dialog.add(browsePanel);
 			dialog.pack();	
 			//loading dialog at the centre of the frame
 			dialog.setLocationRelativeTo(plugin.getDesktop().getSwingEngine().getFrame());

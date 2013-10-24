@@ -221,7 +221,7 @@ public class PathwaySearchPanel extends JPanel {
 				d.setVisible(true);
 				resultTable.setModel(new ResultTableModel(sw.get()));
 				resultTable.setRowSorter(new TableRowSorter(resultTable.getModel()));
-				lblNumFound.setText(" No.of results found: "+sw.get().length);
+				lblNumFound.setText(sw.get().length + " pathways found.");
 			} else {
 				JOptionPane.showMessageDialog(null,
 						"Please Enter a Valid Title", "ERROR",

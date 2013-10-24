@@ -25,10 +25,10 @@ import org.pathvisio.wikipathways.webservice.WSSearchResult;
  * @author mkutmon
  *
  */
-public class WSResult {
+public class WSResult implements Comparable<WSResult>{
 	
 	private WSSearchResult wsSearchResult;
-	private int count;
+	private Integer count;
 
 	//////////////////////////////////////
 	// SETTERS & GETTERS
@@ -42,11 +42,16 @@ public class WSResult {
 		this.wsSearchResult = wsSearchResult;
 	}
 
-	public int getCount() {
+	public Integer getCount() {
 		return count;
 	}
 
 	public void setCount(int count) {
 		this.count = count;
+	}
+
+	@Override
+	public int compareTo(WSResult res) {
+		return getCount().compareTo(res.getCount());
 	}
 }

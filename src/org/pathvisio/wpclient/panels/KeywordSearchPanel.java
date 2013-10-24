@@ -247,7 +247,7 @@ public class KeywordSearchPanel extends JPanel {
 			resultTable.setModel(new ResultTableModel(sw.get()));
 			resultTable
 					.setRowSorter(new TableRowSorter(resultTable.getModel()));
-			lblNumFound.setText(" No.of results found: "+sw.get().length);
+			lblNumFound.setText(sw.get().length + " pathways found.");
 		} else {
 			JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(), "Please Enter a Search Query",
 					"Error", JOptionPane.ERROR_MESSAGE);

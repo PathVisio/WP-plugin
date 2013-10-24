@@ -25,10 +25,9 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.AbstractAction;
@@ -54,11 +53,10 @@ import org.pathvisio.gui.DataSourceModel;
 import org.pathvisio.gui.ProgressDialog;
 import org.pathvisio.wikipathways.webservice.WSSearchResult;
 import org.pathvisio.wpclient.FailedConnectionException;
-import org.pathvisio.wpclient.WSResult;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
+import org.pathvisio.wpclient.impl.WSResult;
 import org.pathvisio.wpclient.models.XrefResultTableModel;
 import org.pathvisio.wpclient.utils.FileUtils;
-import org.pathvisio.wpclient.validators.Validator;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -187,7 +185,8 @@ public class XrefSearchPanel extends JPanel {
 		lblNumFound.setText("");
 		pxXref.clear();
 		if (!txtId.getText().isEmpty()) {
-			if(Validator.CheckNonAlphaAllowColon(txtId.getText())) {
+			System.out.println(txtId.getText());
+//			if(Validator.CheckNonAlphaAllowColon(txtId.getText())) {
 
 				final ProgressKeeper pk = new ProgressKeeper();
 				final ProgressDialog d = new ProgressDialog(JOptionPane.getFrameForComponent(this), "", pk, true, true);
@@ -201,14 +200,11 @@ public class XrefSearchPanel extends JPanel {
 	
 						try {
 							String[] xrefids = txtId.getText().split("\n");
-	
+						
 							if (xrefids.length < 6) {
-								// DataSource ds = DataSource.getByFullName("" +
-								// cbSyscode.getSelectedItem());
-								int i = 0;
-								for (; i < xrefids.length; i++) {
-									String p[] = xrefids[i].split(":");
-	
+								int count = 0;
+								for (String x : xrefids) {
+									String p[] = x.split(":");
 									if (p.length == 2) {
 										DataSource ds =DataSource.getBySystemCode(p[0]);
 										pxXref.add(new Xref(p[1], ds));
@@ -220,15 +216,16 @@ public class XrefSearchPanel extends JPanel {
 										pk.finished();
 										return results;
 									}
+									count++;
 								}
 	
-								xrefs = new Xref[i];
+								xrefs = new Xref[count];
 								pxXref.toArray(xrefs);
 	
 								pk.setTaskName("Searching ");
 								WSSearchResult[] p = plugin.getWpQueries().findByXref(xrefs, pk);
-								pk.setTaskName("Sorting");
-								results = sort(CreateIndexList(p));
+								pk.setTaskName("Sorting result");
+								results = sort(p);
 							} else {
 								JOptionPane.showMessageDialog(XrefSearchPanel.this,
 										" Can have maximum 5 Xrefs ", "Error",
@@ -242,54 +239,32 @@ public class XrefSearchPanel extends JPanel {
 						return results;
 					}
 
-					private WSResult[] sort(Map<WSSearchResult, Integer> map) {
-						WSResult[] finalresults;
-
-						List<WSResult> re = new ArrayList<WSResult>();
-						int max = pxXref.size();
-
-						for (int j = max; j > 0; j--) {
-							for (Entry<WSSearchResult, Integer> entry : map.entrySet()) {
-								if (entry.getValue() == j) { 
-									WSResult wsresult= new WSResult();
-									wsresult.setCount(entry.getValue());
-									wsresult.setWsSearchResult(entry.getKey());
-									re.add(wsresult);
-								}
-							}
-						}
-
-						finalresults = new WSResult[map.size()];
-						re.toArray(finalresults);
-						return finalresults;
-					}
-
-					private Map<WSSearchResult, Integer> CreateIndexList(WSSearchResult[] results) throws RemoteException, FailedConnectionException {
-						Map<String, WSSearchResult> result = new HashMap<String, WSSearchResult>();
-						Map<WSSearchResult, Integer> r = new HashMap<WSSearchResult, Integer>();
-						int count = 0;
-					
-						for (int i = 0; i < results.length; i++) {
-							result.put(results[i].getId(), results[i]);
-						}
-					
-						for (Entry<String, WSSearchResult> entry : result.entrySet()) {
-							String string = (String) entry.getKey();
-							for (int k = 0; k < pxXref.size(); k++) {
-								Xref temp = pxXref.get(k);
-							
-								String [] li = plugin.getWpQueries().getXrefList(string, DataSource.getBySystemCode(temp.getDataSource().getSystemCode()), pk);
-								for (int i = 0; i < li.length; i++) {
-									if (li[i].equalsIgnoreCase(temp.getId())) {
+					private WSResult[] sort(WSSearchResult [] results) throws RemoteException, FailedConnectionException {
+						
+						List<WSResult> result = new ArrayList<WSResult>();
+						for(WSSearchResult res : results) {
+							WSResult wsResult = new WSResult();
+							wsResult.setWsSearchResult(res);
+							int count = 0;
+							for (Xref x : pxXref) {
+								String [] li = plugin.getWpQueries().getXrefList(res.getId(), x.getDataSource(), pk);
+								System.out.println(res.getId() + "\t" + x.getDataSource().getSystemCode() + "\t" + li.length);
+								for(String s : li) {
+									System.out.println(s);
+									if(s.equals(x.getId())) {
 										count++;
-										break;
 									}
 								}
 							}
-							r.put(entry.getValue(), count);
-							count = 0;
+							wsResult.setCount(count);
+							result.add(wsResult);
 						}
-						return r;
+						
+						Collections.sort(result);
+						WSResult [] finalresults = new WSResult[result.size()];
+						finalresults = result.toArray(finalresults);
+						
+						return finalresults;
 					}
 
 					protected void done() {
@@ -309,12 +284,12 @@ public class XrefSearchPanel extends JPanel {
 			
 				resultTable.setModel(new XrefResultTableModel(sw.get()));
 				resultTable.setRowSorter(new TableRowSorter(resultTable.getModel()));
-				lblNumFound.setText(" No.of results found: "+sw.get().length);
-			} else {
-				JOptionPane.showMessageDialog(XrefSearchPanel.this,
-						"Please Enter valid ID", "Error", JOptionPane.ERROR_MESSAGE);
-
-			}
+				lblNumFound.setText(sw.get().length + " pathways found.");
+//			} else {
+//				JOptionPane.showMessageDialog(XrefSearchPanel.this,
+//						"Please Enter valid ID", "Error", JOptionPane.ERROR_MESSAGE);
+//
+//			}
 		} else {
 			JOptionPane.showMessageDialog(XrefSearchPanel.this,
 					"Please Enter ID", "Error", JOptionPane.ERROR_MESSAGE);
