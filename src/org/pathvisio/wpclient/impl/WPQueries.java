@@ -53,16 +53,21 @@ import org.wikipathways.client.WikiPathwaysClient;
  */
 public class WPQueries implements IWPQueries {
 		
+	private WikiPathwaysClient wpClient; 
+	private String currentUrl;
+	
 	private WikiPathwaysClient getClient() throws FailedConnectionException {
-		WikiPathwaysClient client;
-		try {
-			client = new WikiPathwaysClient(new URL(PreferenceManager.getCurrent().get(URLPreference.CONNECTION_URL)));
-		} catch (MalformedURLException e) {
-			throw new FailedConnectionException("Can not connect to WikiPathways.\nInvalid URL.");
-		} catch (ServiceException e) {
-			throw new FailedConnectionException("Can not connect to WikiPathways.");
+		if(wpClient == null || !currentUrl.equals(PreferenceManager.getCurrent().get(URLPreference.CONNECTION_URL))) {
+			try {
+				wpClient = new WikiPathwaysClient(new URL(PreferenceManager.getCurrent().get(URLPreference.CONNECTION_URL)));
+				currentUrl = PreferenceManager.getCurrent().get(URLPreference.CONNECTION_URL);
+			} catch (MalformedURLException e) {
+				throw new FailedConnectionException("Can not connect to WikiPathways.\nInvalid URL.");
+			} catch (ServiceException e) {
+				throw new FailedConnectionException("Can not connect to WikiPathways.");
+			}
 		}
-		return client;
+		return wpClient;
 	}
 	
 	/**
@@ -220,7 +225,14 @@ public class WPQueries implements IWPQueries {
 	@Override
 	public WSPathwayInfo uploadPathway(Pathway pathway) throws RemoteException, FailedConnectionException, ConverterException {
 		WikiPathwaysClient client = getClient();
-		return client.createPathway(pathway);
+		try{
+			WSPathwayInfo info = client.createPathway(pathway);
+			System.out.println(info.getId() + "\t" + info.getName());
+			return info;
+		} catch(RemoteException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	/**
