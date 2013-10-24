@@ -43,7 +43,7 @@ public class FileUtils {
 	
 	public static String getTimeStamp() {
 		Date date = new Date();
-		SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss");
 		String formattedDate = sdf.format(date);
 		return formattedDate;
 	}
