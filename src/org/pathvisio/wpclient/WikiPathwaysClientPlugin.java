@@ -439,6 +439,18 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 
 	@Override
 	public void applicationEvent(ApplicationEvent e) {
+		if(e.getType().equals(ApplicationEvent.Type.VPATHWAY_NEW)) {
+			revisionno = "";
+			pathwayid = "";
+		} else if (e.getType().equals(ApplicationEvent.Type.VPATHWAY_OPENED)) {
+			if(desktop.getSwingEngine().getEngine().getActivePathway().getSourceFile() != null) {
+				// pathway has not been loaded from webservice
+				if(!desktop.getSwingEngine().getEngine().getActivePathway().getSourceFile().getAbsolutePath().contains(GlobalPreference.getPluginDir().getAbsolutePath())) {
+					revisionno = "";
+					pathwayid = "";
+				}
+			}
+		}
 		updateState();
 	}
 
