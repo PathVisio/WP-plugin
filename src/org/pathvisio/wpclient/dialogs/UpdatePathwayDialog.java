@@ -21,6 +21,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.util.Set;
@@ -32,14 +33,19 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingWorker;
 import javax.xml.rpc.ServiceException;
 
+import org.pathvisio.core.debug.Logger;
 import org.pathvisio.core.model.Pathway;
+import org.pathvisio.core.util.ProgressKeeper;
+import org.pathvisio.gui.ProgressDialog;
 import org.pathvisio.wikipathways.webservice.WSCurationTag;
 import org.pathvisio.wikipathways.webservice.WSPathwayInfo;
 import org.pathvisio.wpclient.FailedConnectionException;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.pathvisio.wpclient.panels.LoginPanel;
+import org.pathvisio.wpclient.utils.FileUtils;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -136,57 +142,113 @@ public class UpdatePathwayDialog implements ActionListener {
 	public void UpdatePathway() throws RemoteException, MalformedURLException, ServiceException, FailedConnectionException {
 		plugin.getWpQueries().login(LoginPanel.username,LoginPanel.password);
 		try {
-			Pathway pathway = plugin.getDesktop().getSwingEngine().getEngine().getActivePathway();
-			WSPathwayInfo wsPathwayInfo=plugin.getWpQueries().getPathwayInfo(WikiPathwaysClientPlugin.pathwayid, null);
-			String newrevision=wsPathwayInfo.getRevision();
-			
-			if(WikiPathwaysClientPlugin.revisionno.equals(newrevision)) {
+			final ProgressKeeper pk = new ProgressKeeper();
+			final ProgressDialog d = new ProgressDialog(
+					plugin.getDesktop().getFrame(), "", pk, true, true);
 
-				boolean curTagActive = false;
-				boolean feaTagActive = false;
-				boolean updateCurTag = false;
-				boolean updateFeaTag = false;
-				Set<WSCurationTag> tags = plugin.getWpQueries().getCurationTags(WikiPathwaysClientPlugin.pathwayid, null);
-				for(WSCurationTag tag : tags) {
-					if(tag.getName().equals("Curation:AnalysisCollection")) {
-						if(tag.getRevision().equals(WikiPathwaysClientPlugin.revisionno)) {
-							curTagActive = true;
+			SwingWorker<WSPathwayInfo, Void> sw = new SwingWorker<WSPathwayInfo, Void>() {
+				WSPathwayInfo info;
+				protected WSPathwayInfo doInBackground() throws Exception {
+					try {
+						pk.setTaskName("Checking if pathway has been changed.");
+						Pathway pathway = plugin.getDesktop().getSwingEngine().getEngine().getActivePathway();
+						WSPathwayInfo wsPathwayInfo = plugin.getWpQueries().getPathwayInfo(WikiPathwaysClientPlugin.pathwayid, pk);
+						String newrevision = wsPathwayInfo.getRevision();
+						
+						if(WikiPathwaysClientPlugin.revisionno.equals(newrevision)) {
+							pk.setTaskName("Check if curation tags need to be updated.");
+							// check if curation tags need to be updated
+							boolean curTagActive = false;
+							boolean feaTagActive = false;
+							boolean updateCurTag = false;
+							boolean updateFeaTag = false;
+							Set<WSCurationTag> tags = plugin.getWpQueries().getCurationTags(WikiPathwaysClientPlugin.pathwayid, null);
+							for(WSCurationTag tag : tags) {
+								if(tag.getName().equals("Curation:AnalysisCollection")) {
+									if(tag.getRevision().equals(WikiPathwaysClientPlugin.revisionno)) {
+										curTagActive = true;
+									}
+								} else if (tag.getName().equals("Curation:FeaturedPathway")) {
+									if(tag.getRevision().equals(WikiPathwaysClientPlugin.revisionno)) {
+										feaTagActive = true;
+									}
+								}
+							}
+						
+							// ask if user wants to update curation tags
+							if(curTagActive || feaTagActive) {
+								pk.setTaskName("Ask user if tags should be updated.");
+								int n = JOptionPane.showConfirmDialog(
+										plugin.getDesktop().getFrame(),
+									    "Do you want to update the Curated/Featured Collection tag?",
+									    "Tag update",
+									    JOptionPane.YES_NO_OPTION);
+								if(n == JOptionPane.YES_OPTION) {
+									if(curTagActive) {
+										updateCurTag = true;
+									}
+									if(feaTagActive) {
+										updateFeaTag = true;
+									}
+								}
+							}						
+							
+							pk.setTaskName("Update pathway.");
+							// update pathway
+							plugin.getWpQueries().updatePathway(pathway, WikiPathwaysClientPlugin.pathwayid, Integer.parseInt(WikiPathwaysClientPlugin.revisionno), description.getText());
+	
+							// get latest info to reload pathway
+							info = plugin.getWpQueries().getPathwayInfo(WikiPathwaysClientPlugin.pathwayid, pk);
+							String message = "The pathway is updated.";
+							if(updateCurTag) {
+								plugin.getWpQueries().updateCurationTag("Curation:AnalysisCollection", WikiPathwaysClientPlugin.pathwayid, "", Integer.parseInt(info.getRevision()));
+								message = message + "\nCurated Collection tag has been updated.";
+							}
+							if(updateFeaTag) {
+								plugin.getWpQueries().updateCurationTag("Curation:FeaturedPathway", WikiPathwaysClientPlugin.pathwayid, "", Integer.parseInt(info.getRevision()));
+								message = message + "\nFeatured Collection tag has been updated.";
+							}
+							pk.setTaskName(message);
+							
+							JOptionPane.showMessageDialog(d,
+									message, "Update",
+									JOptionPane.INFORMATION_MESSAGE);
+						} else {
+							JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(),
+									"The pathway is not up-to-date.\nPlease reload the latest revision.", "Error",
+									JOptionPane.ERROR_MESSAGE);
 						}
-					} else if (tag.getName().equals("Curation:FeaturedPathway")) {
-						if(tag.getRevision().equals(WikiPathwaysClientPlugin.revisionno)) {
-							feaTagActive = true;
-						}
+					} finally {
+						pk.finished();
 					}
-				}
-				if(curTagActive || feaTagActive) {
-					int n = JOptionPane.showConfirmDialog(
-							plugin.getDesktop().getFrame(),
-						    "Do you want to update the Curated/Featured Collection tag?",
-						    "Tag update",
-						    JOptionPane.YES_NO_OPTION);
-					if(n == JOptionPane.YES_OPTION) {
-						if(curTagActive) {
-							updateCurTag = true;
-						}
-						if(feaTagActive) {
-							updateFeaTag = true;
-						}
-					}
-				}
-				plugin.getWpQueries().updatePathway(pathway, WikiPathwaysClientPlugin.pathwayid, Integer.parseInt(WikiPathwaysClientPlugin.revisionno), description.getText());
-				WSPathwayInfo info = plugin.getWpQueries().getPathwayInfo(WikiPathwaysClientPlugin.pathwayid, null);
-				if(updateCurTag) {
-					plugin.getWpQueries().updateCurationTag("Curation:AnalysisCollection", WikiPathwaysClientPlugin.pathwayid, "", Integer.parseInt(info.getRevision()));
-				}
-				if(updateFeaTag) {
-					plugin.getWpQueries().updateCurationTag("Curation:FeaturedPathway", WikiPathwaysClientPlugin.pathwayid, "", Integer.parseInt(info.getRevision()));
+					return info;
 				}
 				
-				JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(), "The pathway is updated");
-			}
+				protected void done() {
+					if(info != null) {
+						// open latest revision
+						File tmpDir = new File(plugin.getTmpDir(), FileUtils.getTimeStamp());
+						tmpDir.mkdirs();
+	
+						try {
+							pk.setTaskName("Open latest revision of pathway.");
+							plugin.openPathwayWithProgress(info.getId(), 0, tmpDir);
+						} catch (Exception ex) {
+							JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(),
+									"Could not load new revision.", "Error",
+									JOptionPane.ERROR_MESSAGE);
+							Logger.log.error("Error", ex);
+						}
+					}
+				}
+				
+			};
+			
+			sw.execute();
+			d.setVisible(true);
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(),
-				"Error While creating a pathway", "ERROR",
+				"Error while updating pathway.\n"+e.getMessage(), "ERROR",
 					JOptionPane.ERROR_MESSAGE);
 		}		
 	}
@@ -208,11 +270,11 @@ public class UpdatePathwayDialog implements ActionListener {
 		
 		if ("Update".equals(e.getActionCommand())) {
 			try {
+				d2.dispose();
 				UpdatePathway();
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			} 
-			d2.dispose();
 		}
 	}
 }

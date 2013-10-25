@@ -185,16 +185,7 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 		boolean status = (desktop.getSwingEngine().getEngine().hasVPathway());
 		createMenu.setEnabled(status);
 		updateMenu.setEnabled(status);
-	
 	}
-
-//	private static WikiPathwaysClient client;
-//
-//	public static WikiPathwaysClient loadClient() throws MalformedURLException,
-//			ServiceException {
-//		client = new WikiPathwaysClient(new URL(PreferenceManager.getCurrent().get(URLPreference.CONNECTION_URL)));
-//		return client;
-//	}
 
 	/**
 	 * Register actions to provide option to open a pathway From Xref on right

@@ -21,6 +21,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 
@@ -31,11 +32,16 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingWorker;
 import javax.xml.rpc.ServiceException;
 
+import org.pathvisio.core.debug.Logger;
 import org.pathvisio.core.model.Pathway;
+import org.pathvisio.core.util.ProgressKeeper;
+import org.pathvisio.gui.ProgressDialog;
 import org.pathvisio.wikipathways.webservice.WSPathwayInfo;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
+import org.pathvisio.wpclient.utils.FileUtils;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -127,20 +133,55 @@ public class CreatePathwayPanel extends JPanel implements ActionListener {
 	}
 
 	public void createPathway() {
-		try {
-			Pathway pathway = plugin.getDesktop().getSwingEngine().getEngine().getActivePathway();
-			WSPathwayInfo l = plugin.getWpQueries().uploadPathway(pathway);
-			plugin.getWpQueries().updateCurationTag( "Curation:UnderConstruction", l.getId(), "", Integer.parseInt(l.getRevision()));
-			JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(),
-					"The Pathway " + l.getId() + " has been Uploaded. \n With Curation Tag : Under Construction. \n Please Update the Curation Tag.");
-						WikiPathwaysClientPlugin.revisionno =l.getRevision();
-						WikiPathwaysClientPlugin.pathwayid = l.getId();
+		final ProgressKeeper pk = new ProgressKeeper();
+		final ProgressDialog d = new ProgressDialog(
+				plugin.getDesktop().getFrame(), "", pk, true, true);
 
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(),
-					"Error While creating a pathway", "ERROR",
-					JOptionPane.ERROR_MESSAGE);
-		}
+		SwingWorker<WSPathwayInfo, Void> sw = new SwingWorker<WSPathwayInfo, Void>() {
+			WSPathwayInfo info;
+			protected WSPathwayInfo doInBackground() throws Exception {
+				try {
+					pk.setTaskName("Uploading pathway.");
+					Pathway pathway = plugin.getDesktop().getSwingEngine().getEngine().getActivePathway();
+					info = plugin.getWpQueries().uploadPathway(pathway);
+					pk.setTaskName("Adding curation tag.");
+					plugin.getWpQueries().updateCurationTag( "Curation:UnderConstruction", info.getId(), "", Integer.parseInt(info.getRevision()));
+					JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(),
+							"The Pathway " + info.getId() + " has been uploaded.\n\n Curation Tag \"Under Construction\" has been added.\nPlease update the curation tags if needed.");
+								WikiPathwaysClientPlugin.revisionno = info.getRevision();
+								WikiPathwaysClientPlugin.pathwayid = info.getId();
+		
+				} catch (Exception e) {
+					JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(),
+							"Error while creating new pathway.\n" + e.getMessage(), "Error",
+							JOptionPane.ERROR_MESSAGE);
+				} finally {
+					pk.finished();
+				}
+				return info;
+			}
+			
+			protected void done() {
+				if(info != null) {
+					// open latest revision
+					File tmpDir = new File(plugin.getTmpDir(), FileUtils.getTimeStamp());
+					tmpDir.mkdirs();
+
+					try {
+						pk.setTaskName("Open latest revision of pathway.");
+						plugin.openPathwayWithProgress(info.getId(), 0, tmpDir);
+					} catch (Exception ex) {
+						JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(),
+								"Could not load new revision.", "Error",
+								JOptionPane.ERROR_MESSAGE);
+						Logger.log.error("Error", ex);
+					}
+				}
+			}
+		};
+		
+		sw.execute();
+		d.setVisible(true);
 	}
 
 	@Override

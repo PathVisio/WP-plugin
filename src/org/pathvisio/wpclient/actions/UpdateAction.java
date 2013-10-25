@@ -19,6 +19,7 @@ package org.pathvisio.wpclient.actions;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
+import javax.swing.JOptionPane;
 
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.pathvisio.wpclient.dialogs.UpdatePathwayDialog;
@@ -38,6 +39,11 @@ public class UpdateAction extends AbstractAction {
 	
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		new UpdatePathwayDialog(plugin);
+		if(WikiPathwaysClientPlugin.revisionno.equals("") || WikiPathwaysClientPlugin.pathwayid.equals("")) {
+			JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(), "Pathway has not been downloaded through the plugin.\nOnly pathways that have been opened through the plugin, can be updated.",
+					"Error", JOptionPane.ERROR_MESSAGE);
+		} else {
+			new UpdatePathwayDialog(plugin);
+		}
 	}
 }
