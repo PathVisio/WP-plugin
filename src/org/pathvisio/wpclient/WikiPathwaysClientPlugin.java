@@ -82,7 +82,7 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 	
 	private PvDesktop desktop;
 	private File tmpDir = new File(GlobalPreference.getPluginDir(), "wpclient-cache");
-	private JMenu uploadMenu, wikipathwaysMenu;
+	private JMenu  wikipathwaysMenu;
 	private JMenuItem createMenu,updateMenu;
 	
 	public static String revisionno = "";
@@ -153,10 +153,10 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 			searchMenu.addActionListener(searchAction);
 			browseMenu.addActionListener(browseAction);
 
-			uploadMenu = new JMenu("Upload");
+			//uploadMenu = new JMenu("Upload");
 
-			createMenu = new JMenuItem("Create Pathway");
-			updateMenu = new JMenuItem("Update Pathway");
+			createMenu = new JMenuItem("Upload New");
+			updateMenu = new JMenuItem("Update");
 
 			UploadAction createAction = new UploadAction(plugin);
 			UpdateAction updateAction = new UpdateAction(plugin);
@@ -164,12 +164,13 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 			createMenu.addActionListener(createAction);
 			updateMenu.addActionListener(updateAction);
 
-			uploadMenu.add(createMenu);
-			uploadMenu.add(updateMenu);
+			//uploadMenu.add(createMenu);
+			//uploadMenu.add(updateMenu);
 
 			wikipathwaysMenu.add(searchMenu);
 			wikipathwaysMenu.add(browseMenu);
-			wikipathwaysMenu.add(uploadMenu);
+			wikipathwaysMenu.add(createMenu);
+			wikipathwaysMenu.add(updateMenu);
 
 			desktop.registerSubMenu("Plugins", wikipathwaysMenu);
 			updateState();
@@ -444,8 +445,8 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 			pathwayid = "";
 		} else if (e.getType().equals(ApplicationEvent.Type.VPATHWAY_OPENED)) {
 			if(desktop.getSwingEngine().getEngine().getActivePathway().getSourceFile() != null) {
-				// pathway has not been loaded from webservice
 				if(!desktop.getSwingEngine().getEngine().getActivePathway().getSourceFile().getAbsolutePath().contains(GlobalPreference.getPluginDir().getAbsolutePath())) {
+					// pathway has not been loaded from webservice
 					revisionno = "";
 					pathwayid = "";
 				}
