@@ -52,6 +52,6 @@ public class WSResult implements Comparable<WSResult>{
 
 	@Override
 	public int compareTo(WSResult res) {
-		return getCount().compareTo(res.getCount());
+		return res.getCount().compareTo(getCount());
 	}
 }
