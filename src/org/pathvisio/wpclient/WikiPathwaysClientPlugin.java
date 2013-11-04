@@ -153,10 +153,10 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 			searchMenu.addActionListener(searchAction);
 			browseMenu.addActionListener(browseAction);
 
-			uploadMenu = new JMenu("Upload");
+			//uploadMenu = new JMenu("Upload");
 
-			createMenu = new JMenuItem("Create Pathway");
-			updateMenu = new JMenuItem("Update Pathway");
+			createMenu = new JMenuItem("Upload New");
+			updateMenu = new JMenuItem("Update");
 
 			UploadAction createAction = new UploadAction(plugin);
 			UpdateAction updateAction = new UpdateAction(plugin);
@@ -164,12 +164,15 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 			createMenu.addActionListener(createAction);
 			updateMenu.addActionListener(updateAction);
 
-			uploadMenu.add(createMenu);
-			uploadMenu.add(updateMenu);
+			//uploadMenu.add(createMenu);
+			//uploadMenu.add(updateMenu);
 
 			wikipathwaysMenu.add(searchMenu);
 			wikipathwaysMenu.add(browseMenu);
-			wikipathwaysMenu.add(uploadMenu);
+			//wikipathwaysMenu.add(uploadMenu);
+			wikipathwaysMenu.add(createMenu);
+			wikipathwaysMenu.add(updateMenu);
+			
 
 			desktop.registerSubMenu("Plugins", wikipathwaysMenu);
 			updateState();
