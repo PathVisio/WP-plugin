@@ -26,7 +26,6 @@ import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -53,6 +52,7 @@ import org.pathvisio.core.util.ProgressKeeper;
 import org.pathvisio.gui.DataSourceModel;
 import org.pathvisio.gui.ProgressDialog;
 import org.pathvisio.wikipathways.webservice.WSSearchResult;
+import org.pathvisio.wpclient.FailedConnectionException;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.pathvisio.wpclient.impl.WSResult;
 import org.pathvisio.wpclient.models.XrefResultTableModel;
@@ -185,6 +185,7 @@ public class XrefSearchPanel extends JPanel {
 		lblNumFound.setText("");
 		pxXref.clear();
 		if (!txtId.getText().isEmpty()) {
+			System.out.println(txtId.getText());
 //			if(Validator.CheckNonAlphaAllowColon(txtId.getText())) {
 
 				final ProgressKeeper pk = new ProgressKeeper();
@@ -200,12 +201,12 @@ public class XrefSearchPanel extends JPanel {
 						try {
 							String[] xrefids = txtId.getText().split("\n");
 						
-//							if (xrefids.length < 6) {
+							if (xrefids.length < 6) {
 								int count = 0;
 								for (String x : xrefids) {
 									String p[] = x.split(":");
 									if (p.length == 2) {
-										DataSource ds = DataSource.getBySystemCode(p[0]);
+										DataSource ds =DataSource.getBySystemCode(p[0]);
 										pxXref.add(new Xref(p[1], ds));
 									} else {
 										JOptionPane.showMessageDialog(
@@ -220,51 +221,50 @@ public class XrefSearchPanel extends JPanel {
 	
 								xrefs = new Xref[count];
 								pxXref.toArray(xrefs);
-		
+	
 								pk.setTaskName("Searching ");
-								Map<Xref, WSSearchResult[]> map = new HashMap<Xref, WSSearchResult[]>();
-								for(Xref x : pxXref) {
-									WSSearchResult[] p = plugin.getWpQueries().findByXref(new Xref[] {x}, pk);
-									map.put(x, p);
-								}
-								Map<String, WSResult> resultMap = new HashMap<String, WSResult>();
-								for(Xref x : map.keySet()) {
-									List<String> uniquePathways = new ArrayList<String>();
-									for(WSSearchResult res : map.get(x)) {
-										if(!uniquePathways.contains(res.getId())) {
-											if(resultMap.containsKey(res.getId())) {
-												WSResult r = resultMap.get(res.getId());
-												r.setCount(r.getCount()+1);
-												resultMap.put(res.getId(), r);
-											} else {
-												WSResult r = new WSResult();
-												r.setWsSearchResult(res);
-												r.setCount(1);
-												resultMap.put(res.getId(), r);
-											}
-											uniquePathways.add(res.getId());
-										}
-									}
-								}
-								List<WSResult> result = new ArrayList<WSResult>();
-								for(String str : resultMap.keySet()) {
-									result.add(resultMap.get(str));
-								}
-								
-								Collections.sort(result);
-								results = new WSResult[result.size()];
-								results = result.toArray(results);
-//							} else {
-//								JOptionPane.showMessageDialog(XrefSearchPanel.this,
-//										" Can have maximum 5 Xrefs ", "Error",
-//										JOptionPane.ERROR_MESSAGE);
-//								pk.finished();
-//								return results;
-//							}
+								WSSearchResult[] p = plugin.getWpQueries().findByXref(xrefs, pk);
+								pk.setTaskName("Sorting result");
+								results = sort(p);
+							} else {
+								JOptionPane.showMessageDialog(XrefSearchPanel.this,
+										" Can have maximum 5 Xrefs ", "Error",
+										JOptionPane.ERROR_MESSAGE);
+								pk.finished();
+								return results;
+							}
 						} finally {
 							pk.finished();
 						}
 						return results;
+					}
+
+					private WSResult[] sort(WSSearchResult [] results) throws RemoteException, FailedConnectionException {
+						
+						List<WSResult> result = new ArrayList<WSResult>();
+						for(WSSearchResult res : results) {
+							WSResult wsResult = new WSResult();
+							wsResult.setWsSearchResult(res);
+							int count = 0;
+							for (Xref x : pxXref) {
+								String [] li = plugin.getWpQueries().getXrefList(res.getId(), x.getDataSource(), pk);
+								System.out.println(res.getId() + "\t" + x.getDataSource().getSystemCode() + "\t" + li.length);
+								for(String s : li) {
+									System.out.println(s);
+									if(s.equals(x.getId())) {
+										count++;
+									}
+								}
+							}
+							wsResult.setCount(count);
+							result.add(wsResult);
+						}
+						
+						Collections.sort(result);
+						WSResult [] finalresults = new WSResult[result.size()];
+						finalresults = result.toArray(finalresults);
+						
+						return finalresults;
 					}
 
 					protected void done() {

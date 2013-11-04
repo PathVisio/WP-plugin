@@ -28,7 +28,7 @@ import org.pathvisio.wpclient.impl.WSResult;
  */
 public class XrefResultTableModel extends AbstractTableModel {
 	WSResult[] results;
-	String[] columnNames = new String[] { "ID", "Name", "Species","Query Gene Count" };
+	String[] columnNames = new String[] { "ID", "Name", "Species","Gene Count" };
 
 	public XrefResultTableModel(WSResult[] results) {
 		this.results = results;

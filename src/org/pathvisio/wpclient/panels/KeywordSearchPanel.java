@@ -18,6 +18,7 @@ package org.pathvisio.wpclient.panels;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.FocusTraversalPolicy;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
