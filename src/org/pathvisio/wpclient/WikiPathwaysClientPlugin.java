@@ -393,7 +393,7 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 
 		SwingWorker<Boolean, Void> sw = new SwingWorker<Boolean, Void>() {
 			protected Boolean doInBackground() throws Exception {
-				pk.setTaskName("Finding Related Pathways");
+				pk.setTaskName("Finding Pathways");
 				try {
 					openPathwayXref(x, rev, tmpDir);
 				} catch (Exception e) {
@@ -425,7 +425,7 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 			PathwayPanel p = new PathwayPanel(WikiPathwaysClientPlugin.this,
 					wsp, tmpDir, xref);
 			JDialog d = new JDialog(desktop.getFrame(),
-					"Related Pathways from WikiPathways", false);
+					"Pathways Containing "+x, false);
 
 			d.getContentPane().add(p);
 			d.pack();
