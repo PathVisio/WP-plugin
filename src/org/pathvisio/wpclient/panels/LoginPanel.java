@@ -35,6 +35,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.xml.rpc.ServiceException;
 
+import org.pathvisio.core.debug.Logger;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.pathvisio.wpclient.validators.Validator;
 
@@ -59,7 +60,7 @@ public class LoginPanel extends JPanel {
 		loggedin = false;
 	}
 
-	public void login() throws RemoteException, MalformedURLException, ServiceException {
+	public boolean login() throws RemoteException, MalformedURLException, ServiceException {
 		try {
 			username = UserField.getText();
 			password = new String(PassField.getPassword());
@@ -76,17 +77,20 @@ public class LoginPanel extends JPanel {
 						JOptionPane.ERROR_MESSAGE);
 				username = "";
 				password = "";
+				Logger.log.error("Wrong username. \n");
+				return false;
 			}
 		} catch (Exception ex) {
-			System.out.println(ex.getMessage());
-			JOptionPane
-					.showMessageDialog(
+			JOptionPane.showMessageDialog(
 							plugin.getDesktop().getFrame(),
-							"You do not have permissions. \n Please Send an email to:\n wikipathways-devel@googlegroups.com",
-							"WikiPathways Login ERROR",
+							"Login was unsuccessful. Please check your username and password.\n Do you have webservice write permissions? If not, please contact the develoeprs:\n wikipathways-devel@googlegroups.com",
+							"WikiPathways Login Error",
 							JOptionPane.ERROR_MESSAGE);
+			Logger.log.error("Login was unsuccessfull\n" + ex.getStackTrace() + "\n");
 			username = "";
 			password = "";
+			return false;
 		}
+		return true;
 	}
 }

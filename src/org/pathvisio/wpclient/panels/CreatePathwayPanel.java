@@ -22,8 +22,6 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.net.MalformedURLException;
-import java.rmi.RemoteException;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -33,7 +31,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingWorker;
-import javax.xml.rpc.ServiceException;
 
 import org.pathvisio.core.debug.Logger;
 import org.pathvisio.core.model.Pathway;
@@ -188,20 +185,35 @@ public class CreatePathwayPanel extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 
 		if ("Login".equals(e.getActionCommand())) {
-			dialog.dispose();
-			try {
-				p.login();
+			final ProgressKeeper pk = new ProgressKeeper();
+			final ProgressDialog d = new ProgressDialog(plugin.getDesktop().getFrame(), "", pk, true, true);
+			
+			SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
 				
-				if(LoginPanel.loggedin) {
-					showDescriptionPanel();
+				Boolean value = false;
+				
+				protected Void doInBackground() throws Exception {
+					pk.setTaskName("Checking login details.");
+					dialog.dispose();
+					try {
+						if(p.login()) {
+							value = true;
+						}
+					} catch (Exception e1) {}
+					return null; 
 				}
-			} catch (RemoteException e1) {
-				e1.printStackTrace();
-			} catch (MalformedURLException e1) {
-				e1.printStackTrace();
-			} catch (ServiceException e1) {
-				e1.printStackTrace();
-			}
+				
+				protected void done() {
+					if(!pk.isCancelled()) {
+						if(value) {
+							showDescriptionPanel();
+							pk.finished();
+						}
+					}
+				}
+			};
+			sw.execute();
+			d.setVisible(true);
 		} else if ("Create".equals(e.getActionCommand())) {		
 			createPathway();
 			descriptionDialog.dispose();

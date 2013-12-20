@@ -82,7 +82,7 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 	
 	private PvDesktop desktop;
 	private File tmpDir = new File(GlobalPreference.getPluginDir(), "wpclient-cache");
-	private JMenu uploadMenu, wikipathwaysMenu;
+	private JMenu wikipathwaysMenu;
 	private JMenuItem createMenu,updateMenu;
 	
 	public static String revisionno = "";

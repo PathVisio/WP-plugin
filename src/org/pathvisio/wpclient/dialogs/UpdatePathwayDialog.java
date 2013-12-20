@@ -140,7 +140,6 @@ public class UpdatePathwayDialog implements ActionListener {
 	}
 
 	public void UpdatePathway() throws RemoteException, MalformedURLException, ServiceException, FailedConnectionException {
-		plugin.getWpQueries().login(LoginPanel.username,LoginPanel.password);
 		try {
 			final ProgressKeeper pk = new ProgressKeeper();
 			final ProgressDialog d = new ProgressDialog(
@@ -257,15 +256,35 @@ public class UpdatePathwayDialog implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 
 		if ("Login".equals(e.getActionCommand())) {
-			d.dispose();
-			try {
-				p.login();
-			} catch (Exception e1) {
-				e1.printStackTrace();
-			} 
+			final ProgressKeeper pk = new ProgressKeeper();
+			final ProgressDialog dialog = new ProgressDialog(plugin.getDesktop().getFrame(), "", pk, true, true);
 			
-			if(LoginPanel.loggedin)
-			showDescriptionPanel();
+			SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
+				
+				Boolean value = false;
+				
+				protected Void doInBackground() throws Exception {
+					pk.setTaskName("Checking login details.");
+					d.dispose();
+					try {
+						if(p.login()) {
+							value = true;
+						}
+					} catch (Exception e1) {}
+					return null; 
+				}
+				
+				protected void done() {
+					if(!pk.isCancelled()) {
+						if(value) {
+							showDescriptionPanel();
+							pk.finished();
+						}
+					}
+				}
+			};
+			sw.execute();
+			dialog.setVisible(true);
 		}
 		
 		if ("Update".equals(e.getActionCommand())) {

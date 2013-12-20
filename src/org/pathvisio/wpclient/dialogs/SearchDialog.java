@@ -26,9 +26,13 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingWorker;
 import javax.swing.border.Border;
 import javax.xml.rpc.ServiceException;
 
+import org.pathvisio.core.debug.Logger;
+import org.pathvisio.core.util.ProgressKeeper;
+import org.pathvisio.gui.ProgressDialog;
 import org.pathvisio.wpclient.FailedConnectionException;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.pathvisio.wpclient.panels.KeywordSearchPanel;
@@ -38,25 +42,51 @@ import org.pathvisio.wpclient.panels.XrefSearchPanel;
 
 public class SearchDialog extends JDialog {
 	
-	public SearchDialog(WikiPathwaysClientPlugin plugin) {
-		JDialog d = new JDialog(plugin.getDesktop().getFrame(), "Search WikiPathways",false);
+	public SearchDialog(final WikiPathwaysClientPlugin plugin) {
+		final JDialog dialog = new JDialog(plugin.getDesktop().getFrame(), "Search WikiPathways",false);
+		final ProgressKeeper pk = new ProgressKeeper();
+		final ProgressDialog d = new ProgressDialog(plugin.getDesktop().getFrame(), "", pk, true, true);
 
-		try {
-			Search p = new Search(plugin);
-			d.setLayout(new BorderLayout());
-			Border padBorder = BorderFactory.createEmptyBorder(5, 5, 5, 5);
-			p.setLayout(new CardLayout());
-			p.setBorder(padBorder);	
+		SwingWorker<Exception, Void> sw = new SwingWorker<Exception, Void>() {
+			protected Exception doInBackground() throws Exception {
+				pk.setTaskName("Connecting to WikiPathways");
+				try {
+					Search p = new Search(plugin);
+					dialog.setLayout(new BorderLayout());
+					Border padBorder = BorderFactory.createEmptyBorder(5, 5, 5, 5);
+					p.setLayout(new CardLayout());
+					p.setBorder(padBorder);	
+					
+					dialog.add(p);
+					dialog.pack();	
+					//loading dialog at the centre of the frame
+					dialog.setLocationRelativeTo(plugin.getDesktop().getSwingEngine().getFrame());
+					
+					return null;
+				} catch (Exception e) {
+					return e;
+				}
+			}
 			
-			d.add(p);
-			d.pack();	
-			//loading dialog at the centre of the frame
-			d.setLocationRelativeTo(plugin.getDesktop().getSwingEngine().getFrame());
-			d.setVisible(true);
-			
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(d, "Unable to connect to WikiPathways.", "Connection error", JOptionPane.ERROR_MESSAGE);
-		}
+			protected void done() {
+				if(!pk.isCancelled()) {
+					try {
+						if(get() == null) {
+							dialog.setVisible(true);
+							pk.finished();
+						} else {
+							JOptionPane.showMessageDialog(d, "Unable to connect to WikiPathways.", "Connection error", JOptionPane.ERROR_MESSAGE);
+							Logger.log.error("Unable to conntect to WikiPathways\n" + get().getMessage() + "\n");
+						}
+					} catch (Exception e) {
+						JOptionPane.showMessageDialog(d, "Unable to connect to WikiPathways.", "Connection error", JOptionPane.ERROR_MESSAGE);
+						Logger.log.error("Unable to conntect to WikiPathways\n" + e.getMessage() + "\n");
+					} 
+				} 
+			}
+		};
+		sw.execute();
+		d.setVisible(true);
 	}
 	
 	/**
