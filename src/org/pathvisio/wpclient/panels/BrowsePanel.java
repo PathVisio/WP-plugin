@@ -59,6 +59,7 @@ import org.pathvisio.wpclient.FailedConnectionException;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.pathvisio.wpclient.models.BrowseResult;
 import org.pathvisio.wpclient.models.BrowseTableModel;
+import org.pathvisio.wpclient.utils.FileUtils;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -172,7 +173,7 @@ public class BrowsePanel extends JPanel {
 
 					BrowseTableModel model = (BrowseTableModel) target.getModel();
 
-					File tmpDir = new File(plugin.getTmpDir(), new Timestamp(new java.util.Date().getTime()).toString());
+					File tmpDir = new File(plugin.getTmpDir(), FileUtils.getTimeStamp());
 					tmpDir.mkdirs();
 	
 					try  {
