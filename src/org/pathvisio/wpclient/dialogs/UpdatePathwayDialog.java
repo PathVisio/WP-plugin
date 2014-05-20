@@ -217,6 +217,10 @@ public class UpdatePathwayDialog implements ActionListener {
 									"The pathway is not up-to-date.\nPlease reload the latest revision.", "Error",
 									JOptionPane.ERROR_MESSAGE);
 						}
+					 } catch (Exception e) {
+						JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(),
+								"Error while Updating new pathway.\n" + e.getMessage(), "Error",
+								JOptionPane.ERROR_MESSAGE);
 					} finally {
 						pk.finished();
 					}
