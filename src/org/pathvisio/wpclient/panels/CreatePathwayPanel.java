@@ -150,7 +150,7 @@ public class CreatePathwayPanel extends JPanel implements ActionListener {
 		
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(),
-							"Error while creating new pathway as you donot have the write access.\n Please submit a request in the following link: \n http://plugins.pathvisio.org/wp-client", "Error",
+							"Error while creating new pathway as you donot have the write access.\n Please submit a request in the following link: \n http://plugins.pathvisio.org/wp-client/request-webservice-access/", "Error",
 							JOptionPane.ERROR_MESSAGE);
 				} finally {
 					pk.finished();
