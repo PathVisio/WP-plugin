@@ -24,8 +24,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.xml.rpc.ServiceException;
-
 import org.bridgedb.DataSource;
 import org.bridgedb.Xref;
 import org.bridgedb.bio.Organism;
@@ -63,8 +61,6 @@ public class WPQueries implements IWPQueries {
 				currentUrl = PreferenceManager.getCurrent().get(URLPreference.CONNECTION_URL);
 			} catch (MalformedURLException e) {
 				throw new FailedConnectionException("Can not connect to WikiPathways.\nInvalid URL.");
-			} catch (ServiceException e) {
-				throw new FailedConnectionException("Can not connect to WikiPathways.");
 			}
 		}
 		return wpClient;

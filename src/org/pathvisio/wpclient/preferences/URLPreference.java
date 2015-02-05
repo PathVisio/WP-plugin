@@ -25,7 +25,7 @@ import org.pathvisio.core.preferences.Preference;
  */
 public enum URLPreference implements Preference {
 
-	CONNECTION_URL(new String("http://www.wikipathways.org/wpi/webservice/webservice.php"));
+	CONNECTION_URL(new String("http://webservice.wikipathways.org"));
 	
 	URLPreference(String defaultValue) {
 		this.defaultValue = defaultValue;
