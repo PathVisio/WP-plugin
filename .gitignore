@@ -4,3 +4,5 @@
 .classpath
 build
 /bin
+dist/
+
