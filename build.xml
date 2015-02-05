@@ -20,7 +20,7 @@
 			<include name="org.pathvisio.jgoodies.forms.jar"/>
 		</fileset>
 	  	<fileset dir="lib">
-	  		<include name="org.wikipathways.client.jar"/>
+	  		<include name="*.jar"/>
 			<!--<include name="com.springsource.javax.xml.rpc-1.1.0.jar"/>-->
 	  	</fileset>
 	</path>
