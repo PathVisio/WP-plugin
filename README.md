@@ -59,3 +59,7 @@ Refer:http://plugins.pathvisio.org/wp-client/documentation/
 Contact: Sravanthi : kmitsravanthi@gmail.com
 
 
+Developers:
+----------------
+
+There is an [Ant](https://ant.apache.org/) build.xml file associated with this project. Simply type, "ant" in the same directory to run the default target (i.e., "install") to build this project.
