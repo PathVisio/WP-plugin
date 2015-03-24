@@ -93,12 +93,11 @@ public class BrowsePanel extends JPanel {
 		curationTags = new HashMap<String, String>();
 		collectionTags = new HashMap<String, String>();
 //		tagImages = new HashMap<String, String>();
-
 		List<String> organisms = retrieveOrgansims();
 		setUpCurationTags();
 			
 		this.setLayout(new BorderLayout());
-	
+		
 		// Browse Option Combo boxes
 		organismOpt = new JComboBox(organisms.toArray());
 		organismOpt.setSelectedItem(Organism.HomoSapiens.latinName());
@@ -177,6 +176,7 @@ public class BrowsePanel extends JPanel {
 					tmpDir.mkdirs();
 	
 					try  {
+						row = target.convertRowIndexToModel(row);
 						plugin.openPathwayWithProgress(model.getValueAt(row, 0).toString(), 0, tmpDir);
 					} catch (Exception ex) {
 						JOptionPane.showMessageDialog(BrowsePanel.this,ex.getMessage(), "Error",JOptionPane.ERROR_MESSAGE);
