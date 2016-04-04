@@ -21,7 +21,6 @@
 		</fileset>
 	  	<fileset dir="lib">
 	  		<include name="*.jar"/>
-			<!--<include name="com.springsource.javax.xml.rpc-1.1.0.jar"/>-->
 	  	</fileset>
 	</path>
 
@@ -73,7 +72,7 @@
 				<include name="${jar.name}"/>
 			</fileset>
 			<fileset dir="lib">
-				<include name="org.wikipathways.client.jar"/>
+				<include name="org.wikipathways.webservice.api.bundle-3.2.1.jar"/>
 			</fileset>
 		</copy>
 		<delete file="${jar.name}"/>
