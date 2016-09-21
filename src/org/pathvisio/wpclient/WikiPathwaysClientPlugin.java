@@ -88,7 +88,7 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 	
 	private WikiPathwaysClientPlugin plugin;
 	
-	public static final String ARG_PROPERTY_OPEN_WPID = "open.wpid";
+	public static final String ARG_PROPERTY_WPID = "wp.id";
 
 	// handles 
 	private IWPQueries wpQueries;
@@ -114,7 +114,7 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 			// register a listener to notify when a pathway is opened
 			desktop.getSwingEngine().getEngine().addApplicationEventListener(this);
 			
-			String str = System.getProperty(ARG_PROPERTY_OPEN_WPID);
+			String str = System.getProperty(ARG_PROPERTY_WPID);
 			if (str != null) {
 				openPathwayWithProgress(str, 0, tmpDir);
 			}
