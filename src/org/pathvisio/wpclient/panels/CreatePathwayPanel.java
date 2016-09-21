@@ -140,6 +140,9 @@ public class CreatePathwayPanel extends JPanel implements ActionListener {
 				try {
 					pk.setTaskName("Uploading pathway.");
 					Pathway pathway = plugin.getDesktop().getSwingEngine().getEngine().getActivePathway();
+					if(!description.getText().equals("")) {
+						pathway.getMappInfo().addComment(description.getText(), "WikiPathways-description");
+					}
 					info = plugin.getWpQueries().uploadPathway(pathway);
 					pk.setTaskName("Adding curation tag.");
 					plugin.getWpQueries().updateCurationTag( "Curation:UnderConstruction", info.getId(), "", Integer.parseInt(info.getRevision()));

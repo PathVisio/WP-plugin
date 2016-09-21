@@ -64,21 +64,11 @@ public class LoginPanel extends JPanel {
 		try {
 			username = UserField.getText();
 			password = new String(PassField.getPassword());
-			if (Validator.CheckNonAlpha(username)) {
-				plugin.getWpQueries().login(username, password);
-				loggedin = true;
-				if (!itsKeepBox.isSelected()) {
-					username = "";
-					password = "";
-				}
-			} else {
-				JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(),
-						"Please Enter Valid UserName", "ERROR",
-						JOptionPane.ERROR_MESSAGE);
+			plugin.getWpQueries().login(username, password);
+			loggedin = true;
+			if (!itsKeepBox.isSelected()) {
 				username = "";
 				password = "";
-				Logger.log.error("Wrong username. \n");
-				return false;
 			}
 		} catch (Exception ex) {
 			JOptionPane.showMessageDialog(

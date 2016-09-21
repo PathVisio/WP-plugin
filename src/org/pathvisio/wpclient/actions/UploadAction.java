@@ -19,6 +19,7 @@ package org.pathvisio.wpclient.actions;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
+import javax.swing.JOptionPane;
 
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.pathvisio.wpclient.panels.CreatePathwayPanel;
@@ -37,7 +38,12 @@ public class UploadAction extends AbstractAction {
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		new CreatePathwayPanel(plugin);
+		if(plugin.getDesktop().getSwingEngine().getCurrentOrganism() == null) {
+			JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(), "Please specify organism by double clicking on info box\n in the top left corner of the pathway before uploading.",
+					"Error", JOptionPane.ERROR_MESSAGE);
+		} else {
+			new CreatePathwayPanel(plugin);
+		}
 	}
 
 }

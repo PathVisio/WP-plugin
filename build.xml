@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="org.pathvisio.wpclient" default="install" basedir=".">
 
-  <property name="pathvisio.dir" value="../../pathvisio"/>
+  <property name="pathvisio.dir" value="../pathvisio/"/>
 	<property name="bundle.dest" value="dist"/>
 	<property name="jar.name" value="org.pathvisio.wpclient.jar"/>
 
@@ -51,7 +51,7 @@
 			   includes="**"
 			   destdir="build"
 			   debug="${debug.mode}"
-			   source="1.5">
+			   source="1.6">
        <classpath refid="project.class.path"/>
 		</javac>
 	</target>
