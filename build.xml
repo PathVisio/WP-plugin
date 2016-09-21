@@ -10,7 +10,6 @@
 			<include name="org.pathvisio.core.jar"/>
 			<include name="org.pathvisio.desktop.jar"/>
 			<include name="org.pathvisio.gui.jar"/>
-			
 		</fileset>
 		<fileset dir="${pathvisio.dir}/lib">
 			<include name="org.bridgedb.jar"/>
@@ -72,7 +71,7 @@
 				<include name="${jar.name}"/>
 			</fileset>
 			<fileset dir="lib">
-				<include name="org.wikipathways.webservice.api.bundle-3.2.1.jar"/>
+				<include name="org.wikipathways.webservice.api.bundle-3.2.3.jar"/>
 			</fileset>
 		</copy>
 		<delete file="${jar.name}"/>
