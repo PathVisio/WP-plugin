@@ -33,6 +33,7 @@ import javax.swing.SwingWorker;
 import javax.xml.rpc.ServiceException;
 
 import org.bridgedb.DataSource;
+import org.bridgedb.IDMapperException;
 import org.bridgedb.Xref;
 import org.pathvisio.core.ApplicationEvent;
 import org.pathvisio.core.Engine;
@@ -116,6 +117,12 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 			
 			String str = System.getProperty(ARG_PROPERTY_WPID);
 			if (str != null) {
+				try {
+					Class.forName("org.bridgedb.webservice.bridgerest.BridgeRest");
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				openPathwayWithProgress(str, 0, tmpDir);
 			}
 		} catch (Exception e) {
@@ -284,6 +291,20 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 	 */
 	protected void openPathway(String id, int rev, File tmpDir) throws RemoteException, ConverterException, FailedConnectionException {
 		WSPathway wsp = getWpQueries().getPathway(id, rev, null);
+		
+		if (System.getProperty(ARG_PROPERTY_WPID)!=null){
+			String species = wsp.getSpecies();
+
+			//Instantiate BridgeDb webservice rest mapper
+			try {
+				desktop.getSwingEngine().getGdbManager().
+				addMapper("idmapper-bridgerest:http://webservice.bridgedb.org/"+species);
+			} catch (IDMapperException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 		Pathway p = WikiPathwaysClient.toPathway(wsp);
 		File tmp = new File(tmpDir, wsp.getId() + ".r" + wsp.getRevision() + ".gpml");
 		p.writeToXml(tmp, true);
