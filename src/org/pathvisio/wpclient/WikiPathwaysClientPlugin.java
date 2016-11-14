@@ -38,6 +38,7 @@ import org.bridgedb.Xref;
 import org.pathvisio.core.ApplicationEvent;
 import org.pathvisio.core.Engine;
 import org.pathvisio.core.Engine.ApplicationEventListener;
+import org.pathvisio.core.data.GdbManager;
 import org.pathvisio.core.debug.Logger;
 import org.pathvisio.core.model.ConverterException;
 import org.pathvisio.core.model.Pathway;
@@ -78,53 +79,49 @@ import org.wikipathways.client.WikiPathwaysClient;
  * @author Thomas Kelder, Sravanthi Sinha, mkutmon
  */
 public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListener, VPathwayListener {
-	
+
 	private PvDesktop desktop;
 	private File tmpDir = new File(GlobalPreference.getPluginDir(), "wpclient-cache");
 	private JMenu wikipathwaysMenu;
 	private JMenuItem createMenu,updateMenu;
-	
+
 	public static String revisionno = "";
 	public static String pathwayid = "";
-	
+
 	private WikiPathwaysClientPlugin plugin;
-	
+
 	public static final String ARG_PROPERTY_WPID = "wp.id";
 
 	// handles 
 	private IWPQueries wpQueries;
-	
+
 	public WikiPathwaysClientPlugin(IWPQueries wpQueries) {
 		this.wpQueries = wpQueries;
 		plugin = this;
 	}
-
+	
 	@Override
 	public void init(PvDesktop desktop) {
 		try {
 			this.desktop = desktop;
 			tmpDir.mkdirs();
 			Logger.log.info("Initializing WikiPathways Client plugin");
-
+			
 			// intialization
 			initPreferences();
 			registerActions();
 
 			new WikipathwaysPluginManagerAction(desktop);
-
-			// register a listener to notify when a pathway is opened
-			desktop.getSwingEngine().getEngine().addApplicationEventListener(this);
 			
 			String str = System.getProperty(ARG_PROPERTY_WPID);
-			if (str != null) {
-				try {
-					Class.forName("org.bridgedb.webservice.bridgerest.BridgeRest");
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+			if ( str != null) {
+				Class.forName("org.bridgedb.webservice.bridgerest.BridgeRest");
 				openPathwayWithProgress(str, 0, tmpDir);
-			}
+			}	
+			// register a listener to notify when a pathway is opened
+			desktop.getSwingEngine().getEngine().addApplicationEventListener(this);
+
+			
 		} catch (Exception e) {
 			Logger.log.error("Error while initializing WikiPathways client", e);
 			JOptionPane.showMessageDialog(desktop.getSwingEngine().getApplicationPanel(), 
@@ -139,11 +136,11 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 	 */
 	private void initPreferences() {
 		PreferencesDlg dlg = desktop.getPreferencesDlg();
-		
+
 		dlg.addPanel("WikiPathways Plugin", dlg.builder().stringField(URLPreference.CONNECTION_URL, "WP webservice URL").build()); 
 	}
 
-	
+
 	/**
 	 * Preparing the Submenu For WikiPathways Menu
 	 */
@@ -176,7 +173,7 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 			wikipathwaysMenu.add(browseMenu);
 			wikipathwaysMenu.add(createMenu);
 			wikipathwaysMenu.add(updateMenu);
-			
+
 			desktop.registerSubMenu("Plugins", wikipathwaysMenu);
 			updateState();
 		}
@@ -291,20 +288,6 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 	 */
 	protected void openPathway(String id, int rev, File tmpDir) throws RemoteException, ConverterException, FailedConnectionException {
 		WSPathway wsp = getWpQueries().getPathway(id, rev, null);
-		
-		if (System.getProperty(ARG_PROPERTY_WPID)!=null){
-			String species = wsp.getSpecies();
-
-			//Instantiate BridgeDb webservice rest mapper
-			try {
-				desktop.getSwingEngine().getGdbManager().
-				addMapper("idmapper-bridgerest:http://webservice.bridgedb.org/"+species);
-			} catch (IDMapperException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
 		Pathway p = WikiPathwaysClient.toPathway(wsp);
 		File tmp = new File(tmpDir, wsp.getId() + ".r" + wsp.getRevision() + ".gpml");
 		p.writeToXml(tmp, true);
@@ -313,6 +296,18 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 		Engine engine = desktop.getSwingEngine().getEngine();
 		engine.setWrapper(desktop.getSwingEngine().createWrapper());
 		engine.openPathway(tmp);
+		if (System.getProperty(ARG_PROPERTY_WPID)!=null){
+			GdbManager mgr = desktop.getSwingEngine().getGdbManager();
+			//Instantiate BridgeDb webservice rest mapper
+			try {				
+				mgr.setGeneDb("idmapper-bridgerest:http://webservice.bridgedb.org/"+wsp.getSpecies());
+				mgr.initPreferred();
+				mgr.getCurrentGdb().setTransitive(false);
+			} catch (IDMapperException e) {
+				Logger.log.error("Could not initilize rest mapper", e);
+				e.printStackTrace();
+			}
+		}
 	}
 
 	/**
@@ -333,7 +328,7 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 
 		highlightResults(xrefs);
 	}
-	
+
 	/**
 	 * HighLight the DataNodes With particular Xref	 
 	 */
@@ -367,7 +362,7 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 			FileUtils.deleteDirectory(tmpDir);
 		}
 	}
-	
+
 	public void openPathwayXrefWithProgress(final Xref x, final int rev, final File tmpDir)
 			throws InterruptedException, ExecutionException {
 
@@ -417,7 +412,7 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 			d.setVisible(true);
 
 		} catch (RemoteException e) {
-			
+
 			e.printStackTrace();
 		}
 	}
@@ -443,7 +438,7 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 	public void vPathwayEvent(VPathwayEvent e) {
 		updateState();
 	}
-	
+
 	//////////////////////////////////////
 	// SETTERS & GETTERS
 	//////////////////////////////////////
