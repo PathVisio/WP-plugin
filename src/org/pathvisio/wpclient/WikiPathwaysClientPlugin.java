@@ -111,16 +111,16 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 			initPreferences();
 			registerActions();
 
-			new WikipathwaysPluginManagerAction(desktop);
+			new WikipathwaysPluginManagerAction(desktop);			
+				
+			// register a listener to notify when a pathway is opened
+			desktop.getSwingEngine().getEngine().addApplicationEventListener(this);
 			
 			String str = System.getProperty(ARG_PROPERTY_WPID);
 			if ( str != null) {
 				Class.forName("org.bridgedb.webservice.bridgerest.BridgeRest");
 				openPathwayWithProgress(str, 0, tmpDir);
-			}	
-			// register a listener to notify when a pathway is opened
-			desktop.getSwingEngine().getEngine().addApplicationEventListener(this);
-
+			}
 			
 		} catch (Exception e) {
 			Logger.log.error("Error while initializing WikiPathways client", e);
