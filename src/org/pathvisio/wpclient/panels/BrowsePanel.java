@@ -132,7 +132,7 @@ public class BrowsePanel extends JPanel {
 		opts4.setLayout(new CardLayout());
 		JPanel curOpt = curationOptBuilder.getPanel();
 		opts4.add(curOpt, "Curation");
-		JLabel curationTagLabel = new JLabel("Curation Tag:");
+		JLabel curationTagLabel = new JLabel("Quality Tag:");
 			
 		// NORTH PANEL = SETTINGS
 		JPanel browseOptBox = new JPanel();
@@ -219,7 +219,7 @@ public class BrowsePanel extends JPanel {
 	private List<String> getCollectionTags() {
 		List<String> list = new ArrayList<String>();
 		list.add("All pathways");
-		list.add("Curated pathways");
+		list.add("Approved pathways");
 		list.add("Featured pathways");
 		list.add("Reactome pathways");
 		list.add("WormBase pathways");
@@ -248,7 +248,7 @@ public class BrowsePanel extends JPanel {
 	private void setUpCurationTags() {
 		// Collection combo box
 		collectionTags.put("All pathways", "Curation:All");
-		collectionTags.put("Curated pathways", "Curation:AnalysisCollection");
+		collectionTags.put("Approved pathways", "Curation:AnalysisCollection");
 		collectionTags.put("Featured pathways", "Curation:FeaturedPathway");
 		collectionTags.put("Reactome pathways", "Curation:Reactome_Approved");
 		collectionTags.put("WormBase pathways", "Curation:WormBase_Approved");
