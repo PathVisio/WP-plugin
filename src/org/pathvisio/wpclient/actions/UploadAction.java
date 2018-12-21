@@ -42,7 +42,14 @@ public class UploadAction extends AbstractAction {
 			JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(), "Please specify organism by double clicking on info box\n in the top left corner of the pathway before uploading.",
 					"Error", JOptionPane.ERROR_MESSAGE);
 		} else {
-			new CreatePathwayPanel(plugin);
+			if(plugin.getPathwayID().equals("")) {
+				new CreatePathwayPanel(plugin);
+			} else {
+				int dialogResult = JOptionPane.showConfirmDialog (plugin.getDesktop().getFrame(), "Your pathway was loaded through the plugin.\nAre you sure that you want to create a new pathway on WikiPathways?\n\nIf not, please click 'No' and select the 'Plugins -> WikiPathways plugin -> Update' option.","Warning",JOptionPane.YES_NO_CANCEL_OPTION);
+				if(dialogResult == JOptionPane.YES_OPTION){
+					new CreatePathwayPanel(plugin);
+				}
+			}
 		}
 	}
 

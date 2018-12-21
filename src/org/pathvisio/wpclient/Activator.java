@@ -27,7 +27,7 @@ import org.pathvisio.wpclient.impl.WPQueries;
  * @author SravanthiSinha
  * @author mkutmon
  */
-public class Activator implements BundleActivator{
+public class Activator implements BundleActivator {
 	
 	private WikiPathwaysClientPlugin plugin;
 

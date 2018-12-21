@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: org.pathvisio.wpclient
 Bundle-SymbolicName: org.pathvisio.wpclient
-Bundle-Version: 1.1.3
+Bundle-Version: 1.1.4
 Bundle-Activator: org.pathvisio.wpclient.Activator
 Export-Package: org.pathvisio.wpclient
 Require-Bundle: org.pathvisio.core;bundle-version="3.2.0",

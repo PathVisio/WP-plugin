@@ -80,7 +80,6 @@ public class BrowsePanel extends JPanel {
 
 	private HashMap<String, String> curationTags;
 	private HashMap<String, String> collectionTags;
-//	public static HashMap<String, String> tagImages;
 
 	private JPanel thisPanel;
 	private JLabel lblNumFound;

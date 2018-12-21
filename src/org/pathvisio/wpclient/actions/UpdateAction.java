@@ -39,7 +39,7 @@ public class UpdateAction extends AbstractAction {
 	
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		if(WikiPathwaysClientPlugin.revisionno.equals("") || WikiPathwaysClientPlugin.pathwayid.equals("")) {
+		if(plugin.getRevision().equals("") || plugin.getPathwayID().equals("")) {
 			JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(), "Pathway has not been downloaded through the plugin.\nOnly pathways that have been opened through the plugin, can be updated.",
 					"Error", JOptionPane.ERROR_MESSAGE);
 		} else {

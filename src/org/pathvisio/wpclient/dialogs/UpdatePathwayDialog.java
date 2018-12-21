@@ -151,24 +151,24 @@ public class UpdatePathwayDialog implements ActionListener {
 					try {
 						pk.setTaskName("Checking if pathway has been changed.");
 						Pathway pathway = plugin.getDesktop().getSwingEngine().getEngine().getActivePathway();
-						WSPathwayInfo wsPathwayInfo = plugin.getWpQueries().getPathwayInfo(WikiPathwaysClientPlugin.pathwayid, pk);
+						WSPathwayInfo wsPathwayInfo = plugin.getWpQueries().getPathwayInfo(plugin.getPathwayID(), pk);
 						String newrevision = wsPathwayInfo.getRevision();
 						
-						if(WikiPathwaysClientPlugin.revisionno.equals(newrevision)) {
+						if(plugin.getRevision().equals(newrevision)) {
 							pk.setTaskName("Check if curation tags need to be updated.");
 							// check if curation tags need to be updated
 							boolean curTagActive = false;
 							boolean feaTagActive = false;
 							boolean updateCurTag = false;
 							boolean updateFeaTag = false;
-							Set<WSCurationTag> tags = plugin.getWpQueries().getCurationTags(WikiPathwaysClientPlugin.pathwayid, null);
+							Set<WSCurationTag> tags = plugin.getWpQueries().getCurationTags(plugin.getPathwayID(), null);
 							for(WSCurationTag tag : tags) {
 								if(tag.getName().equals("Curation:AnalysisCollection")) {
-									if(tag.getRevision().equals(WikiPathwaysClientPlugin.revisionno)) {
+									if(tag.getRevision().equals(plugin.getRevision())) {
 										curTagActive = true;
 									}
 								} else if (tag.getName().equals("Curation:FeaturedPathway")) {
-									if(tag.getRevision().equals(WikiPathwaysClientPlugin.revisionno)) {
+									if(tag.getRevision().equals(plugin.getRevision())) {
 										feaTagActive = true;
 									}
 								}
@@ -194,17 +194,17 @@ public class UpdatePathwayDialog implements ActionListener {
 							
 							pk.setTaskName("Update pathway.");
 							// update pathway
-							plugin.getWpQueries().updatePathway(pathway, WikiPathwaysClientPlugin.pathwayid, Integer.parseInt(WikiPathwaysClientPlugin.revisionno), description.getText());
+							plugin.getWpQueries().updatePathway(pathway, plugin.getPathwayID(), Integer.parseInt(plugin.getRevision()), description.getText());
 	
 							// get latest info to reload pathway
-							info = plugin.getWpQueries().getPathwayInfo(WikiPathwaysClientPlugin.pathwayid, pk);
+							info = plugin.getWpQueries().getPathwayInfo(plugin.getPathwayID(), pk);
 							String message = "The pathway is updated.";
 							if(updateCurTag) {
-								plugin.getWpQueries().updateCurationTag("Curation:AnalysisCollection", WikiPathwaysClientPlugin.pathwayid, "", Integer.parseInt(info.getRevision()));
+								plugin.getWpQueries().updateCurationTag("Curation:AnalysisCollection", plugin.getPathwayID(), "", Integer.parseInt(info.getRevision()));
 								message = message + "\nCurated Collection tag has been updated.";
 							}
 							if(updateFeaTag) {
-								plugin.getWpQueries().updateCurationTag("Curation:FeaturedPathway", WikiPathwaysClientPlugin.pathwayid, "", Integer.parseInt(info.getRevision()));
+								plugin.getWpQueries().updateCurationTag("Curation:FeaturedPathway", plugin.getPathwayID(), "", Integer.parseInt(info.getRevision()));
 								message = message + "\nFeatured Collection tag has been updated.";
 							}
 							pk.setTaskName(message);

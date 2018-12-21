@@ -85,10 +85,26 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 	private JMenu wikipathwaysMenu;
 	private JMenuItem createMenu,updateMenu;
 
-	public static String revisionno = "";
-	public static String pathwayid = "";
+	private static String revisionno = "";
+	private static String pathwayid = "";
 
 	private WikiPathwaysClientPlugin plugin;
+
+	public String getRevision() {
+		return revisionno;
+	}
+
+	public String getPathwayID() {
+		return pathwayid;
+	}
+	
+	public void setRevision(String revision) {
+		revisionno = revision;
+	}
+
+	public void setPathwayID(String pathwayID) {
+		pathwayid = pathwayID;
+	}
 
 	public static final String ARG_PROPERTY_WPID = "wp.id";
 
@@ -160,8 +176,8 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 			searchMenu.addActionListener(searchAction);
 			browseMenu.addActionListener(browseAction);
 
-			createMenu = new JMenuItem("Upload New");
-			updateMenu = new JMenuItem("Update");
+			createMenu = new JMenuItem("Create New Pathway");
+			updateMenu = new JMenuItem("Update Pathway");
 
 			UploadAction createAction = new UploadAction(plugin);
 			UpdateAction updateAction = new UpdateAction(plugin);
@@ -171,8 +187,9 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 
 			wikipathwaysMenu.add(searchMenu);
 			wikipathwaysMenu.add(browseMenu);
-			wikipathwaysMenu.add(createMenu);
+			wikipathwaysMenu.addSeparator();
 			wikipathwaysMenu.add(updateMenu);
+			wikipathwaysMenu.add(createMenu);
 
 			desktop.registerSubMenu("Plugins", wikipathwaysMenu);
 			updateState();
@@ -185,8 +202,13 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 	 */
 	public void updateState() {
 		boolean status = (desktop.getSwingEngine().getEngine().hasVPathway());
-		createMenu.setEnabled(status);
-		updateMenu.setEnabled(status);
+		if(pathwayid.equals("")) {
+			updateMenu.setEnabled(false);
+			createMenu.setEnabled(status);
+		} else {
+			updateMenu.setEnabled(true);
+			createMenu.setEnabled(false);
+		}
 	}
 
 	/**
@@ -238,6 +260,7 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 			protected void done() {
 				if (pk.isCancelled()) {
 					pk.finished();
+					updateState();
 				}
 			}
 		};
@@ -272,6 +295,7 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 			protected void done() {
 				if (pk.isCancelled()) {
 					pk.finished();
+					updateState();
 				}
 			}
 		};
@@ -383,6 +407,7 @@ public class WikiPathwaysClientPlugin implements Plugin, ApplicationEventListene
 							JOptionPane.ERROR_MESSAGE);
 				} finally {
 					pk.finished();
+					updateState();
 				}
 				return true;
 			}

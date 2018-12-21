@@ -148,9 +148,8 @@ public class CreatePathwayPanel extends JPanel implements ActionListener {
 					plugin.getWpQueries().updateCurationTag( "Curation:UnderConstruction", info.getId(), "", Integer.parseInt(info.getRevision()));
 					JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(),
 							"The Pathway " + info.getId() + " has been uploaded.\n\n Curation Tag \"Under Construction\" has been added.\nPlease update the curation tags if needed.");
-								WikiPathwaysClientPlugin.revisionno = info.getRevision();
-								WikiPathwaysClientPlugin.pathwayid = info.getId();
-		
+								plugin.setRevision(info.getRevision());
+								plugin.setPathwayID(info.getId());
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(),
 							"Error while creating new pathway as you donot have the write access.\n Please submit a request in the following link: \n http://plugins.pathvisio.org/wp-client/request-webservice-access/", "Error",
