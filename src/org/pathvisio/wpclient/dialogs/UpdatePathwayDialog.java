@@ -177,17 +177,33 @@ public class UpdatePathwayDialog implements ActionListener {
 							// ask if user wants to update curation tags
 							if(curTagActive || feaTagActive) {
 								pk.setTaskName("Ask user if tags should be updated.");
-								int n = JOptionPane.showConfirmDialog(
-										plugin.getDesktop().getFrame(),
-									    "Do you want to update the Approved and/or Featured version tags?",
-									    "Tag update",
-									    JOptionPane.YES_NO_OPTION);
-								if(n == JOptionPane.YES_OPTION) {
-									if(curTagActive) {
-										updateCurTag = true;
+								if(d.isVisible()) {
+									int n = JOptionPane.showConfirmDialog(
+											d,
+										    "Do you want to update the Approved and/or Featured version tags?",
+										    "Tag update",
+										    JOptionPane.YES_NO_OPTION);
+									if(n == JOptionPane.YES_OPTION) {
+										if(curTagActive) {
+											updateCurTag = true;
+										}
+										if(feaTagActive) {
+											updateFeaTag = true;
+										}
 									}
-									if(feaTagActive) {
-										updateFeaTag = true;
+								} else {
+									int n = JOptionPane.showConfirmDialog(
+											plugin.getDesktop().getFrame(),
+										    "Do you want to update the Approved and/or Featured version tags?",
+										    "Tag update",
+										    JOptionPane.YES_NO_OPTION);
+									if(n == JOptionPane.YES_OPTION) {
+										if(curTagActive) {
+											updateCurTag = true;
+										}
+										if(feaTagActive) {
+											updateFeaTag = true;
+										}
 									}
 								}
 							}						
