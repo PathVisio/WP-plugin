@@ -21,6 +21,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 
+import org.pathvisio.core.model.Pathway;
 import org.pathvisio.wpclient.WikiPathwaysClientPlugin;
 import org.pathvisio.wpclient.panels.CreatePathwayPanel;
 
@@ -42,15 +43,27 @@ public class UploadAction extends AbstractAction {
 			JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(), "Please specify organism by double clicking on info box\n in the top left corner of the pathway before uploading.",
 					"Error", JOptionPane.ERROR_MESSAGE);
 		} else {
-			if(plugin.getPathwayID().equals("")) {
-				new CreatePathwayPanel(plugin);
-			} else {
-				int dialogResult = JOptionPane.showConfirmDialog (plugin.getDesktop().getFrame(), "Your pathway was loaded through the plugin.\nAre you sure that you want to create a new pathway on WikiPathways?\n\nIf not, please click 'No' and select the 'Plugins -> WikiPathways plugin -> Update' option.","Warning",JOptionPane.YES_NO_CANCEL_OPTION);
-				if(dialogResult == JOptionPane.YES_OPTION){
+			if(!isEmpty(plugin.getDesktop().getSwingEngine().getEngine().getActivePathway())){
+				if(plugin.getPathwayID().equals("")) {
 					new CreatePathwayPanel(plugin);
+				} else {
+					int dialogResult = JOptionPane.showConfirmDialog (plugin.getDesktop().getFrame(), "Your pathway was loaded through the plugin.\nAre you sure that you want to create a new pathway on WikiPathways?\n\nIf not, please click 'No' and select the 'Plugins -> WikiPathways plugin -> Update' option.","Warning",JOptionPane.YES_NO_CANCEL_OPTION);
+					if(dialogResult == JOptionPane.YES_OPTION){
+						new CreatePathwayPanel(plugin);
+					}
 				}
+			} else {
+				JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(), "Please add some content to your pathway before uploading it.",
+						"Error", JOptionPane.ERROR_MESSAGE);
 			}
 		}
+	}
+	
+	private boolean isEmpty(Pathway p) {
+		if(p.getDataObjects().size() > 2) {
+			return false;
+		}
+		return true;
 	}
 
 }
