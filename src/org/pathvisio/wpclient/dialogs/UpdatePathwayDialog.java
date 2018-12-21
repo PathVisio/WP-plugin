@@ -179,7 +179,7 @@ public class UpdatePathwayDialog implements ActionListener {
 								pk.setTaskName("Ask user if tags should be updated.");
 								int n = JOptionPane.showConfirmDialog(
 										plugin.getDesktop().getFrame(),
-									    "Do you want to update the Curated/Featured Collection tag?",
+									    "Do you want to update the Approved and/or Featured version tags?",
 									    "Tag update",
 									    JOptionPane.YES_NO_OPTION);
 								if(n == JOptionPane.YES_OPTION) {
@@ -201,11 +201,11 @@ public class UpdatePathwayDialog implements ActionListener {
 							String message = "The pathway is updated.";
 							if(updateCurTag) {
 								plugin.getWpQueries().updateCurationTag("Curation:AnalysisCollection", plugin.getPathwayID(), "", Integer.parseInt(info.getRevision()));
-								message = message + "\nCurated Collection tag has been updated.";
+								message = message + "\nApproved version tag has been updated.";
 							}
 							if(updateFeaTag) {
 								plugin.getWpQueries().updateCurationTag("Curation:FeaturedPathway", plugin.getPathwayID(), "", Integer.parseInt(info.getRevision()));
-								message = message + "\nFeatured Collection tag has been updated.";
+								message = message + "\nFeatured version tag has been updated.";
 							}
 							pk.setTaskName(message);
 							
