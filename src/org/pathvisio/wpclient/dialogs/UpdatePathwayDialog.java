@@ -235,9 +235,9 @@ public class UpdatePathwayDialog implements ActionListener {
 						}
 					 } catch (Exception e) {
 						JOptionPane.showMessageDialog(plugin.getDesktop().getFrame(),
-								"Error while updating the pathway as you donot have the write access.\n Please submit a request in the following link: \n http://plugins.pathvisio.org/wp-client/request-webservice-access/", "Error",
+								"Error while updating the pathway, since you do not have write access.\n Please submit a request at the following website: \n http://plugins.pathvisio.org/wp-client/request-webservice-access/", "Error",
 								JOptionPane.ERROR_MESSAGE);
-					} finally {
+					} finally {     
 						pk.finished();
 					}
 					return info;
